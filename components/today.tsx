@@ -59,9 +59,9 @@ export function Today({
   const calls = needs.filter((n) => n.kind === "call");
   const resolves = needs.filter((n) => n.kind === "resolve");
   const money = myMoney(state, people, me.id, currencies, rate);
-  const count = needs.length + money.length;
+  const count = needs.length;
 
-  const place_ = standing(state, roster, me.id);
+  const score = standing(state, roster, me.id);
   const news = inbox(state, people, me.id, seenAt);
   const fresh = news.items.filter((i) => i.unread && i.kind !== "mention").slice(0, 3);
   const kept = phrasebook(state).slice(0, 4);
@@ -81,7 +81,7 @@ export function Today({
   return (
     <div className="flex flex-col gap-6">
       {clock.phase === "before" && clock.toGo !== null ? (
-        <section className="flex flex-col gap-4 rounded-3xl bg-sun p-5 text-[#12141a]">
+        <section className="flex flex-col gap-4 rounded-3xl bg-sun p-5 text-on-sun">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-1.5">
               <p className="font-semibold">
@@ -109,7 +109,7 @@ export function Today({
             {canInvite && (
               <Link
                 href={`${routes.members(tripId)}#invite`}
-                className="btn shrink-0 bg-[#12141a] px-4 text-white"
+                className="btn shrink-0 bg-on-sun px-4 text-white"
               >
                 Invite more
               </Link>
@@ -166,7 +166,7 @@ export function Today({
           <h2 className="display text-xl font-bold">Needs you</h2>
         </div>
 
-        {count === 0 && (
+        {count + money.length === 0 && (
           <p className="card px-4 py-5 text-sm text-soft">
             Nothing is waiting on you. Ask the group something, or go and have the trip.
           </p>
@@ -225,9 +225,9 @@ export function Today({
         ))}
       </section>
 
-      {count === 0 && <AskBox tripId={tripId} placeholder={t.questionPlaceholder} />}
+      {count + money.length === 0 && <AskBox tripId={tripId} placeholder={t.questionPlaceholder} />}
 
-      {fresh.length > 0 && (
+      {news.unreadCount > 0 && (
         <section className="flex flex-col gap-2.5">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="display text-xl font-bold">Since you looked</h2>
@@ -238,25 +238,25 @@ export function Today({
               All {news.unreadCount} new
             </Link>
           </div>
-          <InboxRows items={fresh} plain />
+          {fresh.length > 0 && <InboxRows items={fresh} plain />}
         </section>
       )}
 
-      {place_ && (
+      {score && (
         <Link
           href={routes.members(tripId)}
           className="card flex items-center justify-between gap-3 px-4 py-3.5"
         >
           <span className="min-w-0">
             <span className="block font-semibold">
-              You're {ordinal(place_.place)} of {place_.of}
+              {score.profitC === 0
+                ? "You're level on stamps"
+                : `You're ${score.profitC > 0 ? "up" : "down"} ${fmtPies(Math.abs(score.profitC))} ${stampsWord(score.profitC)}`}
             </span>
             <span className="block text-[13px] text-soft">
-              {place_.netC === 0
-                ? "Level on stamps."
-                : `${place_.netC > 0 ? "Up" : "Down"} ${fmtPies(Math.abs(place_.netC))} ${stampsWord(place_.netC)}.`}{" "}
-              {place_.place > 1 &&
-                `${listNames(place_.leaders.map(firstName))} ${place_.leaders.length === 1 ? "leads" : "lead"} at ${fmtPies(place_.leadC, { sign: true })}.`}
+              {score.profitC === score.leadC
+                ? "Nobody is ahead of you."
+                : `${listNames(score.leaders.map(firstName))} ${score.leaders.length === 1 ? "leads" : "lead"} at ${fmtPies(score.leadC, { sign: true })}.`}
             </span>
           </span>
           <Chevron />
@@ -330,12 +330,6 @@ function Mention({ need }: { need: Extract<Need, { kind: "mention" }> }) {
       </Link>
     </article>
   );
-}
-
-function ordinal(n: number): string {
-  const tail = n % 100;
-  if (tail >= 11 && tail <= 13) return `${n}th`;
-  return `${n}${["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
 }
 
 function listNames(names: string[]): string {

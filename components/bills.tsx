@@ -128,7 +128,7 @@ export function Bills({
           <div>
             <p className="display text-[28px] font-bold leading-tight">You're square.</p>
             <p className="mt-1 text-sm text-night-soft">
-              {bills.length === 0 ? t.billsEmptySub : t.allSquare}
+              {bills.length === 0 ? t.billsEmptySub : "Nothing for you to pay or collect."}
             </p>
           </div>
         ) : (

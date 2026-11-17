@@ -10,6 +10,7 @@ import { PasskeyNudge } from "@/components/passkey-nudge";
 import { RecoveryNotice } from "@/components/recovery-notice";
 import { StaleBuild } from "@/components/stale-build";
 import { TermsNudge } from "@/components/terms-nudge";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { passkeysConfigured, RP_ID } from "@/lib/auth";
 import { build } from "@/lib/build";
 import { passkeyBackups, recoveryNoticeFor } from "@/lib/data";
@@ -112,6 +113,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <footer className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-1 px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-4 text-xs text-soft">
           <span>{t.footer}</span>
           <span className="ml-auto flex gap-3">
+            <ThemeToggle />
             <Link href={routes.terms} className="hover:underline">
               Terms
             </Link>

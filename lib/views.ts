@@ -214,13 +214,6 @@ function toItem(state: TripState, people: People, row: LedgerRow): ActivityItem 
   };
 }
 
-export function recentActivity(state: TripState, people: People, limit = 12): ActivityItem[] {
-  return [...state.ledger]
-    .reverse()
-    .slice(0, limit)
-    .map((row) => toItem(state, people, row));
-}
-
 export function marketActivity(
   state: TripState,
   people: People,

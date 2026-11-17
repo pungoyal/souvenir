@@ -35,10 +35,10 @@ export function ThemeToggle() {
       onClick={toggle}
       title="Switch theme"
       aria-label="Switch between light and dark"
-      className="btn btn-line px-4 text-sm"
+      className="hover:underline"
     >
-      <span className="light-only">Switch to dark</span>
-      <span className="dark-only">Switch to light</span>
+      <span className="light-only">Dark theme</span>
+      <span className="dark-only">Light theme</span>
     </button>
   );
 }

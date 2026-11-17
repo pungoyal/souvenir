@@ -13,7 +13,7 @@ export default async function Landing() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <section className="mt-2 rounded-3xl bg-sun p-6 text-[#12141a] sm:p-10">
+      <section className="mt-2 rounded-3xl bg-sun p-6 text-on-sun sm:p-10">
         <div className="flex items-start justify-between gap-4">
           <p className="text-sm font-semibold uppercase tracking-[0.06em]">
             For a friend group going somewhere
@@ -35,10 +35,10 @@ export default async function Landing() {
           it.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href="#start" className="btn h-14 bg-[#12141a] px-6 text-lg text-white">
+          <a href="#start" className="btn h-14 bg-on-sun px-6 text-lg text-white">
             Open a trip
           </a>
-          <Link href={routes.signin} className="btn h-14 border-[1.5px] border-[#12141a] px-6">
+          <Link href={routes.signin} className="btn h-14 border-[1.5px] border-on-sun px-6">
             Sign in
           </Link>
         </div>
@@ -155,7 +155,7 @@ export default async function Landing() {
 function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
     <li className="card p-4">
-      <p className="mono flex h-8 w-8 items-center justify-center rounded-full bg-sun font-bold text-[#12141a]">
+      <p className="mono flex h-8 w-8 items-center justify-center rounded-full bg-sun font-bold text-on-sun">
         {n}
       </p>
       <p className="display mt-3 text-xl font-bold">{title}</p>

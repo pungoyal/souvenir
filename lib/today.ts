@@ -1,10 +1,11 @@
 // The Today page: what is waiting on one member, and where they stand.
 
 import type { FxRate } from "./fx.ts";
-import { type MarketState, netByMember, type TripState } from "./replay.ts";
+import type { MarketState, TripState } from "./replay.ts";
 import type { Currency } from "./split.ts";
 import {
   billsOverview,
+  leaderboard,
   listMarkets,
   type MarketView,
   type People,
@@ -86,33 +87,29 @@ export function needsYou(
 }
 
 export interface Standing {
-  /** 1 is the top; members level on stamps share a place. */
-  place: number;
-  of: number;
-  netC: number;
-  /** Whoever is in first place, the viewer included. */
+  /** Stamps won or lost on resolved predictions; an open call is not yet a loss. */
+  profitC: number;
+  /** Whoever is furthest ahead, the viewer included. */
   leaders: RosterMember[];
   leadC: number;
 }
 
-/** Where one member stands on net stamps. Null until a verdict has moved any. */
+/** Null until a verdict has moved stamps, or for somebody with no seat. */
 export function standing(
   state: TripState,
   roster: readonly RosterMember[],
   viewerId: string,
 ): Standing | null {
-  if (!roster.some((m) => m.id === viewerId)) return null;
-  const nets = netByMember(state);
-  const netOf = (id: string) => nets.get(id) ?? 0;
-  if (roster.every((m) => netOf(m.id) === 0)) return null;
-  const netC = netOf(viewerId);
-  const leadC = Math.max(...roster.map((m) => netOf(m.id)));
+  const { ranked, unranked } = leaderboard(state, roster, 0);
+  const all = [...ranked, ...unranked];
+  const mine = all.find((s) => s.member.id === viewerId);
+  if (!mine || all.every((s) => s.profitC === 0)) return null;
+  const leadC = Math.max(...all.map((s) => s.profitC));
   return {
-    place: 1 + roster.filter((m) => netOf(m.id) > netC).length,
-    of: roster.length,
-    netC,
-    leaders: roster
-      .filter((m) => netOf(m.id) === leadC)
+    profitC: mine.profitC,
+    leaders: all
+      .filter((s) => s.profitC === leadC)
+      .map((s) => s.member)
       .sort((a, b) => a.name.localeCompare(b.name)),
     leadC,
   };

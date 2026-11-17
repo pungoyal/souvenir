@@ -189,7 +189,7 @@ export function MarketPage({
         <section>
           <h2 className={heading}>{t.activitySoFarHeading}</h2>
           <div className="card mt-2 p-4">
-            <ActivityFeed items={activity} tripId={tripId} lingo={lingo} />
+            <ActivityFeed items={activity} lingo={lingo} />
           </div>
         </section>
       )}

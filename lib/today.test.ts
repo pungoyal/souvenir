@@ -126,30 +126,31 @@ describe("needsYou", () => {
 });
 
 describe("standing", () => {
-  const season = log([
+  const calls: Array<[string, EventPayload]> = [
     ["a", create("m1")],
     ["b", call("m1", "yes", 2)],
     ["c", call("m1", "no", 2)],
-    ["a", { t: "resolve", marketId: "m1", outcome: "yes", note: "" }],
-  ]);
+  ];
+  const verdict: [string, EventPayload] = [
+    "a",
+    { t: "resolve", marketId: "m1", outcome: "yes", note: "" },
+  ];
 
-  it("is silent until stamps have moved", () => {
-    const state = replayTrip(config, log([["a", create("m1")]]));
-    expect(standing(state, roster, "a")).toBeNull();
+  it("is silent while calls are only open: a stake is not yet a loss", () => {
+    const state = replayTrip(config, log(calls));
+    expect(standing(state, roster, "b")).toBeNull();
   });
 
-  it("places a member by net stamps, level members sharing a place", () => {
-    const state = replayTrip(config, season);
-    expect(standing(state, roster, "b")).toMatchObject({ place: 1, of: 4, netC: 200, leadC: 200 });
-    expect(standing(state, roster, "b")?.leaders.map((m) => m.id)).toEqual(["b"]);
-    // org and a are level on nothing: both second.
-    expect(standing(state, roster, "a")).toMatchObject({ place: 2, netC: 0 });
-    expect(standing(state, roster, "org")).toMatchObject({ place: 2 });
-    expect(standing(state, roster, "c")).toMatchObject({ place: 4, netC: -200 });
+  it("reads settled profit and names whoever leads", () => {
+    const state = replayTrip(config, log([...calls, verdict]));
+    expect(standing(state, roster, "b")).toMatchObject({ profitC: 200, leadC: 200 });
+    expect(standing(state, roster, "c")).toMatchObject({ profitC: -200, leadC: 200 });
+    expect(standing(state, roster, "c")?.leaders.map((m) => m.id)).toEqual(["b"]);
+    expect(standing(state, roster, "a")).toMatchObject({ profitC: 0 });
   });
 
   it("has nothing to say about somebody with no seat", () => {
-    const state = replayTrip(config, season);
+    const state = replayTrip(config, log([...calls, verdict]));
     expect(standing(state, roster, "ghost")).toBeNull();
   });
 });
@@ -176,6 +177,11 @@ describe("myMoney", () => {
   it("is empty for somebody who is square", () => {
     const { state, people } = open([["a", dinner("b1", "inr", 100_00)]]);
     expect(myMoney(state, people, "c", ["thb", "inr"], null)).toEqual([]);
+  });
+
+  it("gives one figure on a one-currency trip", () => {
+    const { state, people } = open([["a", dinner("b1", "inr", 100_00)]]);
+    expect(myMoney(state, people, "b", ["inr"], null)).toEqual([{ currency: "inr", netC: -50_00 }]);
   });
 
   it("settles each currency alone without a rate", () => {

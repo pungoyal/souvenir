@@ -22,7 +22,6 @@ import {
   phrasebook,
   type RosterMember,
   reactors,
-  recentActivity,
   tripRecap,
   tripSettlement,
 } from "./views.ts";
@@ -121,13 +120,6 @@ describe("markets", () => {
 });
 
 describe("activity and ledgers", () => {
-  it("lists the trip's latest moves newest first", () => {
-    const state = replayTrip(config, season);
-    const items = recentActivity(state, peopleOf(roster, state), 3);
-    expect(items.map((i) => i.row.kind)).toEqual(["bet", "payout", "bet"]);
-    expect(items[0]?.market?.id).toBe("m3");
-  });
-
   it("separates a prediction's calls from the settlement that stands", () => {
     const state = replayTrip(
       config,

@@ -13,6 +13,7 @@
   --color-night-soft: #c9cdd6;
   --color-night-line: #2a2e38;
   --color-sun: #ffc229;
+  --color-on-sun: #12141a;
   --color-sun-tint: #fff4d1;
   --color-sun-deep: #8a5a00;
   --color-link: #1b45c0;
@@ -145,10 +146,10 @@ body {
 }
 .btn-sun {
   background-color: var(--color-sun);
-  color: #12141a;
+  color: var(--color-on-sun);
 }
 .btn-sun:hover:not(:disabled) {
-  background-color: color-mix(in oklab, var(--color-sun) 88%, #12141a);
+  background-color: color-mix(in oklab, var(--color-sun) 88%, var(--color-on-sun));
 }
 .btn-yes {
   background-color: var(--color-yes);
@@ -233,7 +234,7 @@ body {
 }
 
 .pool-fill {
-  transition: width 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: flex-grow 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

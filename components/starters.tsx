@@ -32,10 +32,11 @@ export function Starters({ tripId, drafts }: { tripId: string; drafts: StarterDr
 export function useStarters(trip: StarterTrip, always = false): StarterDraft[] {
   const { me, roster, state, name } = useOpenTrip();
   if (!always && state.markets.size >= 3) return [];
+  const asked = new Set([...state.markets.values()].map((m) => m.question));
   return starters({
     ...trip,
     name: name ?? trip.place,
     members: roster.map((m) => ({ id: m.id, name: m.name })),
     viewerId: me.id,
-  });
+  }).filter((d) => !asked.has(d.question));
 }

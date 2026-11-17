@@ -4,7 +4,6 @@ import { Avatar } from "@/components/avatar";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { LingoPicker } from "@/components/lingo-picker";
 import { PasskeyManager } from "@/components/passkeys";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { RP_ID } from "@/lib/auth";
 import { listPasskeySummaries, listTrips } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
@@ -48,7 +47,6 @@ export default async function AccountPage() {
       <section className="mt-7">
         <h2 className="display text-xl font-bold">This phone</h2>
         <div className="card mt-3 flex flex-wrap items-center gap-2 p-4">
-          <ThemeToggle />
           <form action={signOutAction}>
             <button type="submit" className="btn btn-line px-4 text-sm">
               Sign out

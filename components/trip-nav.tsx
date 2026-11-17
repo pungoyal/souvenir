@@ -47,7 +47,7 @@ export function TripNav({
             href={routes.talk(tripId)}
             aria-current={talk ? "page" : undefined}
             className={`mx-1 flex h-[60px] flex-col items-center justify-center gap-0.5 rounded-full ${
-              talk ? "bg-sun text-[#12141a]" : "bg-night text-white"
+              talk ? "bg-sun text-on-sun" : "bg-night text-white"
             }`}
           >
             <span className={talk ? "" : "text-sun"}>

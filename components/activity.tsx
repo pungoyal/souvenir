@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { timeAgo } from "@/lib/format";
 import { lingoOf } from "@/lib/lingo";
 import { piesText } from "@/lib/pies";
-import { routes } from "@/lib/routes";
 import type { ActivityItem } from "@/lib/views";
 import { Avatar } from "./avatar";
 
@@ -24,13 +22,9 @@ function phrase(item: ActivityItem): string {
 
 export function ActivityFeed({
   items,
-  tripId,
-  showMarket,
   lingo = "english",
 }: {
   items: ActivityItem[];
-  tripId: string;
-  showMarket?: boolean;
   lingo?: string;
 }) {
   const t = lingoOf(lingo);
@@ -44,17 +38,6 @@ export function ActivityFeed({
           <Avatar member={item.member} size={24} />
           <span className="min-w-0">
             <span className="font-semibold">{item.member.name}</span> {phrase(item)}
-            {showMarket && item.market && (
-              <>
-                {" — "}
-                <Link
-                  href={routes.market(tripId, item.market.id)}
-                  className="underline decoration-line underline-offset-2"
-                >
-                  {item.market.question}
-                </Link>
-              </>
-            )}
             <span className="ml-1.5 whitespace-nowrap text-xs text-soft">
               {timeAgo(item.row.at)}
             </span>

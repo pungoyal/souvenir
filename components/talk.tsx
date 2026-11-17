@@ -371,7 +371,7 @@ export function Talk({
                     title={particle.roman}
                     onClick={() => setSpeaking(who)}
                     className={`h-11 rounded-full px-4 font-semibold ${
-                      speaking === who ? "bg-sun text-[#12141a]" : "text-white"
+                      speaking === who ? "bg-sun text-on-sun" : "text-white"
                     }`}
                   >
                     <span lang={pair.them.code}>{particle.native}</span>
@@ -616,7 +616,7 @@ function Card({
         {turn.literal && outbound && ` · literally: ${turn.literal}`}
       </p>
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={onReplay} className="btn bg-white px-4 text-[#12141a]">
+        <button type="button" onClick={onReplay} className="btn bg-white px-4 text-on-sun">
           {PLAY} Say it again
         </button>
         <button
