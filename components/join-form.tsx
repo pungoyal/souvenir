@@ -52,7 +52,7 @@ export function JoinForm({ code, label }: { code?: string; label?: string }) {
         htmlFor="join-name"
         className="text-xs font-semibold uppercase tracking-wider text-soft"
       >
-        What should the table call you?
+        What should the group call you?
       </label>
       <input
         id="join-name"

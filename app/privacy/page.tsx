@@ -37,10 +37,10 @@ export default function PrivacyPage() {
           </li>
           <li>
             <b>New phone, or lost one?</b> Anyone on the trip sends you the key again in one tap
-            from the table page; the link works only for you, signed in as you, for half an hour. If
-            your passkey supports it (iCloud Keychain and Google Password Manager do; most password
-            managers not yet), it also keeps a sealed backup of your keys, so signing in on a new
-            device brings them back by itself. We store that backup and cannot open it.
+            from their Group tab; the link works only for you, signed in as you, for half an hour.
+            If your passkey supports it (iCloud Keychain and Google Password Manager do; most
+            password managers not yet), it also keeps a sealed backup of your keys, so signing in on
+            a new device brings them back by itself. We store that backup and cannot open it.
           </li>
           <li>
             <b>Lost every passkey?</b> An organiser can give you your seat back with a recovery

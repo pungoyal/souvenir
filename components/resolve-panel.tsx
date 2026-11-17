@@ -8,8 +8,8 @@ import { useAct } from "./use-act";
 type Outcome = Side | "refunded";
 
 const OPTIONS: { value: Outcome; label: string; hint: string | null }[] = [
-  { value: "yes", label: "It happened", hint: "The yes side splits the whole pool" },
-  { value: "no", label: "It didn't", hint: "The no side splits the whole pool" },
+  { value: "yes", label: "It happened", hint: "The yes side splits the whole pool." },
+  { value: "no", label: "It didn't", hint: "The no side splits the whole pool." },
   { value: "refunded", label: "Void", hint: null },
 ];
 
@@ -38,7 +38,6 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
           <button
             key={opt.value}
             type="button"
-            title={opt.hint ?? t.voidHint}
             onClick={() => {
               setOutcome(opt.value);
               setConfirming(false);
@@ -59,10 +58,16 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
         ))}
       </div>
 
+      {outcome && (
+        <p className="mt-2 text-[13px] text-soft">
+          {OPTIONS.find((o) => o.value === outcome)?.hint ?? t.voidHint}
+        </p>
+      )}
+
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        placeholder="How you decided (goes on the permanent record)"
+        placeholder="What settled it? This stays on the record."
         rows={2}
         className="field mt-3"
       />
@@ -74,7 +79,7 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
           onClick={() => setConfirming(true)}
           className="btn btn-ink mt-3 h-12 w-full"
         >
-          Resolve this prediction
+          Resolve it
         </button>
       ) : (
         <div className="mt-3 flex gap-2">
@@ -84,9 +89,7 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
             onClick={resolve}
             className="btn btn-ink h-12 flex-1"
           >
-            {pending
-              ? "Resolving…"
-              : `Confirm ${outcome === "refunded" ? "void" : outcome}. It's final.`}
+            {pending ? "Resolving…" : `Confirm ${outcome === "refunded" ? "void" : outcome}`}
           </button>
           <button
             type="button"

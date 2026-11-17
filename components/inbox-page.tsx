@@ -111,7 +111,7 @@ function Line({ item, t }: { item: InboxItem; t: Lingo }) {
   const name = <span className="font-semibold">{item.actor.name}</span>;
   switch (item.kind) {
     case "new_market":
-      return <>{name} opened a new prediction</>;
+      return <>{name} asked the group</>;
     case "comment":
       return (
         <>
@@ -141,7 +141,7 @@ function Line({ item, t }: { item: InboxItem; t: Lingo }) {
           {item.myProfitC !== null && (
             <span className={`mono ml-1.5 font-bold ${tone(item.myProfitC)}`}>
               {item.myProfitC === 0
-                ? "(stamps returned)"
+                ? "(stamps back)"
                 : `(${(item.myProfitC > 0 ? t.youWon : t.youLost)(piesText(Math.abs(item.myProfitC)))})`}
             </span>
           )}

@@ -31,7 +31,7 @@ export function OrganiserToggle({
     <div className="card px-4 py-3">
       <p className="text-sm">
         {isOrganiser
-          ? `${who} can invite people, shut links, reopen a wrong verdict, and mint a recovery link for anyone on this trip.`
+          ? `${who} can invite people, shut links, reopen a wrong verdict, and create a recovery link for anyone on this trip.`
           : `${who} can't invite anyone to this trip — only organisers can.`}
       </p>
       <button

@@ -43,7 +43,7 @@ export function MarketPage({
     return (
       <div>
         <BackLink href={routes.calls(tripId)}>Calls</BackLink>
-        <p className="mt-6 text-sm text-soft">No such prediction on this trip.</p>
+        <p className="mt-6 text-sm text-soft">That question isn't on this trip.</p>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export function MarketPage({
         <BackLink href={routes.calls(tripId)}>Calls</BackLink>
         <div className="flex items-center justify-between gap-3 text-[13px] text-soft">
           <span>
-            {mine ? "You asked" : `${creator.name} asks`} · {timeAgo(market.createdAt)}
+            {mine ? "You asked" : `${creator.name} asked`} · {timeAgo(market.createdAt)}
           </span>
           <StatusChip status={market.status} />
         </div>

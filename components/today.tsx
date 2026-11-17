@@ -168,7 +168,7 @@ export function Today({
 
         {count + money.length === 0 && (
           <p className="card px-4 py-5 text-sm text-soft">
-            Nothing is waiting on you. Ask the group something, or go and have the trip.
+            Nothing's waiting on you. Ask the group something, or go and enjoy the trip.
           </p>
         )}
 
@@ -235,7 +235,7 @@ export function Today({
               href={routes.inbox(tripId)}
               className="-my-2 flex min-h-11 items-center text-sm font-semibold underline"
             >
-              All {news.unreadCount} new
+              See all {news.unreadCount}
             </Link>
           </div>
           {fresh.length > 0 && <InboxRows items={fresh} plain />}
@@ -297,9 +297,7 @@ export function Today({
         >
           <span>
             <span className="block font-semibold">Already paid for something?</span>
-            <span className="block text-[13px] text-soft">
-              Log the deposit now, split it later.
-            </span>
+            <span className="block text-[13px] text-soft">Log it now, settle up whenever.</span>
           </span>
           <Chevron />
         </Link>

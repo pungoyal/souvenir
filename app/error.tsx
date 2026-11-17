@@ -37,8 +37,8 @@ export default function ErrorPage({
       </h1>
       <p className="mt-2 text-sm text-soft">
         {stale
-          ? "A new version went out while this page was open, so the server stopped answering this tab. Reload and carry on — everything already posted is on the log."
-          : "It has been noted. Trying again usually works; if it keeps happening, your trips are safe ground."}
+          ? "A new version went out while this page was open, so the server stopped answering this tab. Reload and carry on — everything you posted is saved."
+          : "It has been noted. Trying again usually works; if it keeps happening, start again from your trips."}
       </p>
       {!stale && digest && <p className="mono mt-2 text-xs text-soft">ref {digest}</p>}
       <div className="mt-4 flex gap-2">

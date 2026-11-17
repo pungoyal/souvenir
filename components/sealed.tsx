@@ -25,10 +25,10 @@ function WrongKey() {
       <div className="card border-no/40 bg-no-tint px-5 py-4">
         <p className="display text-2xl font-bold">This phone's key doesn't open this trip.</p>
         <p className="mt-1 text-sm text-soft">
-          The trip has {sealed} sealed event{sealed === 1 ? "" : "s"} and none of them opened with
-          the key this phone holds (epoch {epoch ?? "—"}). The key came from a link for a different
-          trip or an earlier sealing. Ask anyone on the trip to send {me.name} a fresh key from the
-          Group tab, and open it here.
+          The trip has {sealed} sealed {sealed === 1 ? "entry" : "entries"} and none of them opened
+          with the key this phone holds (key version {epoch ?? "—"}). The key came from a link for a
+          different trip, or from before the key was rotated. Ask anyone on the trip to send{" "}
+          {me.name} a fresh key from the Group tab, and open it here.
         </p>
         <p className="mt-3 text-xs text-soft">
           <Link href={routes.members(tripId)} className="text-link hover:underline">

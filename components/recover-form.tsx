@@ -34,7 +34,7 @@ export function RecoverForm({ code, name }: { code: string; name: string }) {
       <p className="mt-3 text-left text-xs text-soft">
         Any passkeys {name} still holds keep working — this adds one, it never takes one away. The
         old ones are on {name}'s own page, to remove once you're back in. The trip's key comes next:
-        anyone on the trip sends it from the table page.
+        anyone on the trip sends it from their Group tab.
       </p>
     </div>
   );

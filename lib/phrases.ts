@@ -113,7 +113,7 @@ export function keepPayload(
   id: string = crypto.randomUUID(),
 ): PhraseKeep {
   if (taken.length >= MAX_PHRASES) {
-    throw new PhraseError(`This trip has kept ${MAX_PHRASES} phrases. Drop one to keep another.`);
+    throw new PhraseError(`This trip has kept ${MAX_PHRASES} phrases. Forget one to keep another.`);
   }
   const said = input.said.trim().slice(0, 600);
   if (!worthSaying(said)) throw new PhraseError("There's nothing here to keep.");

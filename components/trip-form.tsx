@@ -200,8 +200,8 @@ export function TripForm({
                 ? `Bills start in ${CURRENCY_INFO[foreign as Currency]?.name ?? foreign} and settle in ${CURRENCY_INFO[homeCurrency].name}. `
                 : `One currency everywhere: ${CURRENCY_INFO[homeCurrency].name}. `}
               {sameLanguage
-                ? "Nothing to interpret — the talk page stays off."
-                : `The talk page interprets ${HOME[homeLanguage]?.language} ↔ ${there.them.language}.`}
+                ? "Same language there, so no interpreter."
+                : `The interpreter speaks ${HOME[homeLanguage]?.language} ↔ ${there.them.language}.`}
             </p>
           )}
         </>
@@ -231,7 +231,7 @@ export function TripForm({
 
       {more || initial ? (
         <label className="block">
-          <span className={label}>Most stamps anyone can put on one prediction</span>
+          <span className={label}>Most stamps anyone can put on one call</span>
           <input
             type="number"
             min={1}

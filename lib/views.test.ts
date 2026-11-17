@@ -191,9 +191,9 @@ describe("table talk", () => {
   it("refuses empty or long drafts and comments", () => {
     expect(draftError("Will it?", "Somehow.")).toBeNull();
     expect(draftError("Hm", "Somehow.")).toMatch(/real question/);
-    expect(draftError("Will it rain?", "")).toMatch(/resolved/);
+    expect(draftError("Will it rain?", "")).toMatch(/decide it/);
     expect(commentError("  ")).toMatch(/Write/);
-    expect(commentError("x".repeat(1001))).toMatch(/1000/);
+    expect(commentError("x".repeat(1001))).toMatch(/1,000/);
     expect(commentError("fine")).toBeNull();
   });
 });

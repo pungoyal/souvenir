@@ -31,7 +31,7 @@ export function RecoveryPanel({
   live: { code: string; url: string; expiresAt: Date } | null;
 }) {
   const router = useRouter();
-  const { pending, error, act } = useAct("Couldn't mint a recovery link.");
+  const { pending, error, act } = useAct("Couldn't create a recovery link.");
   const mint = () =>
     act(async () => {
       const res = await mintRecoveryAction(tripId, memberId);
@@ -49,9 +49,9 @@ export function RecoveryPanel({
       <p className="font-semibold">Lost every passkey?</p>
       <p className="mt-0.5 text-xs text-soft">
         A recovery link puts a new passkey on {memberName}'s seat. Whoever opens it becomes{" "}
-        {memberName} — so mint one only when you know, by voice and not by message, that it is
-        really them asking. It lasts half an hour, works once, and the whole table can see it while
-        it is live. Once they are back in, send them the key from this page.
+        {memberName} — so create one only when you know, by voice and not by message, that it is
+        really them asking. It lasts half an hour, works once, and everyone on the trip can see it
+        while it is live. Once they are back in, send them the key from this page.
       </p>
       {live ? (
         <div className="mt-2">
@@ -64,12 +64,12 @@ export function RecoveryPanel({
           <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-soft">
             <span>expires {timeUntil(live.expiresAt)}</span>
             <ShutRecovery tripId={tripId} code={live.code} />
-            {button("Mint a fresh one", "font-semibold hover:underline disabled:opacity-40")}
+            {button("Create a fresh one", "font-semibold hover:underline disabled:opacity-40")}
           </p>
         </div>
       ) : (
         button(
-          "Mint a recovery link",
+          "Create a recovery link",
           "mt-2 rounded-md border border-line bg-surface px-3 py-2 text-sm font-semibold hover:bg-paper disabled:opacity-40",
         )
       )}

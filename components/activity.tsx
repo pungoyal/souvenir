@@ -14,7 +14,7 @@ function phrase(item: ActivityItem): string {
     case "payout":
       return `collected ${amount}`;
     case "refund":
-      return `was refunded ${amount}`;
+      return `got ${amount} back`;
     case "reversal":
       return `handed ${amount} back when the call reopened`;
   }

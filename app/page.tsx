@@ -59,8 +59,8 @@ export default async function Landing() {
             goes to the group and nobody else.
           </Step>
           <Step n={3} title="Start calling it">
-            Who books first, who's late to the airport, whether the boat trip happens. Every call is
-            on the record, and the table settles it when the trip does.
+            Who books first, who's late to the airport, whether the boat trip happens. Every call
+            goes on the record, and whoever asked settles it when the answer is in.
           </Step>
         </ol>
       </section>
@@ -68,15 +68,15 @@ export default async function Landing() {
       <section className="mt-14 grid gap-4 sm:grid-cols-3">
         <Feature
           title="Call it"
-          body="Anyone asks a yes-or-no question with plain rules for what counts. Everyone backs a side with stamps. When it resolves, the winning side splits exactly what the other side put in — no house, just who read the group best. The leaderboard ranks the season."
+          body="Anyone asks a yes-or-no question and says how it will be decided. Everyone backs a side with stamps. When it resolves, the winning side splits exactly what the other side put in. Nobody takes a cut; it only shows who read the group best."
         />
         <Feature
           title="Split it"
-          body="Bills in the money you're spending and the money you settle in — two currencies, decided when the trip opens. Log what you paid and for whom; the app works out who owes whom in the fewest transfers, and what's still open on the last day."
+          body="Log what you paid and for whom, in the money you're spending there. The app works out who owes whom in the fewest transfers, in the money you settle in at home."
         />
         <Feature
           title="Say it"
-          body="Tap your side, speak, hand the phone over. It says it aloud in Thai, Vietnamese or Bahasa, and what they say comes back in yours. Keep the phrases that worked; the whole trip can play them again."
+          body="Tap your side, speak, hand the phone over. It says it aloud in the language of wherever you are, and what they say comes back in yours. Keep the phrases that worked; the whole trip can play them again."
         />
       </section>
 
@@ -107,7 +107,7 @@ export default async function Landing() {
       <section className="mt-6 grid gap-4 sm:grid-cols-2">
         <Feature
           title="Stamps, not money"
-          body="Stamps are points. Everyone starts at zero, calls cost stamps, and the winners' stamps come from the losers'. Nothing is bought, sold or cashed out; the bills are the only place real money appears, and that's just a record of what you told each other. For adults, 18 and over."
+          body="Stamps are points. Everyone starts at zero and can go below it; what the winners gain is exactly what the others lose. Nothing is bought, sold or cashed out; the bills are the only place real money appears, and that's just a record of what you told each other. For adults, 18 and over."
           small
         />
         <Feature
@@ -127,7 +127,7 @@ export default async function Landing() {
         {passkeysConfigured ? (
           <JoinForm />
         ) : (
-          <p className="mt-4 text-sm text-no-deep">Passkeys aren't available on this host.</p>
+          <p className="mt-4 text-sm text-no-deep">Passkeys aren't set up here.</p>
         )}
         {googleConfigured && (
           <p className="mt-4 text-center text-xs text-soft">

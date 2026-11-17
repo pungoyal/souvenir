@@ -24,7 +24,7 @@ export default async function RecoverPage({ params }: { params: Promise<{ code: 
   if (!row || state !== "live") {
     return (
       <SignedOutNotice eyebrow={EYEBROW}>
-        {deadLink(state || null, "recovery link", "They take a moment to mint.")}
+        {deadLink(state || null, "recovery link", "A fresh one takes a moment to make.")}
       </SignedOutNotice>
     );
   }
@@ -45,7 +45,7 @@ export default async function RecoverPage({ params }: { params: Promise<{ code: 
         's seat — their stamps, their bills, their word in the comments.
       </p>
       <p className="mt-3 rounded-md bg-sun-tint px-3 py-2 text-left text-xs text-soft">
-        {mintedBy ? `${mintedBy.name} minted it` : "It was minted from the console"} · expires{" "}
+        {mintedBy ? `${mintedBy.name} made it` : "The operator made it"} · expires{" "}
         {timeUntil(row.expiresAt)}.
         <br />
         Everyone at the table can see this link exists. If you aren't {member.name}, close this and

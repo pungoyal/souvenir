@@ -85,7 +85,7 @@ export function tripConfig(input: TripInput): TripConfig {
 
   const maxStakePies = input.maxStakePies ?? DEFAULT_MAX_STAKE_PIES;
   if (!Number.isInteger(maxStakePies) || maxStakePies < 1 || maxStakePies > MAX_STAKE_CEILING) {
-    throw new TripError(`The cap per prediction is 1 to ${MAX_STAKE_CEILING} pies.`);
+    throw new TripError(`The cap is 1 to ${MAX_STAKE_CEILING} stamps a call.`);
   }
 
   return {

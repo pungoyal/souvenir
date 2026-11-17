@@ -121,6 +121,6 @@ describe("keepPayload", () => {
     expect(() => keepPayload({ ...turn, said: "…" }, THAI, [])).toThrow(PhraseError);
     expect(() => keepPayload({ ...turn, name: "!!!" }, THAI, [])).toThrow(/name/);
     const full = Array.from({ length: MAX_PHRASES }, (_, i) => `p${i}`);
-    expect(() => keepPayload(turn, THAI, full)).toThrow(/Drop one/);
+    expect(() => keepPayload(turn, THAI, full)).toThrow(/Forget one/);
   });
 });

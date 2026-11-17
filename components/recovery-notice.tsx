@@ -30,7 +30,7 @@ export function RecoveryNotice({
             <>
               <p className="font-semibold">A recovery link to your seat is live.</p>
               <p className="text-sm text-soft">
-                An organiser minted it — whoever opens it adds a passkey that signs in as you. It
+                An organiser made it — whoever opens it adds a passkey that signs in as you. It
                 expires {timeUntil(live.expiresAt)}. If you asked for it, carry on; if you didn't,
                 shut it now and ask your organisers who did.
               </p>

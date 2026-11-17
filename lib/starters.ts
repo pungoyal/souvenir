@@ -111,7 +111,7 @@ export function starters(ctx: StarterContext): StarterDraft[] {
   out.push({
     key: "square-in-a-week",
     question: "Will everyone be square on the bills within a week of getting home?",
-    criteria: `YES if the bills page for ${ctx.name} shows every balance at zero by ${ctx.endsOn ? daysAfter(ctx.endsOn, 7) : "seven days after the last day of the trip"}.`,
+    criteria: `YES if the Money tab for ${ctx.name} shows every balance at zero by ${ctx.endsOn ? daysAfter(ctx.endsOn, 7) : "seven days after the last day of the trip"}.`,
   });
 
   return out;

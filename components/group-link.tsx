@@ -45,7 +45,7 @@ export function GroupLink({
           onClick={mint}
           className="btn btn-line px-3 py-2 text-sm"
         >
-          {pending ? "Minting…" : "Create a group link"}
+          {pending ? "Creating…" : "Create a group link"}
         </button>
         {error && <p className="mt-2 text-sm font-semibold text-no-deep">{error}</p>}
       </div>
@@ -56,7 +56,8 @@ export function GroupLink({
     <div className="rounded-md border border-line bg-surface/60 px-3 py-2">
       <div className="flex items-center gap-2">
         <code className="mono min-w-0 flex-1 truncate rounded bg-surface px-2 py-1 text-xs">
-          {url ?? "Already minted — shut it and mint a fresh one to share it again."}
+          {url ??
+            "A link is shown only once. Shut this one and create a fresh one to share it again."}
         </code>
         {url && <CopyLink url={url} />}
       </div>

@@ -38,7 +38,7 @@ export function InviteForm() {
           onClick={mint}
           className="btn btn-ink px-4 py-2 text-sm"
         >
-          {pending ? "Minting…" : "Mint link"}
+          {pending ? "Creating…" : "Create link"}
         </button>
       </div>
 

@@ -18,12 +18,12 @@ export default async function TalkPage({ params }: { params: Promise<{ tripId: s
   if (!pair) {
     return (
       <div className="mx-auto max-w-2xl">
-        <p className="eyebrow">Talk</p>
+        <p className="eyebrow">Interpreter</p>
         <h1 className="display text-[28px] font-bold leading-tight">Nothing to interpret</h1>
         <p className="mt-1 text-sm text-soft">
           This trip speaks the local language already.{" "}
           <Link href={routes.trip(tripId)} className="text-link hover:underline">
-            Back to today.
+            Back to Today.
           </Link>
         </p>
       </div>

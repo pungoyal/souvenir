@@ -98,7 +98,7 @@ describe("predictions", () => {
         ["p", call("m", "yes", 1)],
       ]),
     );
-    expect(reasons(state)).toEqual(["no such prediction", "prediction is closed"]);
+    expect(reasons(state)).toEqual(["That question is gone.", "It's already resolved."]);
   });
 
   it("refuses a call that is not whole pies", () => {
@@ -126,7 +126,10 @@ describe("predictions", () => {
         ["p", call("m", "no", 1)],
       ]),
     );
-    expect(reasons(state)).toEqual(["over the exposure cap", "already on the other side"]);
+    expect(reasons(state)).toEqual([
+      "That's over the cap on this one.",
+      "You're on the other side. Switch first.",
+    ]);
     expect(state.markets.get("m")?.positions.get("p")).toEqual({ yesC: 1000, noC: 0 });
   });
 
@@ -141,7 +144,7 @@ describe("predictions", () => {
         ["p", call("m", "no", 2)],
       ]),
     );
-    expect(reasons(state)).toEqual(["no call to switch"]);
+    expect(reasons(state)).toEqual(["You have no call to switch."]);
     expect(state.markets.get("m")?.positions.get("p")).toEqual({ yesC: 0, noC: 600 });
     expect(netByMember(state).get("p")).toBe(-600);
   });
@@ -158,9 +161,9 @@ describe("predictions", () => {
       ]),
     );
     expect(reasons(state)).toEqual([
-      "only the creator resolves",
-      "already resolved",
-      "no such prediction",
+      "Only whoever asked can resolve it.",
+      "It's already resolved.",
+      "That question is gone.",
     ]);
   });
 
@@ -191,7 +194,7 @@ describe("predictions", () => {
         ["a", resolve("m", "no")],
       ]),
     );
-    expect(reasons(state)).toEqual(["only an organiser reopens", "already open"]);
+    expect(reasons(state)).toEqual(["Only an organiser can reopen it.", "It's already open."]);
     expect(state.ledger.map((r) => r.kind)).toEqual(["bet", "bet", "payout", "reversal", "payout"]);
     const net = netByMember(state);
     expect(net.get("p")).toBe(-200);
@@ -212,8 +215,8 @@ describe("roles", () => {
       ]),
     );
     expect(reasons(state)).toEqual([
-      "only an organiser changes roles",
-      "the last organiser cannot step down",
+      "Only an organiser can change roles.",
+      "The last organiser can't step down.",
     ]);
     expect([...state.organiserIds]).toEqual(["a"]);
   });
@@ -231,7 +234,7 @@ describe("roles", () => {
         ["b", { t: "reopen", marketId: "m" }],
       ]),
     );
-    expect(reasons(state)).toEqual(["only an organiser reopens"]);
+    expect(reasons(state)).toEqual(["Only an organiser can reopen it."]);
   });
 
   it("lets an organiser keep a phrase on somebody's behalf, and nobody else", () => {
@@ -273,7 +276,11 @@ describe("table talk", () => {
     );
     expect(state.comments).toHaveLength(1);
     expect(state.comments[0]?.mentions).toEqual(["a"]);
-    expect(reasons(state)).toEqual(["id already taken", "no such prediction", "no such bill"]);
+    expect(reasons(state)).toEqual([
+      "id already taken",
+      "That question is gone.",
+      "That bill is gone.",
+    ]);
   });
 
   it("toggles reactions and refuses a toggle that changes nothing", () => {
@@ -289,7 +296,7 @@ describe("table talk", () => {
       ]),
     );
     expect(state.reactions).toEqual([]);
-    expect(reasons(state)).toEqual(["already on", "already off", "no such prediction"]);
+    expect(reasons(state)).toEqual(["already on", "already off", "That question is gone."]);
   });
 });
 
@@ -337,7 +344,7 @@ describe("bills", () => {
     );
     expect(state.bills.size).toBe(0);
     expect(state.rejected).toHaveLength(3);
-    expect(reasons(state)[1]).toBe("not a currency on this trip");
+    expect(reasons(state)[1]).toBe("That currency isn't one this trip spends.");
   });
 
   it("revises, deletes, and then refuses comments on the deleted bill", () => {
@@ -354,7 +361,7 @@ describe("bills", () => {
     );
     expect(state.bills.get("b1")?.revisions.map((r) => r.deleted)).toEqual([false, false, true]);
     expect(state.comments).toHaveLength(1);
-    expect(reasons(state)).toEqual(["no such bill", "no such bill"]);
+    expect(reasons(state)).toEqual(["That bill is gone.", "That bill is gone."]);
   });
 
   it("takes a settlement the way recordSettlement writes one", () => {
@@ -410,10 +417,10 @@ describe("phrasebook", () => {
       ]),
     );
     expect(reasons(state)).toEqual([
-      "that name is taken",
+      "A phrase already has that name.",
       "id already taken",
-      "only the keeper or an organiser drops a phrase",
-      "no such phrase",
+      "Only whoever kept it, or an organiser, can forget it.",
+      "That phrase is gone.",
     ]);
     expect([...state.phrases.keys()]).toEqual(["p2"]);
   });
@@ -423,7 +430,7 @@ describe("phrasebook", () => {
     for (let i = 0; i < 61; i++) entries.push(["a", keep(`p${i}`, `s${i}`)]);
     const state = replayTrip(config, log(entries));
     expect(state.phrases.size).toBe(60);
-    expect(reasons(state)).toEqual(["the phrasebook is full"]);
+    expect(reasons(state)).toEqual(["The phrasebook is full. Forget one to keep another."]);
   });
 });
 

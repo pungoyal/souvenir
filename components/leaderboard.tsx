@@ -46,7 +46,8 @@ export function Leaderboard({
       </ul>
       {unreadable > 0 && (
         <p className="mt-2 text-xs text-soft">
-          {unreadable} event{unreadable === 1 ? "" : "s"} on this trip would not open on this phone.
+          {unreadable} {unreadable === 1 ? "entry" : "entries"} on this trip wouldn't open on this
+          phone.
         </p>
       )}
     </section>
