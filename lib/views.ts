@@ -755,17 +755,17 @@ export function marketCard(state: TripState, people: People, marketId: string): 
 export function draftError(question: string, criteria: string): string | null {
   const q = question.trim();
   const c = criteria.trim();
-  if (q.length < 5) return "Give the prediction a real question.";
+  if (q.length < 5) return "Ask a real question, at least five characters.";
   if (q.length > 200) return "Keep the question under 200 characters.";
-  if (c.length < 5) return "Spell out how this will be resolved — future-you will thank you.";
-  if (c.length > 2000) return "Keep resolution criteria under 2000 characters.";
+  if (c.length < 5) return "Say how you'll decide it. Future you will thank you.";
+  if (c.length > 2000) return "Keep how you'll decide it under 2,000 characters.";
   return null;
 }
 
 export function commentError(body: string): string | null {
   const trimmed = body.trim();
   if (trimmed.length === 0) return "Write the comment first.";
-  if (trimmed.length > 1000) return "Keep the comment under 1000 characters.";
+  if (trimmed.length > 1000) return "Keep the comment under 1,000 characters.";
   return null;
 }
 

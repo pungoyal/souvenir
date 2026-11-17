@@ -16,7 +16,7 @@ export function AccountForms({ name: initialName }: { name: string }) {
       <section className="mt-7">
         <h2 className="display text-xl font-bold">Your name</h2>
         <p className="text-xs text-soft">
-          What every table calls you. Has to be distinct on each trip you're on — it's how @mentions
+          What every trip calls you. Has to be distinct on each trip you're on — it's how @mentions
           find you.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">

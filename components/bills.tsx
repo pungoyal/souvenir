@@ -251,8 +251,8 @@ export function Bills({
                   {fmtRate(settlement.rate)} on {fmtDate(settlement.rate.asOf)}, plus a{" "}
                   {FX_SURCHARGE_BPS / 100}% forex charge on everything spent in{" "}
                   {CURRENCY_INFO[settlement.rate.from].name}. Paying in{" "}
-                  {CURRENCY_INFO[settlement.rate.from].name} instead? Record it below and the
-                  balance follows.
+                  {CURRENCY_INFO[settlement.rate.from].name} instead? Record it with Someone paid
+                  and the balance follows.
                 </p>
               </>
             ) : (

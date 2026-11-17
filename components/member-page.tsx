@@ -100,7 +100,7 @@ export function MemberPage({
       <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
         <Stat label="Net stamps" value={<Pies c={netC} sign />} />
         <Stat
-          label="Trip P/L"
+          label="From verdicts"
           value={<Pies c={stats.profitC} sign />}
           tone={stats.profitC > 0 ? "up" : stats.profitC < 0 ? "down" : undefined}
         />
@@ -162,9 +162,9 @@ export function MemberPage({
       {split.bills.length > 0 && (
         <section className="mt-7">
           <div className="flex items-baseline gap-3">
-            <h2 className={heading}>Split bills</h2>
+            <h2 className={heading}>Bills</h2>
             <Link href={routes.bills(tripId)} className="text-xs text-up hover:underline">
-              settle up
+              Settle up
             </Link>
           </div>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -232,7 +232,7 @@ export function MemberPage({
       )}
 
       <section className="mt-7">
-        <h2 className={heading}>Resolved predictions</h2>
+        <h2 className={heading}>Verdicts</h2>
         {results.length === 0 ? (
           <p className="mt-2 text-sm text-soft">{t.resolvedEmpty}</p>
         ) : (
@@ -259,8 +259,8 @@ export function MemberPage({
       <section className="mt-7">
         <h2 className={heading}>The full ledger</h2>
         <p className="text-xs text-soft">
-          Every stamp movement, newest first. The balance column is derived by replaying the whole
-          history — nothing is ever overwritten.
+          Every stamp movement, newest first. The balance is worked out from the whole history;
+          nothing is ever overwritten.
         </p>
         {/* On a phone the "when" goes under the "what" rather than in a column of its own. */}
         <div className="mt-3 card">
@@ -269,7 +269,7 @@ export function MemberPage({
               <tr className="border-b border-line text-left text-[11px] uppercase tracking-wider text-soft">
                 <th className="hidden px-4 py-2 sm:table-cell">When</th>
                 <th className="px-3 py-2 sm:px-2">What</th>
-                <th className="px-2 py-2 text-right">Δ stamps</th>
+                <th className="px-2 py-2 text-right">Stamps</th>
                 <th className="px-3 py-2 text-right sm:px-4">Balance</th>
               </tr>
             </thead>
@@ -319,13 +319,13 @@ export function MemberPage({
 function describe(kind: string, side: string | null): string {
   switch (kind) {
     case "bet":
-      return `Backed ${side?.toUpperCase()}`;
+      return `Called ${side?.toUpperCase()}`;
     case "switch":
       return `Switched to ${side?.toUpperCase()}`;
     case "payout":
-      return "Won";
+      return "Collected";
     case "refund":
-      return "Refunded";
+      return "Got back";
     case "reversal":
       return "Handed back";
     default:

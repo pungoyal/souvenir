@@ -17,7 +17,7 @@ export default async function BillsPage({ params }: { params: Promise<{ tripId: 
   const note = isDomestic(trip)
     ? `Everything in ${currencyName(currencies[0])}.`
     : rate
-      ? `${currencyName(currencies[0])} there, ${currencyName(currencies[1])} at home, settled together in ${currencyName(currencies[1])} at the day's rate plus ${FX_SURCHARGE_BPS / 100}% for the forex.`
+      ? `${currencyName(currencies[0])} there, ${currencyName(currencies[1])} at home, settled together in ${currencyName(currencies[1])} at the day's rate plus ${FX_SURCHARGE_BPS / 100}% to cover the exchange.`
       : `${currencyName(currencies[0])} there, ${currencyName(currencies[1])} at home. Each settles on its own.`;
 
   return (

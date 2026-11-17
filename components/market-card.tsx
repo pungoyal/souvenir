@@ -24,7 +24,7 @@ export function MarketCard({
   const href = routes.market(tripId, market.id);
   const open = market.status === "open";
   const mine = market.creatorId === me.id;
-  const asker = mine ? "You asked" : `${creator.name} asks`;
+  const asker = mine ? "You asked" : `${creator.name} asked`;
   const talk =
     view.commentCount > 0
       ? `${view.commentCount} comment${view.commentCount === 1 ? "" : "s"}`

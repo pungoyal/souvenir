@@ -99,7 +99,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
                     ? r.mintedBy.id === r.forMember.id
                       ? "for their other phone"
                       : `from ${r.mintedBy.name}`
-                    : "from the console"
+                    : "from the operator"
                 } · expires ${timeUntil(r.row.expiresAt)}`}
               >
                 <ShutRekey tripId={tripId} code={r.row.code} />
@@ -112,7 +112,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
       {(recoveries.live.length > 0 || recoveries.used.length > 0) && (
         <Section
           title="Recovery links"
-          note="A recovery link puts a new passkey on somebody's seat, so whoever opens it is them. Nothing stops an organiser minting one — what stops it going unnoticed is this list, which everybody can read. If one names you and you didn't ask for it, shut it."
+          note="A recovery link puts a new passkey on somebody's seat, so whoever opens it is them. Nothing stops an organiser making one — what stops it going unnoticed is this list, which everybody can read. If one names you and you didn't ask for it, shut it."
         >
           {recoveries.live.length > 0 && (
             <ul className="mt-2 card list overflow-hidden border-sun">
@@ -121,7 +121,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
                   key={r.row.code}
                   className="bg-sun-tint"
                   who={r.member.name}
-                  detail={`minted by ${r.mintedBy?.name ?? "the console"} · expires ${timeUntil(r.row.expiresAt)}`}
+                  detail={`made by ${r.mintedBy?.name ?? "the operator"} · expires ${timeUntil(r.row.expiresAt)}`}
                 >
                   {/* The member a link names can always shut it (revokeRecovery). */}
                   {(canInvite || r.member.id === me.id) && (
@@ -135,7 +135,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
             <ul className="mt-2 space-y-1 text-xs text-soft">
               {recoveries.used.map((r) => (
                 <li key={r.row.code}>
-                  {r.member.name} came back through a link from {r.mintedBy?.name ?? "the console"}
+                  {r.member.name} came back through a link from {r.mintedBy?.name ?? "the operator"}
                   {r.row.usedAt ? ` · ${timeAgo(r.row.usedAt)}` : ""}
                 </li>
               ))}
@@ -145,7 +145,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
       )}
 
       {personal.length > 0 && (
-        <Section title="Invited, not yet at the table">
+        <Section title="Invited, not joined yet">
           <ul className="mt-2 card list">
             {personal.map((i) => (
               <Row
@@ -165,7 +165,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
         <Section
           id="invite"
           title="Invite a friend"
-          note="Mint a link and send it however you'd normally reach them. They pick a name, make a passkey, and they're in — no email, no Google account. The link carries the trip's key, so send it to them and nobody else."
+          note="Create a link and send it however you'd normally reach them. They pick a name, make a passkey, and they're in — no email, no Google account. The link carries the trip's key, so send it to them and nobody else."
         >
           <div className="mt-2">
             <Sealed>

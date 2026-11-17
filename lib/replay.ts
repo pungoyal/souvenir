@@ -212,12 +212,13 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
     case "call": {
       const market = openMarket(state, p.marketId);
       if (!Number.isInteger(p.amountC) || p.amountC < CENTS || p.amountC % CENTS !== 0) {
-        refuse("a call is a whole number of pies, at least 1");
+        refuse("A call is a whole number of stamps, at least 1.");
       }
       const pos = market.positions.get(ev.authorId) ?? { yesC: 0, noC: 0 };
-      if ((p.side === "yes" ? pos.noC : pos.yesC) > 0) refuse("already on the other side");
+      if ((p.side === "yes" ? pos.noC : pos.yesC) > 0)
+        refuse("You're on the other side. Switch first.");
       if (exposure(pos) + p.amountC > ctx.config.maxStakePies * CENTS) {
-        refuse("over the exposure cap");
+        refuse("That's over the cap on this one.");
       }
       move(ctx, ev, market, { kind: "bet", side: p.side, amountC: p.amountC }, -p.amountC);
       return;
@@ -226,15 +227,15 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
       const market = openMarket(state, p.marketId);
       const pos = market.positions.get(ev.authorId);
       const stakeC = pos ? exposure(pos) : 0;
-      if (!pos || stakeC === 0) refuse("no call to switch");
+      if (!pos || stakeC === 0) refuse("You have no call to switch.");
       const to = otherSide(pos.yesC > 0 ? "yes" : "no");
       move(ctx, ev, market, { kind: "switch", side: to, amountC: stakeC }, 0);
       return;
     }
     case "resolve": {
       const market = marketOf(state, p.marketId);
-      if (market.creatorId !== ev.authorId) refuse("only the creator resolves");
-      if (market.status !== "open") refuse("already resolved");
+      if (market.creatorId !== ev.authorId) refuse("Only whoever asked can resolve it.");
+      if (market.status !== "open") refuse("It's already resolved.");
       let settlement: Settlement;
       if (p.outcome === "refunded") {
         settlement = { kind: "refund", paidC: refundAll(market.positions) };
@@ -259,8 +260,8 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
     }
     case "reopen": {
       const market = marketOf(state, p.marketId);
-      if (!state.organiserIds.has(ev.authorId)) refuse("only an organiser reopens");
-      if (market.status === "open") refuse("already open");
+      if (!state.organiserIds.has(ev.authorId)) refuse("Only an organiser can reopen it.");
+      if (market.status === "open") refuse("It's already open.");
       for (const [memberId, amountC] of market.settlement?.paidC ?? []) {
         if (amountC <= 0) continue;
         pushLedger(ctx, ev, {
@@ -282,7 +283,7 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
       if (p.marketId !== undefined) {
         marketOf(state, p.marketId);
       } else if (p.billId === undefined || !liveBill(state, p.billId)) {
-        refuse("no such bill");
+        refuse("That bill is gone.");
       }
       state.comments.push({
         id: p.id,
@@ -315,7 +316,8 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
       return;
     }
     case "bill.rev": {
-      if (!ctx.config.currencies.includes(p.currency)) refuse("not a currency on this trip");
+      if (!ctx.config.currencies.includes(p.currency))
+        refuse("That currency isn't one this trip spends.");
       let entries: BillEntry[] = [];
       if (!p.deleted) {
         try {
@@ -327,7 +329,7 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
       }
       let bill = state.bills.get(p.billId);
       if (!bill) {
-        if (p.deleted) refuse("no such bill");
+        if (p.deleted) refuse("That bill is gone.");
         bill = { id: p.billId, createdAt: ev.at, revisions: [] };
         state.bills.set(p.billId, bill);
       }
@@ -346,9 +348,10 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
     }
     case "phrase.keep": {
       if (state.phrases.has(p.id)) refuse("id already taken");
-      if (state.phrases.size >= MAX_PHRASES) refuse("the phrasebook is full");
+      if (state.phrases.size >= MAX_PHRASES)
+        refuse("The phrasebook is full. Forget one to keep another.");
       for (const other of state.phrases.values()) {
-        if (other.slug === p.slug) refuse("that name is taken");
+        if (other.slug === p.slug) refuse("A phrase already has that name.");
       }
       state.phrases.set(p.id, {
         id: p.id,
@@ -367,9 +370,9 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
       return;
     }
     case "phrase.drop": {
-      const phrase = state.phrases.get(p.id) ?? refuse("no such phrase");
+      const phrase = state.phrases.get(p.id) ?? refuse("That phrase is gone.");
       if (phrase.memberId !== ev.authorId && !state.organiserIds.has(ev.authorId)) {
-        refuse("only the keeper or an organiser drops a phrase");
+        refuse("Only whoever kept it, or an organiser, can forget it.");
       }
       state.phrases.delete(p.id);
       return;
@@ -385,12 +388,12 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
       return;
     }
     case "member.role": {
-      if (!state.organiserIds.has(ev.authorId)) refuse("only an organiser changes roles");
+      if (!state.organiserIds.has(ev.authorId)) refuse("Only an organiser can change roles.");
       if (p.role === "organiser") {
         state.organiserIds.add(p.memberId);
       } else {
         if (state.organiserIds.size === 1 && state.organiserIds.has(p.memberId)) {
-          refuse("the last organiser cannot step down");
+          refuse("The last organiser can't step down.");
         }
         state.organiserIds.delete(p.memberId);
       }
@@ -404,12 +407,12 @@ function apply(ctx: Ctx, ev: OpenEvent, p: Exclude<EventPayload, UnknownEvent>):
 }
 
 function marketOf(state: TripState, id: string): MarketState {
-  return state.markets.get(id) ?? refuse("no such prediction");
+  return state.markets.get(id) ?? refuse("That question is gone.");
 }
 
 function openMarket(state: TripState, id: string): MarketState {
   const market = marketOf(state, id);
-  if (market.status !== "open") refuse("prediction is closed");
+  if (market.status !== "open") refuse("It's already resolved.");
   return market;
 }
 

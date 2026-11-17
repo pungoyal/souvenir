@@ -38,7 +38,7 @@ export function useMintInvite() {
       preview,
     });
     if (!res.ok || !res.url) {
-      return { ok: false, error: res.error ?? "Couldn't mint an invite." };
+      return { ok: false, error: res.error ?? "Couldn't create the invite." };
     }
     return { ok: true, url: linkWithSecret(res.url, secret) };
   };

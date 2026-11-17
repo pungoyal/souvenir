@@ -59,7 +59,7 @@ export function StaleBuild() {
           <p className="text-sm text-soft">
             This tab is running the old version and the server has stopped answering it, so nothing
             you tap here lands and the trip has stopped catching up. Reload and carry on —
-            everything already posted is on the log.
+            everything you posted is saved.
           </p>
         </div>
         <button

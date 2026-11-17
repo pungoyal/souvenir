@@ -253,7 +253,10 @@ export function Talk({
     rec.onerror = (event) => {
       // "no-speech" and "aborted" are somebody changing their mind, not faults.
       if (event.error && event.error !== "no-speech" && event.error !== "aborted") {
-        failure = event.error === "not-allowed" ? "Microphone blocked." : "Didn't catch that.";
+        failure =
+          event.error === "not-allowed"
+            ? "The microphone is blocked. Allow it in the browser, or type instead."
+            : "Didn't catch that.";
       }
     };
     rec.onend = () => {
@@ -343,8 +346,7 @@ export function Talk({
     return (
       <div className="space-y-4">
         <div className="card p-5 text-sm text-soft">
-          Interpreting isn't switched on for this deploy — it needs an LLM endpoint in the
-          environment. Phrases already kept still play.
+          The interpreter isn't switched on here yet. Phrases the trip has kept still play.
         </div>
         {phrasebook}
       </div>
@@ -585,7 +587,7 @@ function KeepForm({
       <button type="button" onClick={onCancel} className="btn btn-line shrink-0 px-3 py-2 text-sm">
         Cancel
       </button>
-      <p className="mono w-full text-xs text-soft">{slug ? `Kept as ${slug}` : " "}</p>
+      <p className="mono w-full text-xs text-soft">{slug ? `It'll be kept as ${slug}` : " "}</p>
     </div>
   );
 }

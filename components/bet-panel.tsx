@@ -44,7 +44,7 @@ export function BetPanel({
       <div className="flex items-center gap-1">
         <button
           type="button"
-          aria-label="One stamp less"
+          aria-label="One stamp fewer"
           className="btn btn-line h-11 w-11 text-xl"
           disabled={clamped <= 1 || pending}
           onClick={() => setPies(clamped - 1)}
@@ -74,7 +74,7 @@ export function BetPanel({
       }`}
     >
       <span className="py-2">
-        You: {fmtPies(myStakeC)} {stampsWord(myStakeC)} on {mySide}
+        Your call: {fmtPies(myStakeC)} {stampsWord(myStakeC)} on {mySide}
       </span>
       {detailHref ? (
         <Link href={detailHref} className="flex min-h-11 items-center underline">

@@ -72,7 +72,7 @@ export default async function CardPage({ params }: { params: Promise<{ marketId:
                 </ul>
               </div>
               <div>
-                <p className="eyebrow">Paid for it</p>
+                <p className="eyebrow">Missed it</p>
                 <ul className="mt-1 space-y-1 text-sm">
                   {card.losers.map((l) => (
                     <li key={l.name} className="flex justify-between">

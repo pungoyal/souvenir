@@ -932,7 +932,7 @@ async function createRecovery(memberId: string, mintedBy: string | null): Promis
  */
 export async function mintRecovery(actorId: string, memberId: string): Promise<string> {
   if (!(await organisesWith(actorId, memberId))) {
-    throw new DataError("Only an organiser of a trip they're on can mint a recovery link.");
+    throw new DataError("Only an organiser of a trip they're on can create a recovery link.");
   }
   return createRecovery(memberId, actorId);
 }

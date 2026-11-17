@@ -206,11 +206,11 @@ export async function polishAction(
   feedback: string,
 ): Promise<ActionResult & { draft?: PolishedDraft }> {
   const memberId = await requireMemberId();
-  if (!llmEnabled) return { ok: false, error: "The magic isn't switched on for this deploy." };
+  if (!llmEnabled) return { ok: false, error: "Rewrites aren't switched on here." };
   if (!question.trim() && !criteria.trim()) {
     return {
       ok: false,
-      error: "Write a rough draft first — the magic needs something to work with.",
+      error: "Write a rough question first, then ask for a rewrite.",
     };
   }
   try {
@@ -220,7 +220,7 @@ export async function polishAction(
     return { ok: true, draft };
   } catch (err) {
     logger.error({ err }, "polish failed");
-    return { ok: false, error: "The magic fizzled. Try again." };
+    return { ok: false, error: "The rewrite didn't come back. Try again." };
   }
 }
 
@@ -323,7 +323,7 @@ export async function interpretAction(
 ): Promise<ActionResult & { said?: Interpretation }> {
   const memberId = await requireMemberId();
   if (!llmEnabled) {
-    return { ok: false, error: "Live interpreting isn't switched on for this deploy." };
+    return { ok: false, error: "The interpreter isn't switched on here." };
   }
   const pair = await pairOf(memberId, tripId);
   if (!pair) return { ok: false, error: "Nothing to interpret on this trip." };
