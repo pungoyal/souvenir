@@ -29,10 +29,10 @@ stored.
 **The web caveat.** The server serves the code that holds the keys; a
 malicious deploy could ship a client that leaks them. No web app escapes
 this. We make a bad deploy detectable (an attested build naming its commit,
-source handed to any member who asks) and ensure no server path can *ask* a
-client for a key. The line for `/privacy`: *"We cannot read your trip. We
+source handed to any member who asks) and ensure no server path can _ask_ a
+client for a key. The line for `/privacy`: _"We cannot read your trip. We
 could, in principle, ship you code that could — which is why every build
-names its commit, is signed, and any member can ask to see it."*
+names its commit, is signed, and any member can ask to see it."_
 Verification is on request, not public, so the repository may be private.
 
 ## 1. Principles
@@ -64,22 +64,22 @@ Verification is on request, not public, so the repository may be private.
 WebCrypto only (`globalThis.crypto.subtle`; Node ≥ 20, so vitest runs the
 same code). No library, matching `lib/webauthn.ts` and `lib/cbor.ts`.
 
-| Primitive | Use |
-|---|---|
-| AES-256-GCM, 96-bit random IV | every envelope, every wrap |
-| HKDF-SHA-256 | link secret → wrap key; PRF output → keyring wrap key |
-| ECDH P-256 + HKDF | rotated trip keys to a member's long-term key |
-| `crypto.getRandomValues` | keys, IVs, link secrets |
+| Primitive                     | Use                                                   |
+| ----------------------------- | ----------------------------------------------------- |
+| AES-256-GCM, 96-bit random IV | every envelope, every wrap                            |
+| HKDF-SHA-256                  | link secret → wrap key; PRF output → keyring wrap key |
+| ECDH P-256 + HKDF             | rotated trip keys to a member's long-term key         |
+| `crypto.getRandomValues`      | keys, IVs, link secrets                               |
 
 ### Keys
 
-| Key | Lives | Made by | Purpose |
-|---|---|---|---|
-| **TK[trip, epoch]** trip key | keyring | the creator's client at epoch 0; the rotating client after | encrypts every event. Epoch bumps on rotation; old epochs stay in the keyring so history stays readable |
-| **KK** keyring key | IndexedDB, non-extractable | the member's client on first use | encrypts the keyring blob |
-| **PRF secret** | the passkey authenticator | per credential | stable across a synced passkey's copies; derives a key (`prfKeyringKey`) that seals the keyring into `keyring_wraps`, a free cross-device backup |
-| **MK[member]** member key | keyring | the member's client at first keyring | P-256 ECDH pair; the public half is announced *inside the log* (`member.hello`) so rotation can encrypt a new trip key to it without trusting any server column |
-| **s** link secret | the URL fragment | the minting client | 256 random bits; `HKDF(s, "invite" \| "rekey" \| "recover" \| "preview")` wraps what the link carries |
+| Key                          | Lives                      | Made by                                                    | Purpose                                                                                                                                                         |
+| ---------------------------- | -------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TK[trip, epoch]** trip key | keyring                    | the creator's client at epoch 0; the rotating client after | encrypts every event. Epoch bumps on rotation; old epochs stay in the keyring so history stays readable                                                         |
+| **KK** keyring key           | IndexedDB, non-extractable | the member's client on first use                           | encrypts the keyring blob                                                                                                                                       |
+| **PRF secret**               | the passkey authenticator  | per credential                                             | stable across a synced passkey's copies; derives a key (`prfKeyringKey`) that seals the keyring into `keyring_wraps`, a free cross-device backup                |
+| **MK[member]** member key    | keyring                    | the member's client at first keyring                       | P-256 ECDH pair; the public half is announced _inside the log_ (`member.hello`) so rotation can encrypt a new trip key to it without trusting any server column |
+| **s** link secret            | the URL fragment           | the minting client                                         | 256 random bits; `HKDF(s, "invite" \| "rekey" \| "recover" \| "preview")` wraps what the link carries                                                           |
 
 ### Keyring
 
@@ -100,7 +100,7 @@ AAD = `${tripId}|${authorId}|${epoch}`
 ```
 
 The server sets `author_id` from the session, never from the body. The
-author is bound into the AAD by the *writer*, so a member cannot post as
+author is bound into the AAD by the _writer_, so a member cannot post as
 somebody else and an operator cannot relabel a row: decryption fails either
 way. No signatures needed.
 
@@ -121,11 +121,11 @@ does not know, so old clients survive a new event type.
 
 `member.role` is in the log as well as in `memberships.role`: the server
 gates invites and recoveries on its column, replay judges a reopen by who
-organised *at the time*, and one action writes both. Without it a role
+organised _at the time_, and one action writes both. Without it a role
 change would re-judge history on every phone.
 
 Uniqueness that used to be a database constraint (a phrase slug, a market
-id) is a replay rule: the *first* event to claim it wins. No blind indexes.
+id) is a replay rule: the _first_ event to claim it wins. No blind indexes.
 
 ## 3. Data model
 
@@ -141,9 +141,9 @@ id) is a replay rule: the *first* event to claim it wins. No blind indexes.
 - `rekeys(code pk, trip_id, for_member_id, minted_by, wrapped_key, epoch,
   expires_at, used_at)`: a key for a member who already has a seat. Any
   member can mint one for any member; 30 minutes, one use, redeemable only
-  by a session that *is* `for_member_id`.
+  by a session that _is_ `for_member_id`.
 - `cards(market_id pk, trip_id, published_by, at, question, verdict, lines
-  json)`: the one deliberate plaintext; a member tapped *share*.
+  json)`: the one deliberate plaintext; a member tapped _share_.
 - `trips`: `key_epoch` (not null), `name_enc` (the trip's name, sealed under
   the trip key), `key_stale_since`. `invites`: `wrapped_key`, `preview`
   (under `HKDF(s,"preview")`), `epoch`. `recoveries`: no key at all.
@@ -164,7 +164,7 @@ passkey sign-in, the `keyring_wraps` blobs this phone's passkeys can open
 (merged into what it holds, then backed up again). A member with no keyring
 anywhere gets a fresh one (new MK). A member whose keyring cannot be opened
 here is **keyless**: they have their seats and the roster, and every trip
-page shows *Get the key* (§4.8) instead of content.
+page shows _Get the key_ (§4.8) instead of content.
 
 ### 4.2 Open a trip
 
@@ -235,7 +235,7 @@ A keyless member has three ways in:
 1. **Your other phone.** A rekey link minted for one's own seat on a phone
    that has the key, opened on the other.
 2. **Anyone on the trip.** The members page shows who has no `member.hello`
-   for the current epoch with *Send the key*. Any member mints a rekey (§3)
+   for the current epoch with _Send the key_. Any member mints a rekey (§3)
    and passes it on. It redeems only as that member, so a leaked rekey link
    adds the key only to a phone that already holds the seat (the
    account-compromise case). A second open by the same member within ten
@@ -257,8 +257,8 @@ security gain of the design.
 
 Each removes the seat and marks the trip `key_stale_since`. An organiser
 then rotates from the members page: `TK[e+1] ← random`; for each remaining
-member a `key_grant` encrypted to the MK public key read *from that member's
-latest `member.hello` in the log*, never a server column (`wrapToMember`:
+member a `key_grant` encrypted to the MK public key read _from that member's
+latest `member.hello` in the log_, never a server column (`wrapToMember`:
 ephemeral ECDH + HKDF + AES-GCM); the name is re-sealed; then
 `bumpEpoch(tripId, e+1)`, which the server accepts only with a grant for
 every other seat, dropping live invites and unused key links (they carried
@@ -267,7 +267,7 @@ behind the epoch pick up their grant (`myGrant` → `unwrapFromMember` →
 keyring) and say hello under the new key; `member.hello` is re-said once per
 epoch, so it proves holding that epoch's key. `deleteAccount` leaves
 rotation to an organiser and drops the keyring backup; events stay, sealed,
-under *Departed member*. After rotation a removed member holding a copy
+under _Departed member_. After rotation a removed member holding a copy
 opens nothing written since and keeps what they could read before.
 
 ### 4.11 The two deliberate disclosures
@@ -289,14 +289,14 @@ trip's pair (`pairFor`).
 
 ## 5. What the server enforces — and cannot
 
-| The server still does | The server can no longer do |
-|---|---|
-| sign-in, sessions, passkey verification, Google | read a question, a call, a stamp, a comment, a bill, a phrase |
-| seats, roles, name distinctness, terms, 18+ | enforce the cap, one-side, zero-sum, resolution authority |
-| order events, cap size, enforce epoch | render a card or a join preview unaided |
-| invites, recoveries, rekeys: TTL, single use, revocation | seat a *reading* intruder by itself |
-| `pnpm stats`: trips, rosters, founding rate | `pnpm seed` without a printed key link; polish a draft it has not been sent |
-| serve the client, the OG image, the avatars | moderate content (it never did) |
+| The server still does                                    | The server can no longer do                                                 |
+| -------------------------------------------------------- | --------------------------------------------------------------------------- |
+| sign-in, sessions, passkey verification, Google          | read a question, a call, a stamp, a comment, a bill, a phrase               |
+| seats, roles, name distinctness, terms, 18+              | enforce the cap, one-side, zero-sum, resolution authority                   |
+| order events, cap size, enforce epoch                    | render a card or a join preview unaided                                     |
+| invites, recoveries, rekeys: TTL, single use, revocation | seat a _reading_ intruder by itself                                         |
+| `pnpm stats`: trips, rosters, founding rate              | `pnpm seed` without a printed key link; polish a draft it has not been sent |
+| serve the client, the OG image, the avatars              | moderate content (it never did)                                             |
 
 ## 6. Security review
 
@@ -308,15 +308,15 @@ Removed members lose future reads. Backups are harmless.
 **Unchanged.** Passkey ceremonies and purposes, PKCE + nonce for Google, the
 signed-cookie session, `requireTrip`, append-only everything.
 
-| Risk | Answer |
-|---|---|
-| Link secrets sit in group chats | Same trust as an invite: a seat. Short TTLs, revocation, rotation on removal; a group link is worth one seat plus the current epoch |
-| Key loss on a device (Safari evicts IndexedDB after 7 days idle for non-installed sites) | Three layers: other device, anyone on the trip, passkey PRF (§4.8). Nudge PWA install on iOS |
-| Ghost device inserted by a malicious server | Impossible by construction: keys are only encrypted to the reader's own device, a link secret, or an MK public key read from the sealed log |
-| A modified client submits rule-breaking events | Every honest client's replay drops them |
-| Garbage events (storage DoS) | Seat required, 16 KiB cap |
-| Malicious deploy | Attested build naming its commit; source on request |
-| A rule bug ships to phones, not a server | Rules are versioned in the envelope; a fix is a new client and a re-replay, never a data migration |
+| Risk                                                                                     | Answer                                                                                                                                      |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link secrets sit in group chats                                                          | Same trust as an invite: a seat. Short TTLs, revocation, rotation on removal; a group link is worth one seat plus the current epoch         |
+| Key loss on a device (Safari evicts IndexedDB after 7 days idle for non-installed sites) | Three layers: other device, anyone on the trip, passkey PRF (§4.8). Nudge PWA install on iOS                                                |
+| Ghost device inserted by a malicious server                                              | Impossible by construction: keys are only encrypted to the reader's own device, a link secret, or an MK public key read from the sealed log |
+| A modified client submits rule-breaking events                                           | Every honest client's replay drops them                                                                                                     |
+| Garbage events (storage DoS)                                                             | Seat required, 16 KiB cap                                                                                                                   |
+| Malicious deploy                                                                         | Attested build naming its commit; source on request                                                                                         |
+| A rule bug ships to phones, not a server                                                 | Rules are versioned in the envelope; a fix is a new client and a re-replay, never a data migration                                          |
 
 The metadata the operator still sees is §0's list, all of it on `/privacy`.
 
@@ -332,7 +332,7 @@ Decisions that still govern the code:
 - **Every trip is sealed from creation**; there is no dual mode and no
   plaintext content column. The trip name is one source, `name_enc`,
   re-sealed by an organiser's phone on rename (no `trip.rename` event); a
-  phone without the key sees *A sealed trip*.
+  phone without the key sees _A sealed trip_.
 - **Phrase slugs** are decided on the phone against the book it sees
   (`lib/phrases` `keepPayload`) and refused by replay if taken.
   `phrase.keep` carries an organiser-only `keeper`, kept in the codec for

@@ -52,7 +52,7 @@ The design is [`docs/private-trips.md`](docs/private-trips.md). In short:
   (`lib/replay.ts`) and derives every page from it (`lib/views.ts`).
 - **The key.** Made on the phone that opens the trip, kept in its keyring
   (IndexedDB). It moves only through people: an invite link carries it in
-  the URL fragment, which browsers never send; a *key link* (`/k/[code]`,
+  the URL fragment, which browsers never send; a _key link_ (`/k/[code]`,
   30 minutes, minted by any member for any seat) puts it on a second or
   replacement phone, and is how a member who lost every passkey gets it back.
   Links are shown once, where minted. The server stores keys only wrapped
@@ -87,7 +87,7 @@ interpreter's rule), the currency, and the IANA zone the trip's days run on.
   currency codes) plus the forex charge a card takes, rounded so they still
   sum to nothing, into one plan in the home currency. No rate reachable, each
   currency settles on its own — a rate is never guessed.
-- **The clock.** A trip ends when its last day ends *there* (`tripToday`),
+- **The clock.** A trip ends when its last day ends _there_ (`tripToday`),
   not at anyone's home midnight; phases ("in 12 days", "last day", "home")
   and the starters follow it.
 - **Talking to locals.** `/talk` is a two-way interpreter on one phone: tap
@@ -119,7 +119,7 @@ by member id.
 beside it (list in `AGENTS.md`). `pnpm test` runs pure logic only; no UI
 tests, by design.
 
-**Vocabulary.** UI: *prediction, call, resolve, pool, stamp*. Code and schema:
+**Vocabulary.** UI: _prediction, call, resolve, pool, stamp_. Code and schema:
 `market`, `stake`, `settle*`, `amountC`. Keep them apart. Stamps are never money
 and never near money: no purchase, no cash-out, no prize, no amount on a
 prediction — that is what keeps the game a social game under India's PROGA
@@ -159,18 +159,18 @@ WebAuthn relying party); use the dev login.
 Every variable is validated in `lib/env.ts`; `.env.example` is the annotated
 list. Highlights:
 
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | Postgres connection (dev default matches compose) |
-| `AUTH_URL` | Public base URL; Google OAuth callbacks derive from it |
-| `AUTH_GOOGLE_ID/SECRET` | Google OAuth app (redirect URI `{AUTH_URL}/api/auth/callback/google`) |
-| `RANKED_MIN_RESOLVED` | Verdicts needed to appear ranked (default 5) |
-| `CONTACT_EMAIL` | Shown on `/privacy`: grievances, and verification requests |
-| `DB_PORT` / `APP_PORT` / `APP_BIND` / `PORT` | Database and HTTP ports |
-| `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` | Optional draft-polish and live interpreting endpoint (hidden when unset) |
-| `SPEECH_BASE_URL` / `SPEECH_API_KEY` | Optional voice for phones with none: MiniMax `/v1/t2a_v2` (hidden when unset) |
+| Variable                                                  | Purpose                                                                                                                                                                     |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                            | Postgres connection (dev default matches compose)                                                                                                                           |
+| `AUTH_URL`                                                | Public base URL; Google OAuth callbacks derive from it                                                                                                                      |
+| `AUTH_GOOGLE_ID/SECRET`                                   | Google OAuth app (redirect URI `{AUTH_URL}/api/auth/callback/google`)                                                                                                       |
+| `RANKED_MIN_RESOLVED`                                     | Verdicts needed to appear ranked (default 5)                                                                                                                                |
+| `CONTACT_EMAIL`                                           | Shown on `/privacy`: grievances, and verification requests                                                                                                                  |
+| `DB_PORT` / `APP_PORT` / `APP_BIND` / `PORT`              | Database and HTTP ports                                                                                                                                                     |
+| `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL`              | Optional draft-polish and live interpreting endpoint (hidden when unset)                                                                                                    |
+| `SPEECH_BASE_URL` / `SPEECH_API_KEY`                      | Optional voice for phones with none: MiniMax `/v1/t2a_v2` (hidden when unset)                                                                                               |
 | `SPEECH_VOICES` / `SPEECH_VOICE_US` / `SPEECH_VOICE_THEM` | Which voice says which language (`th=…,hi=…`), and the fallback per side; a language with no voice gets the device's or none. `pnpm speech:check` hears every language once |
-| `FX_BASE_URL` | Where the day's exchange rate comes from, for settling the whole trip in the home currency (currency-api shape; defaults to the public mirror) |
+| `FX_BASE_URL`                                             | Where the day's exchange rate comes from, for settling the whole trip in the home currency (currency-api shape; defaults to the public mirror)                              |
 
 Anyone can open an account (passkey or Google) and a trip. Trips are
 invite-only: organisers mint a single-use or group link on the members page;
@@ -211,14 +211,14 @@ Push to `main`: verify → build and push one arm64 GHCR image (`:short-sha` +
 
 Configure a GitHub **environment named `oracle-cloud`**:
 
-| Kind | Name | Value |
-| --- | --- | --- |
-| var | `SSH_HOST` | server hostname/IP |
-| var | `SSH_USER` | ssh user |
-| var | `SSH_PORT` | optional, defaults to 22 |
-| var | `SSH_KNOWN_HOSTS` | the box's host keys (`ssh-keyscan <host>`); the deploy refuses a host that doesn't match |
-| var | `DEPLOY_DIR` | server directory holding `docker-compose.yml` + `.env` |
-| secret | `SSH_PRIVATE_KEY` | private key for the ssh user |
+| Kind         | Name                                        | Value                                                                                      |
+| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| var          | `SSH_HOST`                                  | server hostname/IP                                                                         |
+| var          | `SSH_USER`                                  | ssh user                                                                                   |
+| var          | `SSH_PORT`                                  | optional, defaults to 22                                                                   |
+| var          | `SSH_KNOWN_HOSTS`                           | the box's host keys (`ssh-keyscan <host>`); the deploy refuses a host that doesn't match   |
+| var          | `DEPLOY_DIR`                                | server directory holding `docker-compose.yml` + `.env`                                     |
+| secret       | `SSH_PRIVATE_KEY`                           | private key for the ssh user                                                               |
 | var / secret | every name in the configuration table above | the server's `.env` is rendered from these on each deploy (`ci.yml`); a blank one is unset |
 
 No registry credentials needed: the deploy job logs the server into GHCR with

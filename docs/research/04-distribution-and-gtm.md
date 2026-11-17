@@ -10,7 +10,7 @@
 
 ## Acquisition
 
-- **Invite loop**: k = invites per user × conversion. 0.15–0.25 good, 0.4 great, ~0.7 exceptional; sustained k>1 essentially never. Group apps are structurally better (one host imports a group; the invite is the product). Partiful hit 500K MAU with ~no paid marketing because non-members see the event page before signing up. **Measure** members joined per trip and the fraction of joined members who later *found* a trip: the real k.
+- **Invite loop**: k = invites per user × conversion. 0.15–0.25 good, 0.4 great, ~0.7 exceptional; sustained k>1 essentially never. Group apps are structurally better (one host imports a group; the invite is the product). Partiful hit 500K MAU with ~no paid marketing because non-members see the event page before signing up. **Measure** members joined per trip and the fraction of joined members who later _found_ a trip: the real k.
 - **Product Hunt**: diluted, SaaS/AI audience; use for the backlink. **Launch HN** fits a founder-built web app better.
 - **Reddit**: travel subs ban self-promo. What works is the "I built this for my friend group, here's what happened" story in r/SideProject, r/webdev, r/india, plus genuinely answering "how do you plan a group trip" threads.
 - **Short video**: travel creators are the costliest category (India 10–50K followers ₹5–15K/Reel). Cheap version: $50–100 to many micro-creators, <$10K total. The organic unit is the group's own "who won" recap; build a shareable result card (Locket's path).
@@ -20,7 +20,7 @@
 
 ## Pricing benchmarks
 
-Splitwise Pro $39.99/yr (India ₹2,499), Wanderlog Pro $39.99, TripIt $49, Polarsteps €29.99 plus books, Strava $79.99; Partiful and Spond take a cut of tickets/payments; Luma charges organisers. Group apps charge the *organiser*; nobody charges per member. Options: free for the group plus a founder tier (₹99–149/mo) or per-trip unlock (₹299 / $4.99) for voice, AI lingos, exports. Razorpay (UPI AutoPay, 0% on UPI under ₹2,000) in India, Stripe abroad; both need an Indian entity (sole prop + GST suffices for Razorpay).
+Splitwise Pro $39.99/yr (India ₹2,499), Wanderlog Pro $39.99, TripIt $49, Polarsteps €29.99 plus books, Strava $79.99; Partiful and Spond take a cut of tickets/payments; Luma charges organisers. Group apps charge the _organiser_; nobody charges per member. Options: free for the group plus a founder tier (₹99–149/mo) or per-trip unlock (₹299 / $4.99) for voice, AI lingos, exports. Razorpay (UPI AutoPay, 0% on UPI under ₹2,000) in India, Stripe abroad; both need an Indian entity (sole prop + GST suffices for Razorpay).
 
 ## Legal and ops basics
 

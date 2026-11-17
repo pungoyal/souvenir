@@ -22,22 +22,24 @@ A thin core retains hard; the mass does not, unless the game sits inside an exis
 ## Legal
 
 ### India: PROGA 2025
+
 - Passed 21 Aug 2025; Rules in force **1 May 2026**; Online Gaming Authority under MeitY.
 - **Online money game** (s.2(1)(g)): paying fees or depositing money **or other stakes** expecting to win money or other stakes.
-- **"Other stakes"** (s.2(1)(j)): anything convertible to money, including virtual tokens, **purchased by paying money directly or indirectly**. The hinge word is *purchased*: a token nobody buys and nobody can cash out is not a stake.
+- **"Other stakes"** (s.2(1)(j)): anything convertible to money, including virtual tokens, **purchased by paying money directly or indirectly**. The hinge word is _purchased_: a token nobody buys and nobody can cash out is not a stake.
 - **Online social game**: entertainment, no staking for monetary gain; a **subscription or access fee is expressly not a stake**. Deemed approval; registration voluntary unless notified.
 - **Offences** hit the operator and the payment rail (offering up to 3 yrs / ₹1 cr, advertising 2 yrs / ₹50 lakh), not users.
 - Constitutional challenges pending before a three-judge SC bench. The 27 May 2026 Gameskraft GST ruling concerns real-money games only.
 - **Exposure of a play-money app: low.** It rises if the app (a) sells stamps or anything convertible, (b) records, enforces or facilitates an off-app money settlement (a "loser pays ₹500" field, UPI links on a prediction, IOU tracking), or (c) advertises with money language.
 
 ### Elsewhere
+
 - **US**: no federal issue for no-money play; with no rake and no money held, the app is a scorekeeper.
 - **UK**: betting only if payment is required to enter; free-entry games are outside the Commission's remit. A paid subscription to a mainly-prediction app can be argued to be payment to enter.
 - **EU**: no harmonisation (Germany criminalises unlicensed event betting). Universal safe harbour: **no stake, no gambling**.
 
 ## Platform policy
 
-- **Apple** (5.3 and age ratings): *Gambling* 18+; *Simulated Gambling* (non-convertible currency) 13+ infrequent, **18+ frequent**; *Contests* 4+/13+. A reviewer seeing "bet", "stake", "pool" and a currency may tag Simulated Gambling.
+- **Apple** (5.3 and age ratings): _Gambling_ 18+; _Simulated Gambling_ (non-convertible currency) 13+ infrequent, **18+ frequent**; _Contests_ 4+/13+. A reviewer seeing "bet", "stake", "pool" and a currency may tag Simulated Gambling.
 - **Google Play**: India is no longer an RMG market; simulated gambling is allowed but rated via IARC.
 - **PWA** sidesteps both stores' review and ratings; no legal downside, only distribution/UX. It does not change the law: PROGA binds the operator.
 
@@ -48,7 +50,7 @@ Play money does not retain strangers but retains well inside a **closed group wi
 Three rules:
 1. Nothing is ever purchased or cashed out: no IAP for stamps, no top-up, no sponsor cash prizes. Any subscription must be for the app, not contest entry.
 2. Never facilitate a money settlement on a prediction: no currency fields, no UPI/Venmo links, no IOU ledger. Groups settle in dinner or dares.
-3. Vocabulary: *prediction, call, stamp, leaderboard*; avoid *wager, stake (money sense), odds, payout, cash*. Answer store questionnaires as *Contests*. Present stamps as points.
+3. Vocabulary: _prediction, call, stamp, leaderboard_; avoid _wager, stake (money sense), odds, payout, cash_. Answer store questionnaires as _Contests_. Present stamps as points.
 
 Ship as a **PWA first**; go to the stores only when iOS push or discoverability is the measured blocker (Google Play is easier than Apple). Never pursue the Polymarket/Kalshi or sweepstakes path.
 
