@@ -10,7 +10,7 @@ import { routes } from "@/lib/routes";
 import { type InboxItem, inbox } from "@/lib/views";
 import { Avatar } from "./avatar";
 import { useOpenTrip } from "./trip-store";
-import { EmptyState, tone } from "./ui";
+import { BackLink, EmptyState, tone } from "./ui";
 
 /**
  * What happened that concerns me. Opening it moves the cursor — the one
@@ -33,9 +33,7 @@ export function InboxPage() {
 
   return (
     <div>
-      <Link href={routes.trip(tripId)} className="flex min-h-11 items-center text-sm text-soft">
-        ← Today
-      </Link>
+      <BackLink href={routes.trip(tripId)}>Today</BackLink>
       <h1 className="display text-[28px] font-bold">Activity</h1>
       <p className="mt-1 text-sm text-soft">{t.inboxSub}</p>
 
@@ -52,7 +50,7 @@ export function InboxPage() {
   );
 }
 
-/** A run of inbox items as one card; Today shows the unread head of the same list. */
+/** `plain` drops the unread tint, for a list that is all unread. */
 export function InboxRows({ items, plain = false }: { items: InboxItem[]; plain?: boolean }) {
   const { tripId, t } = useOpenTrip();
   return (

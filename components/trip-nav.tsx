@@ -3,20 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { routes } from "@/lib/routes";
+import { MicIcon } from "./ui";
 
-/**
- * The tabs of one trip, at the bottom of the screen where a thumb is: what is happening now,
- * the game, the interpreter in the middle (the one thing used with a stranger waiting), the
- * money, the people. Client-side only for the active mark — the pathname is the one thing the
- * server doesn't hand a layout.
- */
+/** Client-side only for the active mark: the pathname is the one thing a layout isn't handed. */
 export function TripNav({
   tripId,
   waiting,
   talkLabel,
 }: {
   tripId: string;
-  /** How many things on Today are waiting on this member. */
   waiting: number;
   talkLabel: string | null;
 }) {
@@ -55,19 +50,9 @@ export function TripNav({
               talk ? "bg-sun text-[#12141a]" : "bg-night text-white"
             }`}
           >
-            <svg
-              aria-hidden="true"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke={talk ? "#12141a" : "#ffc229"}
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <rect x="7" y="2" width="6" height="10" rx="3" />
-              <path d="M4 10a6 6 0 0012 0M10 16v2" />
-            </svg>
+            <span className={talk ? "" : "text-sun"}>
+              <MicIcon />
+            </span>
             <span className="max-w-full truncate px-2">{talkLabel}</span>
           </Link>
         )}

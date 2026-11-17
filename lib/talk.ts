@@ -29,9 +29,9 @@ export interface Speaker {
   language: string;
   /** A greeting in it, for `pnpm speech:check` to hear a voice say. */
   hello: string;
-  /** The one word that opens the trip's day: short, and the same whoever says it. */
+  /** Opens Today. The start of `hello`, without anything gendered. */
   greeting: string;
-  /** How to say it, where the script is not one the group reads. */
+  /** Required where the script is not Latin. */
   greetingRoman?: string;
   /** Unicode script name, for telling one side's transcript from the other's. */
   script: string;

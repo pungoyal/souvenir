@@ -5,7 +5,6 @@ import { piesText } from "@/lib/pies";
 import { routes } from "@/lib/routes";
 import { tripRecap } from "@/lib/views";
 import { Avatar } from "./avatar";
-import { medal } from "./leaderboard";
 import { Pies } from "./pies";
 import { ShareRecap } from "./share-recap";
 import { useOpenTrip } from "./trip-store";
@@ -48,7 +47,7 @@ export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolv
             <ol className="mt-3 card list">
               {recap.table.map((s, i) => (
                 <li key={s.member.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
-                  <span className="display w-7 text-lg font-bold">{medal(i + 1)}</span>
+                  <span className="display w-7 text-lg font-bold">{i + 1}</span>
                   <Avatar member={s.member} size={28} />
                   <Link
                     href={routes.member(tripId, s.member.id)}

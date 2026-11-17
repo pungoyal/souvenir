@@ -22,7 +22,7 @@ import { RecoveryPanel } from "./recovery";
 import { SeatControls } from "./seat-controls";
 import { SideChip } from "./side-chip";
 import { useOpenTrip } from "./trip-store";
-import { tone } from "./ui";
+import { BackLink, tone } from "./ui";
 
 const heading = "display text-xl font-bold";
 const row = "flex items-center gap-3 px-4 py-2.5 text-sm";
@@ -64,9 +64,7 @@ export function MemberPage({
 
   return (
     <div>
-      <Link href={routes.members(tripId)} className="flex min-h-11 items-center text-sm text-soft">
-        ← Group
-      </Link>
+      <BackLink href={routes.members(tripId)}>Group</BackLink>
       <div className="flex flex-wrap items-center gap-4">
         <Avatar member={member} size={56} />
         <div className="min-w-48 flex-1">

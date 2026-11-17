@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { fmtDate, timeAgo } from "@/lib/format";
-import { toCents } from "@/lib/pies";
 import { routes } from "@/lib/routes";
 import { marketActivity, marketCard, marketComments, marketView, reactors } from "@/lib/views";
 import { ActivityFeed } from "./activity";
@@ -19,16 +18,15 @@ import { markMarketSeen } from "./seen";
 import { ShareCard } from "./share-card";
 import { SideChip, StatusChip } from "./side-chip";
 import { useOpenTrip } from "./trip-store";
+import { BackLink } from "./ui";
 
 const heading = "display text-xl font-bold";
 
 export function MarketPage({
   marketId,
-  maxStakePies,
   published,
 }: {
   marketId: string;
-  maxStakePies: number;
   /** Whether a card is up for it — the one thing about a prediction the server knows. */
   published: boolean;
 }) {
@@ -44,9 +42,7 @@ export function MarketPage({
   if (!m) {
     return (
       <div>
-        <Link href={routes.calls(tripId)} className="flex min-h-11 items-center text-sm text-soft">
-          ← Calls
-        </Link>
+        <BackLink href={routes.calls(tripId)}>Calls</BackLink>
         <p className="mt-6 text-sm text-soft">No such prediction on this trip.</p>
       </div>
     );
@@ -62,9 +58,7 @@ export function MarketPage({
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <Link href={routes.calls(tripId)} className="flex min-h-11 items-center text-sm text-soft">
-          ← Calls
-        </Link>
+        <BackLink href={routes.calls(tripId)}>Calls</BackLink>
         <div className="flex items-center justify-between gap-3 text-[13px] text-soft">
           <span>
             {mine ? "You asked" : `${creator.name} asks`} · {timeAgo(market.createdAt)}
@@ -84,14 +78,7 @@ export function MarketPage({
           meId={me.id}
           lingo={lingo}
         />
-        {isOpen && (
-          <BetPanel
-            marketId={market.id}
-            mySide={view.mySide}
-            myStakeC={view.myStakeC}
-            maxStakeC={toCents(maxStakePies)}
-          />
-        )}
+        {isOpen && <BetPanel marketId={market.id} mySide={view.mySide} myStakeC={view.myStakeC} />}
       </div>
 
       {!isOpen && (

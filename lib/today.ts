@@ -1,18 +1,17 @@
-// What the Today page is made of: the short list of things waiting on one member, and where
-// they stand. Derived on the phone from the replayed trip, like every other view.
+// The Today page: what is waiting on one member, and where they stand.
 
 import type { FxRate } from "./fx.ts";
 import { type MarketState, netByMember, type TripState } from "./replay.ts";
 import type { Currency } from "./split.ts";
 import {
   billsOverview,
-  DEPARTED_NAME,
   listMarkets,
   type MarketView,
   type People,
   type Person,
   type RosterMember,
   tripSettlement,
+  who,
 } from "./views.ts";
 
 export type Need =
@@ -23,7 +22,7 @@ export type Need =
       actor: Person;
       commentId: string;
       body: string;
-      /** Where the talk is: exactly one of these is set. */
+      /** Exactly one of these is set. */
       market: MarketState | null;
       bill: { id: string; label: string } | null;
     }
@@ -32,11 +31,7 @@ export type Need =
   /** An open prediction of yours with stamps on it: only you can resolve it. */
   | { kind: "resolve"; view: MarketView };
 
-/**
- * Everything waiting on `viewerId`, most pressing first: people before predictions, and the
- * ones the recommender would put in front of them before the rest. `seenAt` is the inbox
- * cursor; `seen` is what this phone has opened (components/seen).
- */
+/** Most pressing first. `seenAt` is the inbox cursor; `seen` is components/seen. */
 export function needsYou(
   state: TripState,
   people: People,
@@ -46,10 +41,7 @@ export function needsYou(
   seen: ReadonlySet<string> = new Set(),
 ): Need[] {
   const cursor = seenAt?.getTime() ?? 0;
-  const departed = (id: string): Person =>
-    people.get(id) ?? { id, name: DEPARTED_NAME, avatarUpdatedAt: null };
-
-  // The last time the viewer spoke in each thread: a tag from before that has been answered.
+  // A tag from before the viewer last spoke in its thread has been answered.
   const spokeAt = new Map<string, number>();
   for (const c of state.comments) {
     if (c.authorId !== viewerId) continue;
@@ -68,7 +60,7 @@ export function needsYou(
     mentions.push({
       kind: "mention",
       at: c.at,
-      actor: departed(c.authorId),
+      actor: who(people, c.authorId),
       commentId: c.id,
       body: c.body,
       market,
@@ -127,9 +119,8 @@ export function standing(
 }
 
 /**
- * What one member is owed (positive) or owes (negative) across the trip's bills: one figure in
- * the home currency when there is a rate for the day, else one per currency — the same choice
- * the money page makes, so the two never disagree. Empty when they are square.
+ * Owed (positive) or owing (negative): one home-currency figure with a rate, else one per
+ * currency. Empty when square.
  */
 export function myMoney(
   state: TripState,

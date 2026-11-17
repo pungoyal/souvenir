@@ -2,7 +2,7 @@ export const routes = {
   home: "/",
   signin: "/signin",
   trips: "/trips",
-  // The list itself, even for a member with one trip (who is otherwise sent straight to it).
+  // A member with one trip is otherwise sent straight to it.
   allTrips: "/trips?all=1",
   newTrip: "/trips/new",
   account: "/account",

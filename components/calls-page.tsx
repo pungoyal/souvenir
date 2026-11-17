@@ -2,43 +2,24 @@
 
 import Link from "next/link";
 import { routes } from "@/lib/routes";
-import { type StarterContext, starters } from "@/lib/starters";
+import type { StarterTrip } from "@/lib/starters";
 import { listMarkets, memberResults } from "@/lib/views";
 import { AskBox } from "./ask-box";
 import { MarketCard } from "./market-card";
-import { Starters } from "./starters";
+import { Starters, useStarters } from "./starters";
 import { useOpenTrip } from "./trip-store";
 import { EmptyState } from "./ui";
 
 type Tab = "open" | "yours" | "done";
 
-/**
- * The game, all of it: ask at the top, then the predictions in three piles — still open, the
- * ones you asked (yours to resolve), and the verdicts. The tab is in the URL, so a link from
- * anywhere lands on the right pile and Back does what it should.
- */
-export function CallsPage({
-  tab,
-  starterTrip,
-}: {
-  tab: Tab;
-  starterTrip: Omit<StarterContext, "members" | "viewerId" | "name">;
-}) {
-  const { tripId, me, t, roster, people, state, name, maxStakePies } = useOpenTrip();
+export function CallsPage({ tab, starterTrip }: { tab: Tab; starterTrip: StarterTrip }) {
+  const { tripId, me, t, people, state, maxStakePies } = useOpenTrip();
   const { open, resolved } = listMarkets(state, people, me.id, new Date());
   const yours = [...open, ...resolved].filter((v) => v.market.creatorId === me.id);
   const profitByMarket = new Map(memberResults(state, me.id).map((r) => [r.market.id, r.profitC]));
   const shown = tab === "open" ? open : tab === "yours" ? yours : resolved;
 
-  const drafts =
-    open.length + resolved.length < 3
-      ? starters({
-          ...starterTrip,
-          name: name ?? starterTrip.place,
-          members: roster.map((m) => ({ id: m.id, name: m.name })),
-          viewerId: me.id,
-        })
-      : [];
+  const drafts = useStarters(starterTrip);
 
   const tabs: { key: Tab; label: string; count: number; href: string }[] = [
     { key: "open", label: "Open", count: open.length, href: routes.calls(tripId) },
@@ -75,12 +56,7 @@ export function CallsPage({
 
       <div className="flex flex-col gap-3">
         {shown.map((v) => (
-          <MarketCard
-            key={v.market.id}
-            view={v}
-            myProfitC={profitByMarket.get(v.market.id)}
-            maxStakePies={maxStakePies}
-          />
+          <MarketCard key={v.market.id} view={v} myProfitC={profitByMarket.get(v.market.id)} />
         ))}
       </div>
 

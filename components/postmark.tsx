@@ -1,10 +1,6 @@
 import { useId } from "react";
 
-/**
- * The trip's postmark: the place around the rim, the moment in the middle, inked at an angle
- * the way a border desk would. Drawn in the text colour, so it sits on any card. Decoration
- * with a spoken label — everything it says is also said in words beside it.
- */
+/** Decoration, in the text colour: everything it says is also said in words beside it. */
 export function Postmark({
   place,
   year,
@@ -15,15 +11,13 @@ export function Postmark({
 }: {
   place: string;
   year: string;
-  /** The middle, large: "DAY 2", "SOON", "HOME". */
   top: string;
-  /** Under it, small: a month. */
   bottom?: string;
   size?: number;
   className?: string;
 }) {
   const id = useId();
-  // A short place goes round twice, so the rim is always full and never stretched thin.
+  // A short place goes round twice, so the rim is never stretched thin.
   const once = `${place} · ${year} · `.toUpperCase();
   const rim = (once.length < 18 ? once + once : once).trimEnd();
   return (

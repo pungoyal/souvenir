@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { timeAgo } from "@/lib/format";
-import { piesText, toCents } from "@/lib/pies";
+import { piesText } from "@/lib/pies";
 import { routes } from "@/lib/routes";
 import type { MarketView } from "@/lib/views";
 import { BetPanel } from "./bet-panel";
@@ -11,20 +11,13 @@ import { Verdict } from "./side-chip";
 import { useTrip } from "./trip-store";
 import { tone } from "./ui";
 
-/**
- * One prediction, wherever a list shows it. An open one is answered right here — the question,
- * who is on which side, and the two buttons — so calling never needs a second page. A resolved
- * one carries its verdict and what it did to you.
- */
 export function MarketCard({
   view,
   myProfitC,
-  maxStakePies,
 }: {
   view: MarketView;
-  /** On a resolved card: what the verdict did to the viewer, if they were in. */
+  /** On a resolved card: what the verdict did to the viewer. */
   myProfitC?: number;
-  maxStakePies: number;
 }) {
   const { tripId, me, lingo, t } = useTrip();
   const { market, creator, participants } = view;
@@ -68,7 +61,6 @@ export function MarketCard({
           marketId={market.id}
           mySide={view.mySide}
           myStakeC={view.myStakeC}
-          maxStakeC={toCents(maxStakePies)}
           detailHref={href}
         />
       )}

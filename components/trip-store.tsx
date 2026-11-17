@@ -42,7 +42,6 @@ export interface TripStoreValue {
   /** The trip's name: `undefined` while the key is loading, `null` when this phone cannot read it. */
   name: string | null | undefined;
   me: RosterMember;
-  /** The cap on one member's stamps on one prediction, in whole stamps. */
   maxStakePies: number;
   lingo: string;
   t: Lingo;

@@ -7,36 +7,26 @@ import { fmtPies, stampsWord, toCents } from "@/lib/pies";
 import { useTrip } from "./trip-store";
 import { useAct } from "./use-act";
 
-// What a tap puts down when nobody has chosen a number: enough to mean it, not the whole cap.
 const DEFAULT_PIES = 3;
 
-/**
- * Making a call, wherever a prediction is shown: pick how many stamps, tap a side. Once a side
- * is taken the same control adds to it, and the other side becomes a switch — one side per
- * member is the rule (lib/replay), so the panel never offers both.
- *
- * `detailHref` is given on a card: the card then shows the call that stands and leaves changing
- * it to the prediction's own page.
- */
+/** One side per member (lib/replay): once a side is taken this adds to it or switches. */
 export function BetPanel({
   marketId,
   mySide,
   myStakeC,
-  maxStakeC,
   detailHref,
 }: {
   marketId: string;
   mySide: Side | null;
   myStakeC: number;
-  maxStakeC: number;
+  /** On a card: show the call that stands and leave changing it to the prediction's page. */
   detailHref?: string;
 }) {
-  const { t, append } = useTrip();
+  const { t, append, maxStakePies } = useTrip();
   const { pending, error, act } = useAct(t.oops);
 
   // Infinite bank: the per-prediction exposure cap is the only ceiling.
-  const roomC = maxStakeC - myStakeC;
-  const maxPies = Math.floor(roomC / 100);
+  const maxPies = Math.floor((toCents(maxStakePies) - myStakeC) / 100);
   const [pies, setPies] = useState(DEFAULT_PIES);
   const clamped = Math.min(Math.max(pies, 1), Math.max(maxPies, 1));
 

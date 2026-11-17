@@ -5,22 +5,10 @@ import { usePathname } from "next/navigation";
 import { routes } from "@/lib/routes";
 import { Logo } from "./logo";
 
-/**
- * The bar across the top of every page that is not inside a trip. A trip has its own header
- * (its name, its place, your face) and its tabs at the bottom, so this one steps aside there —
- * the pathname is the one thing the server doesn't hand a layout.
- */
-export function AppBar({
-  signedIn,
-  children,
-}: {
-  signedIn: boolean;
-  /** The right-hand side: the member's face, or the way in. */
-  children: React.ReactNode;
-}) {
+/** Steps aside inside a trip, which has its own header; only the client knows the pathname. */
+export function AppBar({ signedIn, children }: { signedIn: boolean; children: React.ReactNode }) {
   const pathname = usePathname();
   if (pathname.startsWith("/t/")) {
-    // Installed to a home screen, the page runs under the status bar.
     return <div className="pt-[env(safe-area-inset-top)]" />;
   }
   return (

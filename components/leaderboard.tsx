@@ -10,14 +10,7 @@ import { KeyStatus } from "./sealed";
 import { useOpenTrip } from "./trip-store";
 import { tone } from "./ui";
 
-/** A place on the table, as it is written everywhere one is shown. */
-export const medal = (rank: number) => `${rank}`;
-
-/**
- * The table: one ranked list, members still warming up under a divider. Its only stats source
- * is `leaderboard`; passkeys are the server's, as a prop. Money is not here — it has its own
- * tab — so a place on this list is only ever about the game.
- */
+/** Its only stats source is `leaderboard`; passkeys are the server's, as a prop. */
 export function Leaderboard({
   minResolved,
   passkeys,
@@ -84,7 +77,7 @@ function Row({
             {s.resolvedCount}/{minResolved}
           </span>
         ) : (
-          <span className="text-lg font-bold text-ink">{medal(rank)}</span>
+          <span className="text-lg font-bold text-ink">{rank}</span>
         )}
       </span>
       <Avatar member={s.member} size={40} />

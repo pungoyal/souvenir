@@ -52,7 +52,7 @@ export type People = Map<string, Person>;
 export const DEPARTED_NAME = "Departed member";
 
 const departed = (id: string): Person => ({ id, name: DEPARTED_NAME, avatarUpdatedAt: null });
-const who = (people: People, id: string): Person => people.get(id) ?? departed(id);
+export const who = (people: People, id: string): Person => people.get(id) ?? departed(id);
 const known = (people: People, ids: readonly string[]): Person[] =>
   ids.flatMap((id) => people.get(id) ?? []);
 const sideOf = (pos: Position): Side => (pos.yesC > 0 ? "yes" : "no");

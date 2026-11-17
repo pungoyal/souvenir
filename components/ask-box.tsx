@@ -1,10 +1,6 @@
 import { routes } from "@/lib/routes";
 
-/**
- * Asking the group something, from wherever the thought arrives: type the question, and the
- * next screen only wants to know how it will be decided. A plain GET form, so it works before
- * the page has woken up.
- */
+/** A plain GET form into the new-prediction page, so it works before hydration. */
 export function AskBox({ tripId, placeholder }: { tripId: string; placeholder: string }) {
   return (
     <form action={routes.newMarket(tripId)} className="card flex flex-col gap-2.5 p-3">

@@ -2,7 +2,7 @@ import { Bills } from "@/components/bills";
 import { Sealed } from "@/components/sealed";
 import { FX_SURCHARGE_BPS } from "@/lib/fx";
 import { lingoOf } from "@/lib/lingo";
-import { latestRate } from "@/lib/rates";
+import { tripRate } from "@/lib/rates";
 import { requireTrip } from "@/lib/session";
 import { currencyName, isDomestic, tripCurrencies } from "@/lib/trips";
 
@@ -11,9 +11,8 @@ export default async function BillsPage({ params }: { params: Promise<{ tripId: 
   const { me, trip } = await requireTrip(tripId);
   const t = lingoOf(me.lingo);
   const currencies = tripCurrencies(trip);
-  // Foreign first, home last (lib/trips tripCurrencies). The rate is public and names only the
-  // pair; the bills stay on the phone.
-  const rate = isDomestic(trip) ? null : await latestRate(currencies[0], currencies[1]);
+  // The rate is public and names only the pair; the bills stay on the phone.
+  const rate = await tripRate(currencies);
 
   const note = isDomestic(trip)
     ? `Everything in ${currencyName(currencies[0])}.`

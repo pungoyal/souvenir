@@ -6,7 +6,7 @@ import type { FxRate } from "@/lib/fx";
 import { fmtPies, stampsWord } from "@/lib/pies";
 import { routes } from "@/lib/routes";
 import { type Currency, fmtMoney } from "@/lib/split";
-import { type StarterContext, starters } from "@/lib/starters";
+import type { StarterTrip } from "@/lib/starters";
 import { myMoney, type Need, needsYou, standing } from "@/lib/today";
 import type { TripClock } from "@/lib/trips";
 import { inbox, phrasebook } from "@/lib/views";
@@ -17,26 +17,18 @@ import { InboxRows } from "./inbox-page";
 import { MarketCard } from "./market-card";
 import { Postmark } from "./postmark";
 import { seenMarkets } from "./seen";
-import { Starters } from "./starters";
+import { Starters, useStarters } from "./starters";
 import { useOpenTrip } from "./trip-store";
+import { Chevron } from "./ui";
 
-// How many open calls Today puts in front of somebody before pointing at the Calls tab.
 const CALLS_SHOWN = 3;
 
 export interface Greeting {
-  /** In the destination's own script. */
   native: string;
-  /** How to say it, when that script is not one the group reads. */
   roman: string | null;
-  /** BCP-47 language of `native`, for a screen reader and the right font. */
   lang: string;
 }
 
-/**
- * The trip's home: what is waiting on you, in the order it matters, under a greeting from the
- * place you are going. It changes with the calendar — a countdown before, the day's number
- * during, the way to the recap once home — and never asks you to go looking.
- */
 export function Today({
   clock,
   greeting,
@@ -58,9 +50,9 @@ export function Today({
   rate: FxRate | null;
   canInvite: boolean;
   talkLabel: string | null;
-  starterTrip: Omit<StarterContext, "members" | "viewerId" | "name">;
+  starterTrip: StarterTrip;
 }) {
-  const { tripId, me, t, roster, people, state, seenAt, name, maxStakePies } = useOpenTrip();
+  const { tripId, me, t, roster, people, state, seenAt } = useOpenTrip();
   const [seen] = useState(() => seenMarkets(tripId));
   const needs = needsYou(state, people, me.id, seenAt, new Date(), seen);
   const mentions = needs.filter((n) => n.kind === "mention");
@@ -73,16 +65,7 @@ export function Today({
   const news = inbox(state, people, me.id, seenAt);
   const fresh = news.items.filter((i) => i.unread && i.kind !== "mention").slice(0, 3);
   const kept = phrasebook(state).slice(0, 4);
-  const marketCount = state.markets.size;
-  const drafts =
-    marketCount < 3 || clock.phase === "before"
-      ? starters({
-          ...starterTrip,
-          name: name ?? starterTrip.place,
-          members: roster.map((m) => ({ id: m.id, name: m.name })),
-          viewerId: me.id,
-        }).slice(0, 3)
-      : [];
+  const drafts = useStarters(starterTrip, clock.phase === "before").slice(0, 3);
 
   const hello = `${greeting.roman ?? greeting.native}, ${firstName(me)}`;
   const stamp = (top: string, className = "") => (
@@ -193,12 +176,7 @@ export function Today({
 
         {calls
           .slice(0, CALLS_SHOWN)
-          .map(
-            (n) =>
-              n.kind === "call" && (
-                <MarketCard key={n.view.market.id} view={n.view} maxStakePies={maxStakePies} />
-              ),
-          )}
+          .map((n) => n.kind === "call" && <MarketCard key={n.view.market.id} view={n.view} />)}
         {calls.length > CALLS_SHOWN && (
           <Link href={routes.calls(tripId)} className="btn btn-line text-sm">
             {calls.length - CALLS_SHOWN} more waiting in Calls
@@ -351,25 +329,6 @@ function Mention({ need }: { need: Extract<Need, { kind: "mention" }> }) {
         Reply
       </Link>
     </article>
-  );
-}
-
-function Chevron() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="shrink-0"
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M7 4l5 5-5 5" />
-    </svg>
   );
 }
 

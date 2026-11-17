@@ -8,12 +8,8 @@ import { Avatar } from "./avatar";
 import { seenMarkets } from "./seen";
 import { TripNav } from "./trip-nav";
 import { useTrip } from "./trip-store";
+import { Chevron } from "./ui";
 
-/**
- * The top of every page of a trip: where and when, the trip's name (which is also the way to
- * the other trips), and your own face (the way to your account). The tabs it renders sit at
- * the bottom of the screen.
- */
 export function TripHeader({
   tripId,
   place,
@@ -41,20 +37,7 @@ export function TripHeader({
             <span className="truncate">
               {name === undefined ? "…" : (name ?? t.sealedTripName)}
             </span>
-            <svg
-              aria-hidden="true"
-              className="shrink-0"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M4 6l4 4 4-4" />
-            </svg>
+            <Chevron down />
           </span>
         </Link>
         <Link href={routes.account} aria-label="Your account" className="shrink-0 rounded-full">

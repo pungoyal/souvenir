@@ -2,14 +2,13 @@
 
 /* Plain @theme (not inline) so utilities reference variables the dark blocks can swap. */
 @theme {
-  /* Cool ground, white cards, near-black ink, one marigold accent.
-     Colorblind-safe duality: YES = blue, NO = burnt orange. */
+  /* Colorblind-safe duality: YES = blue, NO = burnt orange. */
   --color-paper: #eef0f3;
   --color-surface: #ffffff;
   --color-ink: #12141a;
   --color-soft: #565c6b;
   --color-line: #dfe2e8;
-  /* The dark panel (money hero, the stranger's side of talk) stays dark in both themes. */
+  /* Stays dark in both themes. */
   --color-night: #12141a;
   --color-night-soft: #c9cdd6;
   --color-night-line: #2a2e38;
@@ -122,8 +121,7 @@ body {
   border-top: 1px solid var(--color-line);
 }
 
-/* Type and padding stay utilities at the call site (`btn btn-ink px-4 text-sm`); the height
-   is here, so nothing tappable is under 44px. */
+/* Padding and type stay utilities at the call site; the 44px minimum height is here. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -181,7 +179,6 @@ body {
   text-decoration: underline;
 }
 
-/* One field, everywhere: 48px tall, 16px type so iOS never zooms. */
 .field {
   width: 100%;
   min-height: 3rem;
@@ -221,7 +218,6 @@ body {
   color: var(--color-soft);
 }
 
-/* A verdict, inked on at an angle like a stamp in a passport. */
 .inked {
   display: inline-block;
   border: 2px solid currentColor;
@@ -246,7 +242,7 @@ body {
   }
 }
 
-/* The trip's tabs sit at the bottom of the screen; the page and the footer end above them. */
+/* Clear the trip's fixed bottom tabs. */
 body:has([data-trip-nav]) footer {
   padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
 }

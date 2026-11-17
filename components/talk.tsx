@@ -38,6 +38,7 @@ import {
 } from "@/lib/talk";
 import { phrasebook as phrasesOf } from "@/lib/views";
 import { useOpenTrip } from "./trip-store";
+import { MicIcon } from "./ui";
 
 /** SpeechRecognition, which is not in every DOM lib and not on every phone. */
 interface RecognitionLike {
@@ -352,7 +353,6 @@ export function Talk({
 
   return (
     <div className="space-y-5">
-      {/* Their side: dark, so it reads as a different surface when the phone is turned round. */}
       <section
         aria-label={`Their side, in ${pair.them.language}`}
         className="flex flex-col gap-4 rounded-3xl bg-night p-5 text-white"
@@ -504,22 +504,6 @@ export function Talk({
   );
 }
 
-const MIC = (
-  <svg
-    aria-hidden="true"
-    width="24"
-    height="24"
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <rect x="7" y="2" width="6" height="10" rx="3" />
-    <path d="M4 10a6 6 0 0012 0M10 16v2" />
-  </svg>
-);
-
 const PLAY = (
   <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
     <path d="M3 1.5v11l9-5.5z" />
@@ -553,7 +537,11 @@ function Mic({
             : "h-[72px] rounded-[20px] border-[1.5px] border-night-line text-white"
       }`}
     >
-      {active ? <span aria-hidden className="h-4 w-4 rounded-sm bg-current" /> : MIC}
+      {active ? (
+        <span aria-hidden className="h-4 w-4 rounded-sm bg-current" />
+      ) : (
+        <MicIcon size={24} />
+      )}
       {label}
     </button>
   );

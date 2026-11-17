@@ -2,11 +2,7 @@ import { lingoOf } from "@/lib/lingo";
 import { fmtPies } from "@/lib/pies";
 import type { ParticipantPosition } from "@/lib/views";
 
-/**
- * The signature element: a tug-of-war between YES and NO. Width is share of committed stamps —
- * the group's revealed belief, with no odds or probabilities calculated for anyone — and under
- * each end, who is pulling on it.
- */
+/** Width is share of committed stamps; no odds or probabilities are calculated for anyone. */
 export function PoolBar({
   yesPoolC,
   noPoolC,

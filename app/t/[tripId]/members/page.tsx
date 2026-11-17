@@ -7,6 +7,7 @@ import { ShutRekey } from "@/components/rekey-list";
 import { RevokeInvite } from "@/components/revoke-invite";
 import { RotateKey } from "@/components/rotate-key";
 import { Sealed } from "@/components/sealed";
+import { Chevron } from "@/components/ui";
 import {
   isOrganiser,
   listInvites,
@@ -203,20 +204,9 @@ function More({ href, title, sub }: { href: string; title: string; sub: string }
         <span className="block font-semibold">{title}</span>
         <span className="block text-[13px] text-soft">{sub}</span>
       </span>
-      <svg
-        aria-hidden="true"
-        className="shrink-0 text-soft"
-        width="18"
-        height="18"
-        viewBox="0 0 18 18"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M7 4l5 5-5 5" />
-      </svg>
+      <span className="text-soft">
+        <Chevron />
+      </span>
     </Link>
   );
 }

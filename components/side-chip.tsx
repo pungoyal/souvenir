@@ -13,7 +13,6 @@ export function SideChip({ side, small }: { side: Side; small?: boolean }) {
   );
 }
 
-/** How a prediction ended, inked on like a stamp in a passport. */
 export function Verdict({ status }: { status: Side | "refunded" }) {
   const tone =
     status === "yes" ? "text-yes-deep" : status === "no" ? "text-no-deep" : "text-soft rotate-3";

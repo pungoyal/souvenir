@@ -33,7 +33,6 @@ export function Bills({
 }: {
   currencies: readonly Currency[];
   rate?: FxRate | null;
-  /** Which currencies this trip counts in and how they settle, in a sentence. */
   note: string;
 }) {
   const { me, lingo, t, roster: members, people, state, append } = useOpenTrip();
@@ -529,7 +528,6 @@ function PaymentForm({
   );
 }
 
-/** The transfers that involve the viewer lead: they are the ones the viewer can act on. */
 function mineFirst<T extends { fromId: string; toId: string }>(plan: T[], meId: string): T[] {
   const involves = (x: T) => x.fromId === meId || x.toId === meId;
   return [...plan.filter(involves), ...plan.filter((x) => !involves(x))];

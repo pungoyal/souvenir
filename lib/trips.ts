@@ -148,7 +148,6 @@ export interface TripClock {
   toGo: number | null;
 }
 
-// Everything the Today page says about time, from the two dates and the destination's today.
 export function tripClock(trip: TripLike, today: string): TripClock {
   const phase = tripPhase(trip, today);
   const { startsOn, endsOn } = trip;

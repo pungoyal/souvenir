@@ -3,7 +3,7 @@
 //
 // Pure. The member who opens a draft can edit it, so the criteria only have to be fair, not final.
 
-import { daysBetween, type TripLike, tripPhase } from "./trips.ts";
+import { daysBetween, placeOf, type TripLike, tripPhase, tripToday } from "./trips.ts";
 
 export interface StarterDraft {
   /** So the UI can remember which were already opened. */
@@ -19,6 +19,21 @@ export interface StarterContext extends TripLike {
   /** Never the subject of their own starter. */
   viewerId: string;
   today: string;
+}
+
+export type StarterTrip = Omit<StarterContext, "members" | "viewerId" | "name">;
+
+export function starterTrip(trip: TripLike): StarterTrip {
+  const { destination, homeCurrency, foreignCurrency, startsOn, endsOn } = trip;
+  return {
+    destination,
+    homeCurrency,
+    foreignCurrency,
+    startsOn,
+    endsOn,
+    place: placeOf(trip),
+    today: tripToday(trip),
+  };
 }
 
 // The n-th other member, deterministically.
