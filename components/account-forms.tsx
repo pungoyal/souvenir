@@ -14,7 +14,7 @@ export function AccountForms({ name: initialName }: { name: string }) {
   return (
     <>
       <section className="mt-7">
-        <h2 className="display text-xl font-bold uppercase tracking-wide text-soft">Your name</h2>
+        <h2 className="display text-xl font-bold">Your name</h2>
         <p className="text-xs text-soft">
           What every table calls you. Has to be distinct on each trip you're on — it's how @mentions
           find you.
@@ -45,9 +45,7 @@ export function AccountForms({ name: initialName }: { name: string }) {
       </section>
 
       <section className="mt-10 rounded-lg border border-no/40 p-4">
-        <h2 className="display text-xl font-bold uppercase tracking-wide text-no-deep">
-          Delete your account
-        </h2>
+        <h2 className="display text-xl font-bold text-no-deep">Delete your account</h2>
         <p className="mt-1 text-xs text-soft">
           Your name, email, picture, passkeys, key backups, and seats go at once, and nothing can
           sign in as you again. What stays is the record every trip keeps of its own game — the

@@ -47,12 +47,12 @@ export interface RosterMember extends Person {
   role: "organiser" | "member";
 }
 
-type People = Map<string, Person>;
+export type People = Map<string, Person>;
 
 export const DEPARTED_NAME = "Departed member";
 
 const departed = (id: string): Person => ({ id, name: DEPARTED_NAME, avatarUpdatedAt: null });
-const who = (people: People, id: string): Person => people.get(id) ?? departed(id);
+export const who = (people: People, id: string): Person => people.get(id) ?? departed(id);
 const known = (people: People, ids: readonly string[]): Person[] =>
   ids.flatMap((id) => people.get(id) ?? []);
 const sideOf = (pos: Position): Side => (pos.yesC > 0 ? "yes" : "no");
@@ -212,13 +212,6 @@ function toItem(state: TripState, people: People, row: LedgerRow): ActivityItem 
     member: who(people, row.memberId),
     market: state.markets.get(row.marketId) ?? null,
   };
-}
-
-export function recentActivity(state: TripState, people: People, limit = 12): ActivityItem[] {
-  return [...state.ledger]
-    .reverse()
-    .slice(0, limit)
-    .map((row) => toItem(state, people, row));
 }
 
 export function marketActivity(

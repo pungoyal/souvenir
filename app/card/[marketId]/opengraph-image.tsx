@@ -27,13 +27,13 @@ export default async function Image({ params }: { params: Promise<{ marketId: st
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        background: "#143024",
-        color: "#f1eee4",
+        background: "#12141a",
+        color: "#ffffff",
         padding: 64,
         fontFamily: "sans-serif",
       }}
     >
-      <div style={{ display: "flex", fontSize: 28, color: "#e8c46a", letterSpacing: 2 }}>
+      <div style={{ display: "flex", fontSize: 28, color: "#ffc229", letterSpacing: 2 }}>
         {card ? card.tripName.toUpperCase() : "SOUVENIR"}
       </div>
       <div
@@ -55,17 +55,17 @@ export default async function Image({ params }: { params: Promise<{ marketId: st
               fontWeight: 800,
               color:
                 card?.verdict === "yes"
-                  ? "#9db9e8"
+                  ? "#a9bffa"
                   : card?.verdict === "no"
-                    ? "#eda06d"
-                    : "#e8c46a",
+                    ? "#f3a27e"
+                    : "#ffc229",
             }}
           >
             {settled ? `RESOLVED ${verdict}` : verdict}
           </div>
         )}
         {card && settled && card.winners.length > 0 && (
-          <div style={{ display: "flex", fontSize: 26, color: "#f1eee4" }}>
+          <div style={{ display: "flex", fontSize: 26, color: "#ffffff" }}>
             Called it: {names(card.winners)}
           </div>
         )}

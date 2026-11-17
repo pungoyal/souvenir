@@ -1,54 +1,58 @@
 import { lingoOf } from "@/lib/lingo";
-import { Pies } from "./pies";
+import { fmtPies } from "@/lib/pies";
+import type { ParticipantPosition } from "@/lib/views";
 
-/**
- * The signature element: a tug-of-war between YES and NO.
- * Width is share of committed pies — the group's revealed belief,
- * with no odds or probabilities calculated for anyone.
- */
+/** Width is share of committed stamps; no odds or probabilities are calculated for anyone. */
 export function PoolBar({
   yesPoolC,
   noPoolC,
-  compact,
+  participants = [],
+  meId,
   lingo = "english",
 }: {
   yesPoolC: number;
   noPoolC: number;
-  compact?: boolean;
+  participants?: ParticipantPosition[];
+  meId?: string;
   lingo?: string;
 }) {
   const t = lingoOf(lingo);
   const total = yesPoolC + noPoolC;
-  const yesPct = total === 0 ? 50 : (yesPoolC / total) * 100;
-
+  if (total === 0) {
+    return (
+      <div>
+        <div className="h-2.5 rounded-full border border-dashed border-line" />
+        <p className="mt-1.5 text-[13px] text-soft">{t.poolEmpty}</p>
+      </div>
+    );
+  }
+  const names = (side: "yes" | "no") =>
+    participants
+      .filter((p) => p.side === side)
+      .map((p) => (p.member.id === meId ? "you" : p.member.name))
+      .join(", ");
+  const yes = names("yes");
+  const no = names("no");
   return (
     <div>
-      {total === 0 ? (
-        <div className="flex h-3 items-center rounded-full border border-dashed border-line bg-surface" />
-      ) : (
-        <div className="flex h-3 overflow-hidden rounded-full">
-          <div className="pool-fill bg-yes" style={{ width: `${yesPct}%` }} />
-          <div className="w-0.5 shrink-0 bg-paper" />
-          <div className="pool-fill flex-1 bg-no" />
-        </div>
-      )}
-      {!compact && (
-        <div className="mt-1 flex justify-between text-xs font-semibold">
-          <span className="text-yes-deep">
-            YES{" "}
-            <span className="mono">
-              <Pies c={yesPoolC} />
-            </span>
-          </span>
-          {total === 0 && <span className="text-soft">{t.poolEmpty}</span>}
-          <span className="text-no-deep">
-            <span className="mono">
-              <Pies c={noPoolC} />
-            </span>{" "}
-            NO
-          </span>
-        </div>
-      )}
+      <div
+        className="flex h-2.5 gap-0.5 overflow-hidden rounded-full"
+        role="img"
+        aria-label={`${fmtPies(yesPoolC)} stamps on yes, ${fmtPies(noPoolC)} on no`}
+      >
+        {yesPoolC > 0 && <div className="pool-fill bg-yes" style={{ flexGrow: yesPoolC }} />}
+        {noPoolC > 0 && <div className="pool-fill bg-no" style={{ flexGrow: noPoolC }} />}
+      </div>
+      <div className="mt-1.5 flex justify-between gap-3 text-[13px] font-semibold">
+        <span className="min-w-0 truncate text-yes-deep">
+          Yes <span className="mono">{fmtPies(yesPoolC)}</span>
+          {yes && ` · ${yes}`}
+        </span>
+        <span className="min-w-0 truncate text-right text-no-deep">
+          No <span className="mono">{fmtPies(noPoolC)}</span>
+          {no && ` · ${no}`}
+        </span>
+      </div>
     </div>
   );
 }

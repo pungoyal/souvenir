@@ -11,9 +11,7 @@ export default function PrivacyPage() {
   return (
     <article className="mx-auto max-w-2xl">
       <p className="eyebrow">Privacy</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">
-        Your trip is yours
-      </h1>
+      <h1 className="display text-[28px] font-bold leading-tight">Your trip is yours</h1>
       <p className="text-sm text-soft">Last updated 6 October 2026.</p>
 
       <Section title="In one paragraph">
@@ -137,7 +135,7 @@ export default function PrivacyPage() {
         Access, correction, erasure (above), portability, and the right to complain to the Data
         Protection Board of India or your local supervisory authority. You can exercise every one of
         them from your{" "}
-        <Link href={routes.account} className="text-felt hover:underline">
+        <Link href={routes.account} className="text-link hover:underline">
           account page
         </Link>{" "}
         or by writing to us; we answer within 30 days. Access to the content of a trip is something
@@ -161,7 +159,7 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-6">
-      <h2 className="display text-xl font-bold uppercase tracking-wide">{title}</h2>
+      <h2 className="display text-xl font-bold">{title}</h2>
       <div className="mt-1 text-sm leading-relaxed">{children}</div>
     </section>
   );
@@ -171,7 +169,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Contact() {
   if (!env.CONTACT_EMAIL) return <>the organiser of your trip</>;
   return (
-    <a href={`mailto:${env.CONTACT_EMAIL}`} className="text-felt hover:underline">
+    <a href={`mailto:${env.CONTACT_EMAIL}`} className="text-link hover:underline">
       {env.CONTACT_EMAIL}
     </a>
   );

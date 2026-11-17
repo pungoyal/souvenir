@@ -4,6 +4,7 @@ import { useState } from "react";
 import { fmtDate, timeAgo } from "@/lib/format";
 import { FX_SURCHARGE_BPS, type FxRate, fmtRate } from "@/lib/fx";
 import { CURRENCY_INFO, CURRENCY_SYMBOL, type Currency, fmtMoney, parseAmount } from "@/lib/split";
+import { myMoney } from "@/lib/today";
 import {
   type BillView,
   billComments,
@@ -28,9 +29,11 @@ import { useAct } from "./use-act";
 export function Bills({
   currencies,
   rate = null,
+  note,
 }: {
   currencies: readonly Currency[];
   rate?: FxRate | null;
+  note: string;
 }) {
   const { me, lingo, t, roster: members, people, state, append } = useOpenTrip();
   const meId = me.id;
@@ -45,6 +48,7 @@ export function Bills({
       ? tripSettlement(state, people, rate.to, rate)
       : null;
   const comments = billComments(state, people);
+  const mine = myMoney(state, people, meId, currencies, rate);
   const who = (m: Person, you = "You") => (m.id === meId ? you : firstName(m));
 
   /** "X paid Y back" — a settlement bill, so replay cancels the debt. */
@@ -97,111 +101,47 @@ export function Bills({
     transfer: { fromId: string; toId: string; from: Person; to: Person; amountC: number },
     currency: Currency,
   ) => (
-    <li key={`${transfer.fromId}-${transfer.toId}`} className="flex items-center gap-2 text-sm">
-      <span className="truncate">
-        <span className="font-semibold">{who(transfer.from)}</span> → {who(transfer.to, "you")}
+    <li key={`${transfer.fromId}-${transfer.toId}`} className="flex items-center gap-3 px-4 py-2.5">
+      <Avatar member={transfer.from} size={36} />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-semibold">
+          {who(transfer.from)} {transfer.from.id === meId ? "pay" : "pays"}{" "}
+          {who(transfer.to, "you")}
+        </span>
+        <span className="mono block text-sm text-soft">{fmtMoney(currency, transfer.amountC)}</span>
       </span>
-      <span className="mono font-bold">{fmtMoney(currency, transfer.amountC)}</span>
       <button
         type="button"
         disabled={pending}
         onClick={() => recordTransfer(transfer.from, transfer.to, currency, transfer.amountC)}
-        className="btn btn-line ml-auto px-2 py-1 text-xs"
+        className="btn btn-line shrink-0 px-3 text-sm"
       >
-        Record payment
+        Mark paid
       </button>
     </li>
   );
 
   return (
-    <div className="mt-5 grid gap-5">
-      {settlement && bills.length > 0 && (
-        <section className="card p-4">
-          <h2 className="display text-lg font-bold uppercase tracking-wide text-soft">
-            {CURRENCY_SYMBOL[settlement.home]} {settlement.home.toUpperCase()} · the whole trip
-          </h2>
-          {settlement.nets.length === 0 ? (
-            <p className="mt-2 text-sm text-soft">{t.allSquare}</p>
-          ) : (
-            <ul className="mt-2 grid gap-1.5">
-              {settlement.nets.map((n) => (
-                <li key={n.member.id} className="text-sm">
-                  <div className="flex items-center gap-2">
-                    <Avatar member={n.member} size={22} />
-                    <span className="truncate">{n.member.id === meId ? "You" : n.member.name}</span>
-                    <span className={`mono ml-auto font-bold ${tone(n.netC)}`}>
-                      {fmtMoney(settlement.home, n.netC, { sign: true })}
-                    </span>
-                  </div>
-                  {n.foreignC !== 0 && (
-                    <p className="mono pl-[30px] text-xs text-soft">
-                      {n.homeC !== 0 &&
-                        `${fmtMoney(settlement.home, n.homeC, { sign: true })} at home · `}
-                      {fmtMoney(settlement.rate.from, n.foreignC, { sign: true })} there ≈{" "}
-                      {fmtMoney(settlement.home, n.foreignHomeC, { sign: true })}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          {settlement.plan.length > 0 && (
-            <div className="mt-3 border-t border-line pt-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-soft">Settle up</p>
-              <ul className="mt-1.5 grid gap-1.5">
-                {settlement.plan.map((transfer) => transferRow(transfer, settlement.home))}
-              </ul>
+    <div className="mt-4 grid gap-5">
+      <section className="flex flex-col gap-4 rounded-3xl bg-night p-5 text-white">
+        {mine.length === 0 ? (
+          <div>
+            <p className="display text-[28px] font-bold leading-tight">You're square.</p>
+            <p className="mt-1 text-sm text-night-soft">
+              {bills.length === 0 ? t.billsEmptySub : "Nothing for you to pay or collect."}
+            </p>
+          </div>
+        ) : (
+          mine.map((m) => (
+            <div key={m.currency}>
+              <p className="text-sm text-night-soft">{m.netC > 0 ? "You're owed" : "You owe"}</p>
+              <p className="display text-[40px] font-bold leading-none">
+                {fmtMoney(m.currency, Math.abs(m.netC))}
+              </p>
             </div>
-          )}
-          <p className="mt-3 text-xs text-soft">
-            {fmtRate(settlement.rate)} on {fmtDate(settlement.rate.asOf)}, plus a{" "}
-            {FX_SURCHARGE_BPS / 100}% forex charge on everything spent in{" "}
-            {CURRENCY_INFO[settlement.rate.from].name}. Paying in{" "}
-            {CURRENCY_INFO[settlement.rate.from].name} instead? Record it below and the balance
-            follows.
-          </p>
-        </section>
-      )}
-
-      {balances.map(
-        (b) =>
-          !settlement &&
-          (b.nets.length > 0 || bills.some((x) => x.currency === b.currency)) && (
-            <section key={b.currency} className="card p-4">
-              <h2 className="display text-lg font-bold uppercase tracking-wide text-soft">
-                {CURRENCY_SYMBOL[b.currency]} {b.currency.toUpperCase()}
-              </h2>
-              {b.nets.length === 0 ? (
-                <p className="mt-2 text-sm text-soft">{t.allSquare}</p>
-              ) : (
-                <>
-                  <ul className="mt-2 grid gap-1.5">
-                    {b.nets.map(({ member, netC }) => (
-                      <li key={member.id} className="flex items-center gap-2 text-sm">
-                        <Avatar member={member} size={22} />
-                        <span className="truncate">{member.id === meId ? "You" : member.name}</span>
-                        <span className={`mono ml-auto font-bold ${tone(netC)}`}>
-                          {fmtMoney(b.currency, netC, { sign: true })}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-3 border-t border-line pt-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-soft">
-                      Settle up
-                    </p>
-                    <ul className="mt-1.5 grid gap-1.5">
-                      {b.plan.map((transfer) => transferRow(transfer, b.currency))}
-                    </ul>
-                  </div>
-                </>
-              )}
-            </section>
-          ),
-      )}
-
-      <div className="flex flex-wrap items-center gap-2">
-        {!adding && (
+          ))
+        )}
+        <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => {
@@ -209,24 +149,22 @@ export function Bills({
               setPaying(false);
               setEditingId(null);
             }}
-            className="btn btn-felt display px-4 py-2 text-base font-bold uppercase"
+            className="btn btn-sun h-12"
           >
             Add a bill
           </button>
-        )}
-        {!paying && (
           <button
             type="button"
             onClick={() => {
               setPaying(true);
               setAdding(false);
             }}
-            className="btn btn-line px-3 py-2 text-sm"
+            className="btn h-12 border-[1.5px] border-night-line text-white"
           >
-            Record a payment
+            Someone paid
           </button>
-        )}
-      </div>
+        </div>
+      </section>
 
       {adding && <BillForm currencies={currencies} onDone={() => setAdding(false)} />}
       {paying && (
@@ -243,14 +181,116 @@ export function Bills({
         />
       )}
 
+      {settlement && settlement.plan.length > 0 && (
+        <section>
+          <h2 className="display text-xl font-bold">Settle up</h2>
+          <ul className="card list mt-2">
+            {mineFirst(settlement.plan, meId).map((transfer) =>
+              transferRow(transfer, settlement.home),
+            )}
+          </ul>
+        </section>
+      )}
+
+      {!settlement &&
+        balances.map(
+          (b) =>
+            b.plan.length > 0 && (
+              <section key={b.currency}>
+                <h2 className="display text-xl font-bold">
+                  Settle up{balances.length > 1 && ` · ${CURRENCY_INFO[b.currency].name}`}
+                </h2>
+                <ul className="card list mt-2">
+                  {mineFirst(b.plan, meId).map((transfer) => transferRow(transfer, b.currency))}
+                </ul>
+              </section>
+            ),
+        )}
+
+      {bills.length > 0 && (
+        <details className="card group px-4">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 font-semibold [&::-webkit-details-marker]:hidden">
+            How this was worked out
+            <span aria-hidden className="text-soft group-open:rotate-180">
+              ⌄
+            </span>
+          </summary>
+          <div className="border-t border-line py-3">
+            <p className="text-sm text-soft">{note}</p>
+            {settlement ? (
+              <>
+                {settlement.nets.length === 0 ? (
+                  <p className="mt-2 text-sm text-soft">{t.allSquare}</p>
+                ) : (
+                  <ul className="mt-3 grid gap-2">
+                    {settlement.nets.map((n) => (
+                      <li key={n.member.id} className="text-sm">
+                        <div className="flex items-center gap-2">
+                          <Avatar member={n.member} size={22} />
+                          <span className="truncate">
+                            {n.member.id === meId ? "You" : n.member.name}
+                          </span>
+                          <span className={`mono ml-auto font-bold ${tone(n.netC)}`}>
+                            {fmtMoney(settlement.home, n.netC, { sign: true })}
+                          </span>
+                        </div>
+                        {n.foreignC !== 0 && (
+                          <p className="mono pl-[30px] text-xs text-soft">
+                            {n.homeC !== 0 &&
+                              `${fmtMoney(settlement.home, n.homeC, { sign: true })} at home · `}
+                            {fmtMoney(settlement.rate.from, n.foreignC, { sign: true })} there ≈{" "}
+                            {fmtMoney(settlement.home, n.foreignHomeC, { sign: true })}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <p className="mt-3 text-xs text-soft">
+                  {fmtRate(settlement.rate)} on {fmtDate(settlement.rate.asOf)}, plus a{" "}
+                  {FX_SURCHARGE_BPS / 100}% forex charge on everything spent in{" "}
+                  {CURRENCY_INFO[settlement.rate.from].name}. Paying in{" "}
+                  {CURRENCY_INFO[settlement.rate.from].name} instead? Record it below and the
+                  balance follows.
+                </p>
+              </>
+            ) : (
+              balances.map((b) => (
+                <div key={b.currency} className="mt-3">
+                  <p className="eyebrow">
+                    {CURRENCY_SYMBOL[b.currency]} {CURRENCY_INFO[b.currency].name}
+                  </p>
+                  {b.nets.length === 0 ? (
+                    <p className="mt-1 text-sm text-soft">{t.allSquare}</p>
+                  ) : (
+                    <ul className="mt-2 grid gap-2">
+                      {b.nets.map(({ member, netC }) => (
+                        <li key={member.id} className="flex items-center gap-2 text-sm">
+                          <Avatar member={member} size={24} />
+                          <span className="truncate">
+                            {member.id === meId ? "You" : member.name}
+                          </span>
+                          <span className={`mono ml-auto font-bold ${tone(netC)}`}>
+                            {fmtMoney(b.currency, netC, { sign: true })}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </details>
+      )}
+
       {bills.length === 0 ? (
-        <EmptyState title={t.billsEmptyTitle} sub={t.billsEmptySub} />
+        <EmptyState title={t.billsEmptyTitle} />
       ) : (
         [...byDate].map(([onDate, dayBills]) => (
           <section key={onDate}>
-            <h2 className="display text-lg font-bold uppercase tracking-wide text-soft">
-              {fmtDate(onDate)}
-            </h2>
+            <h2 className="display text-xl font-bold">{fmtDate(onDate)}</h2>
             <ul className="mt-2 card list">
               {dayBills.map((bill) =>
                 editingId === bill.id ? (
@@ -289,7 +329,8 @@ export function Bills({
                       </div>
                       {(comments[bill.id]?.length ?? 0) > 0 && (
                         <span className="whitespace-nowrap text-xs text-soft">
-                          💬 {comments[bill.id].length}
+                          {comments[bill.id].length} comment
+                          {comments[bill.id].length === 1 ? "" : "s"}
                         </span>
                       )}
                       <span className="mono font-bold">{fmtMoney(bill.currency, bill.totalC)}</span>
@@ -339,9 +380,7 @@ export function Bills({
                           </button>
                         </div>
                         <div className="mt-3 border-t border-dashed border-line pt-3">
-                          <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-                            {t.commentsHeading}
-                          </p>
+                          <p className="eyebrow">{t.commentsHeading}</p>
                           <div className="mt-2">
                             <CommentsSection
                               comments={comments[bill.id] ?? []}
@@ -406,7 +445,7 @@ function PaymentForm({
 
   const amountC = parseAmount(amountText);
   const select =
-    "rounded-md border border-line bg-surface px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-felt";
+    "rounded-md border border-line bg-surface px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ink";
   const memberSelect = (value: string, onChange: (id: string) => void, label: string) => (
     <select
       value={value}
@@ -424,9 +463,7 @@ function PaymentForm({
 
   return (
     <div className="card p-4">
-      <h3 className="display text-lg font-bold uppercase tracking-wide text-soft">
-        Record a payment
-      </h3>
+      <h3 className="display text-xl font-bold">Record a payment</h3>
       <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
         {memberSelect(payerId, setPayerId, "Who paid")}
         <span className="text-soft">paid</span>
@@ -440,7 +477,7 @@ function PaymentForm({
                 onClick={() => setCurrency(c)}
                 aria-pressed={currency === c}
                 className={`px-2.5 py-1.5 text-sm font-bold ${
-                  currency === c ? "bg-felt text-white" : "bg-surface text-soft hover:text-ink"
+                  currency === c ? "bg-ink text-paper" : "bg-surface text-soft hover:text-ink"
                 }`}
               >
                 {CURRENCY_SYMBOL[c]}
@@ -454,7 +491,7 @@ function PaymentForm({
           inputMode="decimal"
           placeholder="0"
           aria-label="Amount paid back"
-          className="mono w-28 rounded-md border border-line bg-surface px-2 py-1.5 font-bold focus:outline-none focus:ring-2 focus:ring-felt"
+          className="mono w-28 rounded-md border border-line bg-surface px-2 py-1.5 font-bold focus:outline-none focus:ring-2 focus:ring-ink"
         />
         <input
           type="date"
@@ -474,7 +511,7 @@ function PaymentForm({
             const receiver = members.find((m) => m.id === receiverId);
             if (payer && receiver && amountC) onRecord(payer, receiver, currency, amountC, onDate);
           }}
-          className="btn btn-felt display px-4 py-2 text-base font-bold uppercase"
+          className="btn btn-ink display px-4 py-2 text-base font-bold"
         >
           Record
         </button>
@@ -489,4 +526,9 @@ function PaymentForm({
       </div>
     </div>
   );
+}
+
+function mineFirst<T extends { fromId: string; toId: string }>(plan: T[], meId: string): T[] {
+  const involves = (x: T) => x.fromId === meId || x.toId === meId;
+  return [...plan.filter(involves), ...plan.filter((x) => !involves(x))];
 }

@@ -19,7 +19,7 @@ export function Avatar({ member, size = 32 }: { member: AvatarMember; size?: num
   const [from, to] = avatarTint(member.id);
   return (
     <span
-      className="display inline-flex shrink-0 items-center justify-center rounded-full font-bold uppercase text-white"
+      className="display inline-flex shrink-0 items-center justify-center rounded-full font-bold text-white"
       style={{
         width: size,
         height: size,

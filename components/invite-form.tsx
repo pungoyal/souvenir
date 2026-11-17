@@ -36,7 +36,7 @@ export function InviteForm() {
           type="button"
           disabled={pending || !label.trim()}
           onClick={mint}
-          className="btn btn-felt px-4 py-2 text-sm"
+          className="btn btn-ink px-4 py-2 text-sm"
         >
           {pending ? "Minting…" : "Mint link"}
         </button>
@@ -45,7 +45,7 @@ export function InviteForm() {
       {error && <p className="mt-2 text-sm font-semibold text-no-deep">{error}</p>}
 
       {link && (
-        <div className="mt-3 rounded-md border border-gold/40 bg-gold/10 px-3 py-2">
+        <div className="mt-3 rounded-md border border-sun bg-sun-tint px-3 py-2">
           <p className="text-sm font-semibold">
             Send this to {link.who}. It works once, for seven days.
           </p>

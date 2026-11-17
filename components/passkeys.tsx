@@ -232,10 +232,7 @@ export function AddPasskeyButton({
             return res;
           })
         }
-        className={
-          className ??
-          "rounded-md bg-felt px-3 py-2 text-sm font-semibold text-white hover:bg-felt-deep disabled:opacity-40"
-        }
+        className={className ?? "btn btn-ink px-4 text-sm"}
       >
         {pending ? "Waiting for your device…" : label}
       </button>
@@ -285,7 +282,7 @@ function KeyBackup({ passkey, rpId }: { passkey: PasskeySummary; rpId: string })
               return { ok: true };
             })
           }
-          className="btn btn-link px-1 py-0 text-xs text-felt"
+          className="btn btn-link px-1 py-0 text-xs text-link"
         >
           {pending ? "Waiting for your device…" : "Back up keys here"}
         </button>

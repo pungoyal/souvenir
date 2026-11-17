@@ -39,7 +39,7 @@ export function ShareRecap({
       <button
         type="button"
         onClick={share}
-        className="btn btn-felt display px-4 py-2 text-lg font-bold uppercase"
+        className="btn btn-ink display px-4 py-2 text-lg font-bold"
       >
         Share the table
       </button>

@@ -26,7 +26,7 @@ export function RecoverForm({ code, name }: { code: string; name: string }) {
         type="button"
         onClick={recover}
         disabled={pending}
-        className="btn btn-felt block w-full py-3"
+        className="btn btn-ink block w-full py-3"
       >
         {pending ? "Waiting for your device…" : `Add a new passkey for ${name}`}
       </button>

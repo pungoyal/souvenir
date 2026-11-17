@@ -23,8 +23,8 @@ import { useKeyring, useTripKey } from "./keyring";
 import { useAct } from "./use-act";
 
 const field =
-  "mt-1 w-full rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-felt";
-const label = "block text-[11px] font-semibold uppercase tracking-wider text-soft";
+  "mt-1 w-full rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ink";
+const label = "block eyebrow";
 
 export interface TripFormInitial {
   id: string;
@@ -152,8 +152,8 @@ export function TripForm({
                   aria-pressed={destination === d.code}
                   className={`flex items-center gap-2 rounded-md border px-2.5 py-2 text-left text-sm ${
                     destination === d.code
-                      ? "border-felt bg-felt-tint font-semibold"
-                      : "border-line bg-surface hover:border-felt"
+                      ? "border-ink bg-sun-tint font-semibold"
+                      : "border-line bg-surface hover:border-ink"
                   }`}
                 >
                   <span aria-hidden>{d.flag}</span>
@@ -255,7 +255,7 @@ export function TripForm({
         type="button"
         onClick={submit}
         disabled={pending || name.trim().length < MIN_TRIP_NAME}
-        className="btn btn-felt display block w-full py-3 text-lg font-bold uppercase"
+        className="btn btn-ink display block w-full py-3 text-lg font-bold"
       >
         {pending ? "One moment…" : initial ? "Save" : "Open the trip"}
       </button>

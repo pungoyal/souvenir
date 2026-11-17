@@ -32,7 +32,7 @@ export default function ErrorPage({
   return (
     <div className="card mx-auto max-w-md p-6">
       <p className="eyebrow">{stale ? "New version" : "Something went wrong"}</p>
-      <h1 className="display text-3xl font-extrabold uppercase tracking-wide">
+      <h1 className="display text-3xl font-bold">
         {stale ? "Souvenir updated" : "This page broke"}
       </h1>
       <p className="mt-2 text-sm text-soft">
@@ -45,7 +45,7 @@ export default function ErrorPage({
         <button
           type="button"
           onClick={stale ? () => window.location.reload() : retry}
-          className="btn btn-felt px-4 py-2 text-sm"
+          className="btn btn-ink px-4 py-2 text-sm"
         >
           {stale ? "Reload" : "Try again"}
         </button>

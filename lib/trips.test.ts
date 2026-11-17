@@ -7,6 +7,7 @@ import {
   isoDay,
   placeOf,
   TripError,
+  tripClock,
   tripConfig,
   tripCurrencies,
   tripName,
@@ -107,5 +108,47 @@ describe("helpers", () => {
     expect(isoDay(new Date("2026-11-06T20:30:00Z"), "Asia/Kolkata")).toBe("2026-11-07");
     expect(isoDay(new Date("2026-11-06T20:30:00Z"), "UTC")).toBe("2026-11-06");
     expect(isoDay(new Date("2026-11-06T20:30:00Z"), "Not/AZone")).toBe("2026-11-06");
+  });
+});
+
+describe("tripClock", () => {
+  const trip = {
+    destination: "TH",
+    homeCurrency: "inr",
+    foreignCurrency: "thb",
+    startsOn: "2026-11-06",
+    endsOn: "2026-11-10",
+  };
+
+  it("counts down to the first day", () => {
+    expect(tripClock(trip, "2026-10-25")).toEqual({
+      phase: "before",
+      day: null,
+      length: 5,
+      toGo: 12,
+    });
+  });
+
+  it("numbers the days from one, through the last", () => {
+    expect(tripClock(trip, "2026-11-06")).toMatchObject({ phase: "during", day: 1, toGo: null });
+    expect(tripClock(trip, "2026-11-10")).toMatchObject({ phase: "during", day: 5, length: 5 });
+  });
+
+  it("says nothing about days once home, or with no dates", () => {
+    expect(tripClock(trip, "2026-11-11")).toMatchObject({ phase: "after", day: null });
+    expect(tripClock({ ...trip, startsOn: null, endsOn: null }, "2026-11-07")).toEqual({
+      phase: "undated",
+      day: null,
+      length: null,
+      toGo: null,
+    });
+  });
+
+  it("has no length to give with only one date", () => {
+    expect(tripClock({ ...trip, endsOn: null }, "2026-11-08")).toMatchObject({
+      phase: "during",
+      day: 3,
+      length: null,
+    });
   });
 });

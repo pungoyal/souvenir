@@ -23,17 +23,11 @@ export default async function TripsPage({
     <div className="mx-auto max-w-2xl">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="eyebrow">Your trips</p>
-          <h1 className="display text-4xl font-extrabold uppercase tracking-wide">
-            {t.tripsTitle}
-          </h1>
+          <h1 className="display text-[28px] font-bold leading-tight">{t.tripsTitle}</h1>
           <p className="mt-1 text-sm text-soft">{t.tripsSub}</p>
         </div>
-        <Link
-          href={routes.newTrip}
-          className="btn btn-felt display px-4 py-2 text-lg font-bold uppercase"
-        >
-          + New trip
+        <Link href={routes.newTrip} className="btn btn-ink px-4">
+          New trip
         </Link>
       </div>
 

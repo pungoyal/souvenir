@@ -13,7 +13,7 @@ function effectiveTheme(): "light" | "dark" {
 /**
  * Flips data-theme on <html>; the inline script in the root layout applies
  * the stored choice before first paint, and CSS (.light-only / .dark-only)
- * picks the icon, so no client state or hydration mismatch is involved.
+ * picks the label, so no client state or hydration mismatch is involved.
  */
 export function ThemeToggle() {
   // Dev only: React Strict Mode's remount resets <html> to its JSX
@@ -35,10 +35,10 @@ export function ThemeToggle() {
       onClick={toggle}
       title="Switch theme"
       aria-label="Switch between light and dark"
-      className="rounded px-2 py-1 text-white/60 hover:bg-white/10 hover:text-white"
+      className="hover:underline"
     >
-      <span className="light-only">☾</span>
-      <span className="dark-only">☀</span>
+      <span className="light-only">Dark theme</span>
+      <span className="dark-only">Light theme</span>
     </button>
   );
 }

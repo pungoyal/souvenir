@@ -9,11 +9,11 @@ export default async function PredictionPage({
   params: Promise<{ tripId: string; id: string }>;
 }) {
   const { tripId, id } = await params;
-  const { trip } = await requireTrip(tripId);
+  await requireTrip(tripId);
   const published = await publishedCards(tripId);
   return (
     <Sealed>
-      <MarketPage marketId={id} maxStakePies={trip.maxStakePies} published={published.has(id)} />
+      <MarketPage marketId={id} published={published.has(id)} />
     </Sealed>
   );
 }

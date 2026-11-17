@@ -12,7 +12,7 @@ export default function TermsPage() {
   return (
     <article className="prose mx-auto max-w-2xl">
       <p className="eyebrow">Terms of use</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">The terms</h1>
+      <h1 className="display text-[28px] font-bold leading-tight">The terms</h1>
       <p className="text-sm text-soft">Last updated 22 August 2026.</p>
 
       <Section title="1. What Souvenir is">
@@ -71,7 +71,7 @@ export default function TermsPage() {
         passkeys, key backups, and seats are removed immediately. Entries in a trip's append-only
         ledger, bills, and comments remain under a "Departed member" label, because removing them
         would change every other member's numbers. See the{" "}
-        <Link href={routes.privacy} className="text-felt hover:underline">
+        <Link href={routes.privacy} className="text-link hover:underline">
           privacy note
         </Link>
         .
@@ -100,7 +100,7 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-6">
-      <h2 className="display text-xl font-bold uppercase tracking-wide">{title}</h2>
+      <h2 className="display text-xl font-bold">{title}</h2>
       <p className="mt-1 text-sm leading-relaxed">{children}</p>
     </section>
   );

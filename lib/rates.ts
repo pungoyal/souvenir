@@ -39,3 +39,8 @@ export async function latestRate(from: Currency, to: Currency): Promise<FxRate |
     return stale;
   }
 }
+
+/** `currencies` as `tripCurrencies` gives them: foreign first, home last; one means no rate. */
+export async function tripRate(currencies: readonly Currency[]): Promise<FxRate | null> {
+  return currencies.length === 2 ? latestRate(currencies[0], currencies[1]) : null;
+}

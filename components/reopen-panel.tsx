@@ -37,7 +37,7 @@ export function ReopenPanel({ marketId }: { marketId: string }) {
             type="button"
             disabled={pending}
             onClick={reopen}
-            className="btn btn-felt px-3 py-1.5 text-xs"
+            className="btn btn-ink px-3 py-1.5 text-xs"
           >
             {pending ? "Reopening…" : "Yes, reopen it"}
           </button>

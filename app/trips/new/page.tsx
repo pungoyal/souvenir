@@ -8,7 +8,7 @@ export default async function NewTripPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <p className="eyebrow">New trip</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">{t.newTripTitle}</h1>
+      <h1 className="display text-[28px] font-bold leading-tight">{t.newTripTitle}</h1>
       <p className="mt-1 text-sm text-soft">{t.newTripSub}</p>
       <div className="mt-5">
         <TripForm creatorId={me.id} />

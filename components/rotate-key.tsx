@@ -48,8 +48,8 @@ export function RotateKey({ since }: { since: Date | null }) {
 
   return (
     <section className="mt-8">
-      <h2 className="display text-xl font-bold uppercase tracking-wide">The key</h2>
-      <div className="mt-2 card border-gold/40 bg-gold/10 px-4 py-3 text-sm">
+      <h2 className="display text-xl font-bold">The key</h2>
+      <div className="mt-2 card border-sun bg-sun-tint px-4 py-3 text-sm">
         <p>
           Somebody left on {fmtDate(since)} and still holds the key. Rotating gives everyone at the
           table a new one; what was written until now stays readable to them, nothing after.
@@ -65,7 +65,7 @@ export function RotateKey({ since }: { since: Date | null }) {
               type="button"
               disabled={pending}
               onClick={rotate}
-              className="btn btn-felt px-3 py-1.5 text-sm"
+              className="btn btn-ink px-3 py-1.5 text-sm"
             >
               Rotate the key
             </button>

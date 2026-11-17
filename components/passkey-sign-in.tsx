@@ -24,7 +24,7 @@ export function PasskeySignIn({ next }: { next?: string }) {
         type="button"
         onClick={signIn}
         disabled={pending}
-        className="btn btn-felt block w-full py-3"
+        className="btn btn-ink block w-full py-3"
       >
         {pending ? "Waiting for your device…" : "Sign in with a passkey"}
       </button>

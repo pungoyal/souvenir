@@ -8,21 +8,20 @@ import { routes } from "@/lib/routes";
  */
 export function PasskeyNudge({ needsPicture }: { memberId?: string; needsPicture: boolean }) {
   return (
-    <div className="mx-auto mt-4 max-w-5xl px-4">
-      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-gold/40 bg-gold/10 px-4 py-3">
+    <div className="mx-auto mt-4 max-w-2xl px-5">
+      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-sun bg-sun-tint px-4 py-3">
         <div className="min-w-64 flex-1">
           <p className="font-semibold">Add a passkey so this phone can sign you in.</p>
-          <p className="text-sm text-soft">
-            One tap with Face ID, a fingerprint, or your phone. No password, no email, nothing about
-            you stored.
+          <p className="text-[13px] text-soft">
+            One tap with Face ID or a fingerprint. No password, nothing about you stored.
             {needsPicture && (
               <>
                 {" "}
                 While you're at it,{" "}
-                <Link href={routes.account} className="text-felt hover:underline">
+                <Link href={routes.account} className="text-link hover:underline">
                   upload a picture
                 </Link>{" "}
-                — your Google photo is gone, and initials are standing in.
+                : initials are standing in for your face.
               </>
             )}
           </p>

@@ -138,6 +138,13 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   guess one. UI vocabulary is *prediction / call / resolve /
   pool / stamp / points*; never *bet, wager, stake (as money), odds, payout,
   cash*. Code keeps `market/stake/settle*/amountC`. Don't half-rename either.
+- **The trip opens on Today.** Bottom tabs (`components/trip-nav.tsx`): Today
+  (`/t/[id]`), Calls (`/calls?tab=`), the interpreter, Money (`/bills`),
+  Group (`/members`). Today is `lib/today.ts` (`needsYou`, `myMoney`,
+  `standing`) plus `lib/trips` `tripClock`; its greeting is the destination's
+  `Speaker.greeting`. There is no inbox tab: Activity (`/inbox`) is the full
+  list and the only thing that moves the cursor. Colours are tokens in
+  `app/globals.css`; never hard-code one a token names.
 - Inbox and the For-you rail are derived on the phone from the replayed trip
   (`lib/views` `inbox`/`listMarkets`). Stored state is only
   `memberships.inbox_seen_at`; which predictions a phone has opened is that

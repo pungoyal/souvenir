@@ -37,7 +37,7 @@ export function NewMarketForm({
       setError(null);
       const res = await polishAction(question, criteria, feedback);
       if (!res.ok || !res.draft) {
-        setError(res.error ?? "The magic fizzled. Try again.");
+        setError(res.error ?? "Couldn't rewrite it. Try again.");
       } else {
         setSuggestion(res.draft);
         setFeedback("");
@@ -64,46 +64,42 @@ export function NewMarketForm({
   return (
     <div className="space-y-4">
       <label className="block">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-          The prediction
-        </span>
+        <span className="eyebrow">The question</span>
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           maxLength={200}
           placeholder={t.questionPlaceholder}
-          className="mt-1 w-full rounded-md border border-line bg-surface px-3 py-2.5 text-lg!"
+          className="field mt-1.5 font-semibold"
         />
       </label>
 
       <label className="block">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-          How you'll resolve it
-        </span>
+        <span className="eyebrow">How you'll decide it</span>
         <textarea
           value={criteria}
           onChange={(e) => setCriteria(e.target.value)}
           maxLength={2000}
           rows={4}
           placeholder={t.criteriaPlaceholder}
-          className="mt-1 w-full rounded-md border border-line bg-surface px-3 py-2.5 text-sm"
+          className="field mt-1.5"
         />
       </label>
 
       {polishAvailable && (
-        <div className="rounded-lg border border-dashed border-felt/40 bg-felt-tint/40 p-4">
+        <div className="rounded-[20px] bg-sun-tint p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm">
-              <span className="font-semibold">✨ Sprinkle some AI magic?</span>{" "}
+              <span className="font-semibold">Want it tightened up?</span>{" "}
               <span className="text-soft">{t.magicPitch}</span>
             </p>
             <button
               type="button"
               disabled={busy}
               onClick={polish}
-              className="shrink-0 rounded-md border border-felt px-3 py-1.5 text-sm font-semibold text-felt hover:bg-felt hover:text-white disabled:opacity-40"
+              className="btn btn-line shrink-0 px-4 text-sm"
             >
-              {polishing ? "Working magic…" : suggestion ? "Try again" : "Work some magic"}
+              {polishing ? "Rewriting…" : suggestion ? "Try again" : "Suggest a rewrite"}
             </button>
           </div>
 
@@ -123,7 +119,7 @@ export function NewMarketForm({
                     setCriteria(suggestion.criteria);
                     setSuggestion(null);
                   }}
-                  className="btn btn-felt px-3 py-1.5 text-sm"
+                  className="btn btn-ink px-3 py-1.5 text-sm"
                 >
                   Use this version
                 </button>
@@ -139,7 +135,7 @@ export function NewMarketForm({
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   placeholder="Say what to change, then try again"
-                  className="min-w-0 flex-1 rounded-md border border-line bg-paper px-3 py-1.5 text-sm"
+                  className="field min-w-0 flex-1"
                 />
               </div>
             </div>
@@ -151,9 +147,9 @@ export function NewMarketForm({
         type="button"
         disabled={busy}
         onClick={publish}
-        className="btn btn-felt display w-full py-3 text-xl font-bold uppercase"
+        className="btn btn-ink h-14 w-full text-base"
       >
-        {publishing ? "Publishing…" : "Publish to the group"}
+        {publishing ? "Asking…" : "Ask the group"}
       </button>
 
       {error && <p className="text-sm font-semibold text-no-deep">{error}</p>}

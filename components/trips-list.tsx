@@ -9,6 +9,7 @@ import { routes } from "@/lib/routes";
 import { DESTINATIONS } from "@/lib/talk";
 import { tripPhase, tripToday } from "@/lib/trips";
 import { useKeyring } from "./keyring";
+import { Postmark } from "./postmark";
 
 export interface TripRow {
   trip: Trip;
@@ -48,18 +49,19 @@ export function TripsList({ trips, sealedName }: { trips: TripRow[]; sealedName:
         const phase = tripPhase(trip, tripToday(trip));
         return (
           <li key={trip.id}>
-            <Link
-              href={routes.trip(trip.id)}
-              className="card flex items-center gap-4 px-4 py-3 hover:border-felt"
-            >
-              <span className="text-3xl" aria-hidden>
-                {there?.flag ?? "✈️"}
-              </span>
+            <Link href={routes.trip(trip.id)} className="card flex items-center gap-4 p-4">
+              <Postmark
+                place={there?.place ?? trip.destination}
+                year={(trip.startsOn ?? tripToday(trip)).slice(0, 4)}
+                top={phase === "after" ? "Home" : phase === "during" ? "Now" : "Soon"}
+                size={64}
+                className="text-sun-deep"
+              />
               <span className="min-w-0 flex-1">
-                <span className="display block truncate text-2xl font-extrabold uppercase tracking-wide">
+                <span className="display block truncate text-xl font-bold">
                   {names[trip.id] ?? (status === "loading" ? "…" : sealedName)}
                 </span>
-                <span className="block text-xs text-soft">
+                <span className="block text-[13px] text-soft">
                   {there?.place ?? trip.destination}
                   {trip.startsOn && ` · ${fmtDate(trip.startsOn)}`}
                   {trip.endsOn && ` – ${fmtDate(trip.endsOn)}`}
@@ -70,7 +72,7 @@ export function TripsList({ trips, sealedName }: { trips: TripRow[]; sealedName:
                 <span className="block">
                   {memberCount} {memberCount === 1 ? "person" : "people"}
                 </span>
-                {role === "organiser" && <span className="block text-gold">organiser</span>}
+                {role === "organiser" && <span className="block">organiser</span>}
               </span>
             </Link>
           </li>

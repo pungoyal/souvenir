@@ -44,7 +44,7 @@ export default async function RecoverPage({ params }: { params: Promise<{ code: 
         <span className="font-semibold text-ink">{member.name}</span>
         's seat — their stamps, their bills, their word in the comments.
       </p>
-      <p className="mt-3 rounded-md bg-gold/10 px-3 py-2 text-left text-xs text-soft">
+      <p className="mt-3 rounded-md bg-sun-tint px-3 py-2 text-left text-xs text-soft">
         {mintedBy ? `${mintedBy.name} minted it` : "It was minted from the console"} · expires{" "}
         {timeUntil(row.expiresAt)}.
         <br />
