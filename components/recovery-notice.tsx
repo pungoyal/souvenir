@@ -23,7 +23,7 @@ export function RecoveryNotice({
   const { pending, error, act } = useRefreshingAct();
 
   return (
-    <div className="mx-auto mt-4 max-w-5xl px-4">
+    <div className="mx-auto mt-4 max-w-2xl px-5">
       <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-no/40 bg-no-tint px-4 py-3">
         <div className="min-w-64 flex-1">
           {live ? (
@@ -41,7 +41,7 @@ export function RecoveryNotice({
               <p className="text-sm text-soft">
                 It was used {usedAt ? timeAgo(usedAt) : "recently"}. If that was you on a new
                 device, all good. If not,{" "}
-                <Link href={routes.account} className="text-felt hover:underline">
+                <Link href={routes.account} className="text-link hover:underline">
                   remove that passkey
                 </Link>{" "}
                 and tell an organiser.

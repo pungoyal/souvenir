@@ -1,94 +1,100 @@
+"use client";
+
 import Link from "next/link";
 import { timeAgo } from "@/lib/format";
-import { lingoOf } from "@/lib/lingo";
-import { piesText } from "@/lib/pies";
+import { piesText, toCents } from "@/lib/pies";
 import { routes } from "@/lib/routes";
 import type { MarketView } from "@/lib/views";
-import { Avatar } from "./avatar";
-import { Pies } from "./pies";
+import { BetPanel } from "./bet-panel";
 import { PoolBar } from "./pool-bar";
-import { SideChip, StatusChip } from "./side-chip";
+import { Verdict } from "./side-chip";
+import { useTrip } from "./trip-store";
 import { tone } from "./ui";
 
+/**
+ * One prediction, wherever a list shows it. An open one is answered right here — the question,
+ * who is on which side, and the two buttons — so calling never needs a second page. A resolved
+ * one carries its verdict and what it did to you.
+ */
 export function MarketCard({
   view,
-  tripId,
   myProfitC,
-  lingo = "english",
+  maxStakePies,
 }: {
   view: MarketView;
-  tripId: string;
+  /** On a resolved card: what the verdict did to the viewer, if they were in. */
   myProfitC?: number;
-  lingo?: string;
+  maxStakePies: number;
 }) {
-  const t = lingoOf(lingo);
+  const { tripId, me, lingo, t } = useTrip();
   const { market, creator, participants } = view;
-  const social = [
-    view.upvotes > 0 && `👍 ${view.upvotes}`,
-    view.watchers > 0 && `👁 ${view.watchers}`,
-    view.commentCount > 0 && `💬 ${view.commentCount}`,
-  ].filter(Boolean);
-  const backers = (side: "yes" | "no") => (
-    <div className="flex -space-x-1.5">
-      {participants
-        .filter((p) => p.side === side)
-        .map((p) => (
-          <span
-            key={p.member.id}
-            className={`rounded-full ring-2 ${side === "yes" ? "ring-yes-tint" : "ring-no-tint"}`}
-            title={`${p.member.name}: ${piesText(p.stakeC)} on ${side.toUpperCase()}`}
-          >
-            <Avatar member={p.member} size={22} />
-          </span>
-        ))}
-    </div>
-  );
+  const href = routes.market(tripId, market.id);
+  const open = market.status === "open";
+  const mine = market.creatorId === me.id;
+  const asker = mine ? "You asked" : `${creator.name} asks`;
+  const talk =
+    view.commentCount > 0
+      ? `${view.commentCount} comment${view.commentCount === 1 ? "" : "s"}`
+      : null;
 
   return (
-    <Link
-      href={routes.market(tripId, market.id)}
-      className="block card p-4 shadow-[0_1px_0_rgba(33,38,31,0.06)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_-10px_rgba(20,48,36,0.4)]"
-    >
-      <div className="flex items-center justify-between gap-2">
-        <StatusChip status={market.status} />
-        <span className="text-xs text-soft">
-          by {creator.name} · {timeAgo(market.createdAt)}
+    <article className="card flex flex-col gap-3 p-4">
+      <div className="flex items-center justify-between gap-2 text-[13px] text-soft">
+        <span className="min-w-0 truncate">
+          {open
+            ? asker
+            : `${mine ? "You" : creator.name} ${market.status === "refunded" ? "voided" : "resolved"} it`}{" "}
+          · {timeAgo(open ? market.createdAt : (market.resolvedAt ?? market.createdAt))}
         </span>
+        {market.status !== "open" && <Verdict status={market.status} />}
       </div>
 
-      <h3 className="display mt-2 break-words text-2xl font-bold leading-tight">
+      <Link href={href} className="display break-words text-lg font-semibold leading-tight">
         {market.question}
-      </h3>
+      </Link>
 
-      {social.length > 0 && <p className="mono mt-2 text-xs text-soft">{social.join(" · ")}</p>}
-
-      <div className="mt-3">
-        <PoolBar yesPoolC={view.yesPoolC} noPoolC={view.noPoolC} lingo={lingo} />
-      </div>
-
-      {participants.length > 0 && (
-        <div className="mt-2 flex items-center justify-between">
-          {backers("yes")}
-          {backers("no")}
-        </div>
+      {(open || view.yesPoolC + view.noPoolC > 0) && (
+        <PoolBar
+          yesPoolC={view.yesPoolC}
+          noPoolC={view.noPoolC}
+          participants={participants}
+          meId={me.id}
+          lingo={lingo}
+        />
       )}
 
-      {view.mySide && market.status === "open" && (
-        <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold">
-          You:{" "}
-          <span className="mono">
-            <Pies c={view.myStakeC} />
-          </span>{" "}
-          on <SideChip side={view.mySide} small />
-        </p>
+      {open && (
+        <BetPanel
+          marketId={market.id}
+          mySide={view.mySide}
+          myStakeC={view.myStakeC}
+          maxStakeC={toCents(maxStakePies)}
+          detailHref={href}
+        />
       )}
-      {market.status !== "open" && myProfitC !== undefined && (
-        <p className={`mono mt-2 text-sm font-bold ${tone(myProfitC)}`}>
+
+      {open && mine && view.yesPoolC + view.noPoolC > 0 && (
+        <Link href={`${href}#resolve`} className="btn btn-line text-sm">
+          Yours to resolve
+        </Link>
+      )}
+
+      {!open && myProfitC !== undefined && (
+        <p className={`mono text-sm font-bold ${tone(myProfitC)}`}>
           {myProfitC === 0
             ? t.brokeEven
             : (myProfitC > 0 ? t.youWon : t.youLost)(piesText(Math.abs(myProfitC)))}
         </p>
       )}
-    </Link>
+
+      {talk && (
+        <Link
+          href={`${href}#talk`}
+          className="-my-2 flex min-h-11 items-center text-[13px] text-soft"
+        >
+          {talk}
+        </Link>
+      )}
+    </article>
   );
 }

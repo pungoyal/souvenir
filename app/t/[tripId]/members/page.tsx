@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { GroupLink } from "@/components/group-link";
 import { InviteForm } from "@/components/invite-form";
 import { Leaderboard } from "@/components/leaderboard";
@@ -18,7 +19,9 @@ import { env } from "@/lib/env";
 import { fmtDate, timeAgo, timeUntil } from "@/lib/format";
 import { inviteUrl, partitionInvites } from "@/lib/invites";
 import { lingoOf } from "@/lib/lingo";
+import { routes } from "@/lib/routes";
 import { requireTrip } from "@/lib/session";
+import { tripPhase, tripToday } from "@/lib/trips";
 
 /**
  * The group and the leaderboard. The table is sealed and comes from the phone; the invite,
@@ -31,6 +34,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
   const { me } = ctx;
   const t = lingoOf(me.lingo);
   const canInvite = isOrganiser(ctx);
+  const ended = tripPhase(ctx.trip, tripToday(ctx.trip)) === "after";
 
   const [roster, invites, passkeys, recoveries, rekeys] = await Promise.all([
     membersOf(tripId),
@@ -43,16 +47,41 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
   const nameById = new Map(roster.map((m) => [m.id, m.name]));
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <p className="eyebrow">The table</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">{t.membersTitle}</h1>
-      <p className="mt-1 text-sm text-soft">{t.membersSub}</p>
-      <p className="mt-1 text-xs text-soft">{t.sealedNote}</p>
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="display text-[28px] font-bold">{t.membersTitle}</h1>
+        {canInvite && (
+          <a href="#invite" className="btn btn-ink px-4">
+            Invite
+          </a>
+        )}
+      </div>
 
       <Sealed>
         <Leaderboard minResolved={env.RANKED_MIN_RESOLVED} passkeys={[...passkeys]} />
         <RotateKey since={ctx.trip.keyStaleSince} />
       </Sealed>
+
+      <nav aria-label="More about this trip" className="card list mt-5 overflow-hidden">
+        <More
+          href={routes.recap(tripId)}
+          title={ended ? "The recap" : "Recap so far"}
+          sub="Rivalries, biggest swings, and a card for the group chat."
+        />
+        <More href={routes.inbox(tripId)} title="Activity" sub="Everything that has happened." />
+        <More
+          href={routes.privacy}
+          title={`Private to the ${roster.length} of you`}
+          sub={t.sealedNote}
+        />
+        {canInvite && (
+          <More
+            href={routes.settings(tripId)}
+            title="Trip settings"
+            sub="Name, dates, the cap on a call."
+          />
+        )}
+      </nav>
 
       {rekeys.length > 0 && (
         <Section
@@ -85,11 +114,11 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
           note="A recovery link puts a new passkey on somebody's seat, so whoever opens it is them. Nothing stops an organiser minting one — what stops it going unnoticed is this list, which everybody can read. If one names you and you didn't ask for it, shut it."
         >
           {recoveries.live.length > 0 && (
-            <ul className="mt-2 card list border-gold/40">
+            <ul className="mt-2 card list overflow-hidden border-sun">
               {recoveries.live.map((r) => (
                 <Row
                   key={r.row.code}
-                  className="bg-gold/10"
+                  className="bg-sun-tint"
                   who={r.member.name}
                   detail={`minted by ${r.mintedBy?.name ?? "the console"} · expires ${timeUntil(r.row.expiresAt)}`}
                 >
@@ -133,6 +162,7 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
 
       {canInvite && (
         <Section
+          id="invite"
           title="Invite a friend"
           note="Mint a link and send it however you'd normally reach them. They pick a name, make a passkey, and they're in — no email, no Google account. The link carries the trip's key, so send it to them and nobody else."
         >
@@ -166,19 +196,46 @@ export default async function MembersPage({ params }: { params: Promise<{ tripId
   );
 }
 
+function More({ href, title, sub }: { href: string; title: string; sub: string }) {
+  return (
+    <Link href={href} className="flex min-h-14 items-center justify-between gap-3 px-4 py-3">
+      <span className="min-w-0">
+        <span className="block font-semibold">{title}</span>
+        <span className="block text-[13px] text-soft">{sub}</span>
+      </span>
+      <svg
+        aria-hidden="true"
+        className="shrink-0 text-soft"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M7 4l5 5-5 5" />
+      </svg>
+    </Link>
+  );
+}
+
 function Section({
+  id,
   title,
   note,
   children,
 }: {
+  id?: string;
   title: string;
   note?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-6">
-      <h2 className="display text-lg font-bold uppercase tracking-wide text-soft">{title}</h2>
-      {note && <p className="text-xs text-soft">{note}</p>}
+    <section id={id} className="mt-6 scroll-mt-4">
+      <h2 className="display text-xl font-bold">{title}</h2>
+      {note && <p className="mt-0.5 text-[13px] text-soft">{note}</p>}
       {children}
     </section>
   );

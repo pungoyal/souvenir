@@ -19,25 +19,19 @@ export default async function TalkPage({ params }: { params: Promise<{ tripId: s
     return (
       <div className="mx-auto max-w-2xl">
         <p className="eyebrow">Talk</p>
-        <h1 className="display text-4xl font-extrabold uppercase tracking-wide">
-          Nothing to interpret
-        </h1>
+        <h1 className="display text-[28px] font-bold leading-tight">Nothing to interpret</h1>
         <p className="mt-1 text-sm text-soft">
           This trip speaks the local language already.{" "}
-          <Link href={routes.trip(tripId)} className="text-felt hover:underline">
-            Back to the calls.
+          <Link href={routes.trip(tripId)} className="text-link hover:underline">
+            Back to today.
           </Link>
         </p>
       </div>
     );
   }
   return (
-    <div className="mx-auto max-w-2xl">
-      <p className="eyebrow">{pair.them.language}</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">
-        {t.talkTitle(pair.them.language)}
-      </h1>
-      <p className="mb-6 mt-1 text-sm text-soft">{t.talkSub(pair.them.language)}</p>
+    <div>
+      <h1 className="sr-only">{t.talkTitle(pair.them.language)}</h1>
       <Sealed>
         <Talk
           pair={pair}

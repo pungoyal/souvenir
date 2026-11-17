@@ -53,7 +53,7 @@ export default async function SignInPage({
               <input type="checkbox" name="agree" value="1" className="mt-0.5" />
               <span>
                 New here? Tick to confirm you're 18+ and agree to the{" "}
-                <Link href={routes.terms} className="text-felt hover:underline">
+                <Link href={routes.terms} className="text-link hover:underline">
                   terms
                 </Link>
                 .
@@ -68,7 +68,7 @@ export default async function SignInPage({
 
       <p className="mt-5 text-sm">
         No account?{" "}
-        <Link href={routes.home} className="font-semibold text-felt hover:underline">
+        <Link href={routes.home} className="font-semibold text-link hover:underline">
           Start a trip
         </Link>
       </p>
@@ -91,7 +91,7 @@ export default async function SignInPage({
           }}
         >
           <input type="hidden" name="next" value={next} />
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-gold">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-sun-deep">
             Dev login — local only
           </p>
           <input

@@ -24,7 +24,7 @@ import { SideChip } from "./side-chip";
 import { useOpenTrip } from "./trip-store";
 import { tone } from "./ui";
 
-const heading = "display text-xl font-bold uppercase tracking-wide text-soft";
+const heading = "display text-xl font-bold";
 const row = "flex items-center gap-3 px-4 py-2.5 text-sm";
 const rowLink = "min-w-0 flex-1 font-semibold hover:underline";
 
@@ -63,13 +63,16 @@ export function MemberPage({
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
+      <Link href={routes.members(tripId)} className="flex min-h-11 items-center text-sm text-soft">
+        ← Group
+      </Link>
       <div className="flex flex-wrap items-center gap-4">
         <Avatar member={member} size={56} />
         <div className="min-w-48 flex-1">
-          <h1 className="display break-words text-3xl font-extrabold sm:text-4xl">{member.name}</h1>
+          <h1 className="display break-words text-[28px] font-bold leading-tight">{member.name}</h1>
           <p className="text-sm text-soft">
-            At the table since {fmtDate(member.joinedAt)}
+            On the trip since {fmtDate(member.joinedAt)}
             {member.role === "organiser" && " · organiser"}
             {isMe && " · this is you"}
           </p>
@@ -91,7 +94,7 @@ export function MemberPage({
         </div>
         {isMe && (
           <Link href={routes.account} className="btn btn-line shrink-0 px-3 py-1.5 text-sm">
-            Your account →
+            Your account
           </Link>
         )}
       </div>
@@ -162,8 +165,8 @@ export function MemberPage({
         <section className="mt-7">
           <div className="flex items-baseline gap-3">
             <h2 className={heading}>Split bills</h2>
-            <Link href={routes.bills(tripId)} className="text-xs text-felt hover:underline">
-              settle up →
+            <Link href={routes.bills(tripId)} className="text-xs text-up hover:underline">
+              settle up
             </Link>
           </div>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -288,7 +291,7 @@ export function MemberPage({
                         {" — "}
                         <Link
                           href={routes.market(tripId, item.market.id)}
-                          className="text-felt hover:underline"
+                          className="text-up hover:underline"
                         >
                           {item.market.question}
                         </Link>
@@ -349,7 +352,7 @@ function Stat({
       <p className="text-[10px] font-semibold uppercase tracking-wider text-soft">{label}</p>
       <p
         className={`mono mt-0.5 text-lg font-bold ${
-          tone === "up" ? "text-felt" : tone === "down" ? "text-no-deep" : ""
+          tone === "up" ? "text-up" : tone === "down" ? "text-no-deep" : ""
         }`}
       >
         {value}

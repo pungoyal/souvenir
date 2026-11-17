@@ -55,7 +55,7 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
           <JoinAsMember code={code} name={me.name} tripName={place} seated />
           <Link
             href={routes.trip(invite.tripId)}
-            className="mt-2 block text-sm text-felt hover:underline"
+            className="mt-2 block text-sm text-link hover:underline"
           >
             Open the trip
           </Link>
@@ -70,7 +70,7 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
             <SignInKeepingSecret
               code={code}
               href={signInThen(routes.join(code))}
-              className="text-felt hover:underline"
+              className="text-link hover:underline"
             >
               Sign in
             </SignInKeepingSecret>{" "}

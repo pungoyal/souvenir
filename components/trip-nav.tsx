@@ -5,54 +5,106 @@ import { usePathname } from "next/navigation";
 import { routes } from "@/lib/routes";
 
 /**
- * The tabs of one trip. Client-side only for the active underline — the
- * pathname is the one thing the server doesn't hand a layout.
+ * The tabs of one trip, at the bottom of the screen where a thumb is: what is happening now,
+ * the game, the interpreter in the middle (the one thing used with a stranger waiting), the
+ * money, the people. Client-side only for the active mark — the pathname is the one thing the
+ * server doesn't hand a layout.
  */
 export function TripNav({
   tripId,
-  unread,
+  waiting,
   talkLabel,
-  ended,
 }: {
   tripId: string;
-  unread: boolean;
+  /** How many things on Today are waiting on this member. */
+  waiting: number;
   talkLabel: string | null;
-  ended: boolean;
 }) {
   const pathname = usePathname();
-  const tabs: { href: string; label: string; dot?: boolean; exact?: boolean }[] = [
-    { href: routes.trip(tripId), label: "Calls", exact: true },
-    { href: routes.members(tripId), label: "Table" },
-    { href: routes.bills(tripId), label: "Bills" },
-  ];
-  if (talkLabel) tabs.push({ href: routes.talk(tripId), label: talkLabel });
-  tabs.push({ href: routes.recap(tripId), label: ended ? "Recap ★" : "Recap" });
-  tabs.push({ href: routes.inbox(tripId), label: "Inbox", dot: unread });
+  const home = routes.trip(tripId);
+  const under = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const calls =
+    under(routes.calls(tripId)) || under(`${home}/p`) || under(routes.newMarket(tripId));
+  const money = under(routes.bills(tripId));
+  const talk = under(routes.talk(tripId));
+  const group =
+    under(routes.members(tripId)) ||
+    under(`${home}/member`) ||
+    under(routes.recap(tripId)) ||
+    under(routes.settings(tripId));
+  const today = !calls && !money && !talk && !group;
 
   return (
-    <nav className="-mx-4 mt-3 flex gap-1 overflow-x-auto border-b border-line px-4 text-sm">
-      {tabs.map((tab) => {
-        const active = tab.exact
-          ? pathname === tab.href
-          : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
-        return (
+    <nav
+      data-trip-nav
+      aria-label="Trip"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)]"
+    >
+      <div
+        className={`mx-auto grid max-w-2xl items-end px-3 pb-3 pt-2 text-xs font-semibold ${
+          talkLabel ? "grid-cols-5" : "grid-cols-4"
+        }`}
+      >
+        <Tab href={home} label="Today" active={today} badge={waiting} />
+        <Tab href={routes.calls(tripId)} label="Calls" active={calls} />
+        {talkLabel && (
           <Link
-            key={tab.href}
-            href={tab.href}
-            className={`relative flex-1 whitespace-nowrap px-1 py-2 text-center font-semibold sm:flex-none sm:px-3 ${
-              active ? "border-b-[3px] border-felt text-ink" : "text-soft hover:text-ink"
+            href={routes.talk(tripId)}
+            aria-current={talk ? "page" : undefined}
+            className={`mx-1 flex h-[60px] flex-col items-center justify-center gap-0.5 rounded-full ${
+              talk ? "bg-sun text-[#12141a]" : "bg-night text-white"
             }`}
           >
-            {tab.label}
-            {tab.dot && (
-              <span
-                className="absolute right-1 top-1.5 h-2 w-2 rounded-full bg-no"
-                title="Unread activity"
-              />
-            )}
+            <svg
+              aria-hidden="true"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke={talk ? "#12141a" : "#ffc229"}
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <rect x="7" y="2" width="6" height="10" rx="3" />
+              <path d="M4 10a6 6 0 0012 0M10 16v2" />
+            </svg>
+            <span className="max-w-full truncate px-2">{talkLabel}</span>
           </Link>
-        );
-      })}
+        )}
+        <Tab href={routes.bills(tripId)} label="Money" active={money} />
+        <Tab href={routes.members(tripId)} label="Group" active={group} />
+      </div>
     </nav>
+  );
+}
+
+function Tab({
+  href,
+  label,
+  active,
+  badge = 0,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  badge?: number;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`relative flex min-h-[52px] flex-col items-center justify-center gap-1 ${
+        active ? "text-ink" : "text-soft hover:text-ink"
+      }`}
+    >
+      <span className={`h-1 w-7 rounded-full ${active ? "bg-sun" : ""}`} />
+      {label}
+      {badge > 0 && (
+        <span className="mono absolute right-[calc(50%-30px)] top-1 min-w-[18px] rounded-full bg-no px-1 text-center text-[11px] font-bold leading-[18px] text-white">
+          {badge}
+          <span className="sr-only"> waiting on you</span>
+        </span>
+      )}
+    </Link>
   );
 }

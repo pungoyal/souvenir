@@ -138,6 +138,28 @@ export function daysBetween(a: string, b: string): number {
   return Math.round((Date.parse(b) - Date.parse(a)) / 86_400_000);
 }
 
+export interface TripClock {
+  phase: TripPhase;
+  /** Which day of the trip today is, from 1; null outside it or without a start. */
+  day: number | null;
+  /** How many days the trip runs; null without both dates. */
+  length: number | null;
+  /** Days until it starts; null unless it is still ahead. */
+  toGo: number | null;
+}
+
+// Everything the Today page says about time, from the two dates and the destination's today.
+export function tripClock(trip: TripLike, today: string): TripClock {
+  const phase = tripPhase(trip, today);
+  const { startsOn, endsOn } = trip;
+  return {
+    phase,
+    day: phase === "during" && startsOn ? daysBetween(startsOn, today) + 1 : null,
+    length: startsOn && endsOn ? daysBetween(startsOn, endsOn) + 1 : null,
+    toGo: phase === "before" && startsOn ? daysBetween(today, startsOn) : null,
+  };
+}
+
 // By the destination's clock: the trip ends when its last day does there, not at home midnight.
 export function tripToday(trip: { destination: string }, now: Date = new Date()): string {
   return isoDay(now, DESTINATIONS[trip.destination]?.tz ?? DEFAULT_HOME_TZ);

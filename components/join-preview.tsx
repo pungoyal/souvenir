@@ -24,12 +24,12 @@ export function JoinPreview({ code, sealed }: { code: string; sealed: string | n
   if (!preview) return null;
   return (
     <>
-      <p className="display text-2xl font-extrabold uppercase tracking-wide">{preview.name}</p>
+      <p className="display text-2xl font-bold">{preview.name}</p>
       {preview.questions.length > 0 && (
         <ul className="mt-3 space-y-1 border-t border-line pt-3 text-sm">
           {preview.questions.map((q) => (
             <li key={q} className="flex gap-2">
-              <span aria-hidden className="text-gold">
+              <span aria-hidden className="text-sun-deep">
                 ◆
               </span>
               <span className="font-semibold">{q}</span>

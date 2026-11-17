@@ -99,6 +99,9 @@ describe("the pair", () => {
     ]) {
       expect(speaker.tag.startsWith(`${speaker.code}-`)).toBe(true);
       expect(speaker.hello.trim().length).toBeGreaterThan(2);
+      // The short greeting is the opening of the longer one, so the two never disagree.
+      expect(speaker.hello.startsWith(speaker.greeting)).toBe(true);
+      if (speaker.script !== "Latin") expect(speaker.greetingRoman).toBeTruthy();
     }
   });
 });

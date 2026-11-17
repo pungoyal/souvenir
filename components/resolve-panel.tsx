@@ -8,8 +8,8 @@ import { useAct } from "./use-act";
 type Outcome = Side | "refunded";
 
 const OPTIONS: { value: Outcome; label: string; hint: string | null }[] = [
-  { value: "yes", label: "YES", hint: "The YES side splits the whole pool" },
-  { value: "no", label: "NO", hint: "The NO side splits the whole pool" },
+  { value: "yes", label: "It happened", hint: "The yes side splits the whole pool" },
+  { value: "no", label: "It didn't", hint: "The no side splits the whole pool" },
   { value: "refunded", label: "Void", hint: null },
 ];
 
@@ -29,11 +29,9 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
     });
 
   return (
-    <div className="rounded-lg border border-gold/40 bg-surface p-4">
-      <h3 className="display text-lg font-bold uppercase tracking-wide text-gold">
-        Resolve — your call
-      </h3>
-      <p className="mt-1 text-xs text-soft">{t.resolveSub}</p>
+    <div className="card border-sun p-4">
+      <p className="eyebrow">You asked · yours to resolve</p>
+      <p className="mt-1 text-sm text-soft">{t.resolveSub}</p>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {OPTIONS.map((opt) => (
@@ -45,14 +43,15 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
               setOutcome(opt.value);
               setConfirming(false);
             }}
-            className={`display rounded-md border py-2 text-lg font-bold uppercase ${
+            aria-pressed={outcome === opt.value}
+            className={`btn h-12 text-sm ${
               outcome === opt.value
                 ? opt.value === "yes"
-                  ? "border-yes bg-yes text-white"
+                  ? "btn-yes"
                   : opt.value === "no"
-                    ? "border-no bg-no text-white"
-                    : "border-ink bg-ink text-paper"
-                : "border-line hover:bg-paper"
+                    ? "btn-no"
+                    : "btn-ink"
+                : "btn-line"
             }`}
           >
             {opt.label}
@@ -65,7 +64,7 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
         onChange={(e) => setNote(e.target.value)}
         placeholder="How you decided (goes on the permanent record)"
         rows={2}
-        className="mt-3 w-full rounded-md border border-line bg-paper px-3 py-2 text-sm"
+        className="field mt-3"
       />
 
       {!confirming ? (
@@ -73,7 +72,7 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
           type="button"
           disabled={!outcome || pending}
           onClick={() => setConfirming(true)}
-          className="btn btn-felt mt-3 w-full py-2.5"
+          className="btn btn-ink mt-3 h-12 w-full"
         >
           Resolve this prediction
         </button>
@@ -83,11 +82,11 @@ export function ResolvePanel({ marketId }: { marketId: string }) {
             type="button"
             disabled={pending}
             onClick={resolve}
-            className="btn btn-felt flex-1 py-2.5"
+            className="btn btn-ink h-12 flex-1"
           >
             {pending
               ? "Resolving…"
-              : `Confirm ${outcome === "refunded" ? "void" : outcome?.toUpperCase()} — final`}
+              : `Confirm ${outcome === "refunded" ? "void" : outcome}. It's final.`}
           </button>
           <button
             type="button"

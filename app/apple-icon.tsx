@@ -7,7 +7,7 @@ export const contentType = "image/png";
 /** The home-screen icon, drawn from the same mark as the favicon. */
 export default function AppleIcon() {
   return new ImageResponse(
-    <div style={{ display: "flex", width: "100%", height: "100%", background: "#143024" }}>
+    <div style={{ display: "flex", width: "100%", height: "100%", background: "#12141a" }}>
       <Logo size={180} />
     </div>,
     size,

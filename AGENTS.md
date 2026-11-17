@@ -138,6 +138,26 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   guess one. UI vocabulary is *prediction / call / resolve /
   pool / stamp / points*; never *bet, wager, stake (as money), odds, payout,
   cash*. Code keeps `market/stake/settle*/amountC`. Don't half-rename either.
+- **The trip opens on Today, not on the game.** Five tabs at the bottom of the
+  screen (`components/trip-nav.tsx`): Today (`/t/[id]`), Calls
+  (`/t/[id]/calls`, its Open · Yours · Done pile in `?tab=`), the interpreter
+  in the middle under the destination language's name, Money (`/bills`), Group
+  (`/members`, which is also the way to the recap, the activity list and the
+  settings). Today is `lib/today.ts`, pure and tested like every view:
+  `needsYou` (a tag you have not answered, an open prediction you have not
+  called, one of yours with stamps on it to resolve), `myMoney` (the one
+  figure the Money tab leads with) and `standing`. It changes with
+  `lib/trips` `tripClock` — a countdown before, the day's number during, the
+  recap once home — and is greeted in the destination's language
+  (`Speaker.greeting`, on its `DESTINATIONS` line like everything else about
+  a place; the postmark is drawn from the place and the dates). There is no
+  inbox tab: what was unread is the head of Today, and the whole list is
+  Activity (`/inbox`), which is what moves the cursor. A prediction is called
+  on its card (`BetPanel` inside `MarketCard`), so no list is only a list of
+  links. The look is tokens in `app/globals.css` — ground, surface, ink, one
+  marigold accent (`sun`), `night` for the two dark panels — and the
+  component classes there sit in `@layer components` so a utility at the call
+  site still wins; never hard-code a colour in a component that a token names.
 - Inbox and the For-you rail are derived on the phone from the replayed trip
   (`lib/views` `inbox`/`listMarkets`). Stored state is only
   `memberships.inbox_seen_at`; which predictions a phone has opened is that

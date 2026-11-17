@@ -288,9 +288,9 @@ export function Talk({
     );
 
   const phrasebook = kept.length > 0 && (
-    <section className="space-y-2">
-      <h2 className="eyebrow">{t.phrasebookHeading}</h2>
-      <div className="card list">
+    <section id="kept" className="scroll-mt-4 space-y-2">
+      <h2 className="display text-xl font-bold">{t.phrasebookHeading}</h2>
+      <div className="card list overflow-hidden">
         {kept.map((phrase) => {
           const voice = voiceFor(phrase, pair);
           return (
@@ -298,19 +298,21 @@ export function Talk({
               <button
                 type="button"
                 onClick={() => speak(phrase.said, voice)}
-                className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left hover:bg-paper"
+                className="flex min-w-0 flex-1 items-center gap-3 px-4 py-2.5 text-left"
               >
-                <span aria-hidden>🔊</span>
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-night text-sun">
+                  {PLAY}
+                </span>
                 <span className="min-w-0 flex-1">
                   {/* The slug as stored, not in caps: it is the name the member holds on to. */}
-                  <span className="mono block truncate text-[11px] tracking-wider text-gold">
+                  <span className="block truncate font-semibold">
                     {phrase.slug}
                     {/* Kept somewhere this deploy is no longer pointed at. */}
                     {voice.side === null && ` · ${phrase.language}`}
                   </span>
                   <span
                     lang={phrase.tag.split("-")[0]}
-                    className="block truncate text-sm font-semibold"
+                    className="block truncate text-sm text-soft"
                   >
                     {phrase.said}
                   </span>
@@ -324,9 +326,9 @@ export function Talk({
                   type="button"
                   onClick={() => forget(phrase)}
                   aria-label={`Forget ${phrase.slug}`}
-                  className="shrink-0 self-stretch px-4 text-soft hover:bg-paper"
+                  className="min-h-11 shrink-0 self-stretch px-4 text-[13px] text-soft underline"
                 >
-                  ✕
+                  Forget
                 </button>
               )}
             </div>
@@ -339,7 +341,7 @@ export function Talk({
   if (!canInterpret) {
     return (
       <div className="space-y-4">
-        <div className="rounded-lg border border-dashed border-line bg-surface p-6 text-sm text-soft">
+        <div className="card p-5 text-sm text-soft">
           Interpreting isn't switched on for this deploy — it needs an LLM endpoint in the
           environment. Phrases already kept still play.
         </div>
@@ -349,109 +351,120 @@ export function Talk({
   }
 
   return (
-    <div className="space-y-4">
-      {pair.them.particles && (
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-            You end sentences with
-          </span>
-          <div className="flex overflow-hidden rounded-md border border-line">
-            {(Object.entries(pair.them.particles) as [Gender, Particle][]).map(
-              ([who, particle]) => (
-                <button
-                  key={who}
-                  type="button"
-                  onClick={() => setSpeaking(who)}
-                  className={`px-3 py-1.5 text-sm ${
-                    speaking === who ? "bg-felt text-[#f1eee4]" : "bg-surface hover:bg-paper"
-                  }`}
-                >
-                  <span lang={pair.them.code} className="font-semibold">
-                    {particle.native}
-                  </span>
-                  <span className="mono ml-1.5 text-xs opacity-70">{particle.roman}</span>
-                </button>
-              ),
-            )}
-          </div>
+    <div className="space-y-5">
+      {/* Their side: dark, so it reads as a different surface when the phone is turned round. */}
+      <section
+        aria-label={`Their side, in ${pair.them.language}`}
+        className="flex flex-col gap-4 rounded-3xl bg-night p-5 text-white"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <span className="eyebrow text-night-soft!">Them · {pair.them.language}</span>
+          {pair.them.particles && (
+            <fieldset className="flex rounded-full bg-night-line p-[3px]">
+              <legend className="sr-only">You end polite sentences with</legend>
+              {(Object.entries(pair.them.particles) as [Gender, Particle][]).map(
+                ([who, particle]) => (
+                  <button
+                    key={who}
+                    type="button"
+                    aria-pressed={speaking === who}
+                    title={particle.roman}
+                    onClick={() => setSpeaking(who)}
+                    className={`h-11 rounded-full px-4 font-semibold ${
+                      speaking === who ? "bg-sun text-[#12141a]" : "text-white"
+                    }`}
+                  >
+                    <span lang={pair.them.code}>{particle.native}</span>
+                  </button>
+                ),
+              )}
+            </fieldset>
+          )}
         </div>
-      )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <Mic
-          label={`Say it in ${pair.us.language}`}
-          sub={listening === "us" ? "Tap to finish" : "Tap, speak, tap"}
-          tone="ours"
-          active={listening === "us"}
-          disabled={busy && listening !== "us"}
-          onPress={() => press("us")}
-        />
-        <Mic
-          label="Their turn"
-          sub={listening === "them" ? "Tap to finish" : "Hand the phone over"}
-          tone="theirs"
-          active={listening === "them"}
-          disabled={busy && listening !== "them"}
-          onPress={() => press("them")}
-        />
-      </div>
-
-      <p className="min-h-5 text-center text-sm text-soft" aria-live="polite">
-        {partial ? (
-          <span className="italic">{partial}</span>
-        ) : listening ? (
-          "Listening…"
-        ) : thinking ? (
-          "Interpreting…"
-        ) : (
-          ""
-        )}
-      </p>
-
-      {error && (
-        <p className="rounded-md bg-no-tint px-3 py-2 text-center text-sm font-semibold text-no-deep">
-          {error}
-        </p>
-      )}
-
-      {latest && (
-        <div className="space-y-2">
+        {latest ? (
           <Card
             pair={pair}
             turn={latest}
             onReplay={() => replay(latest)}
             onKeep={() => setNaming(latest)}
           />
-          {keepForm(latest, "card p-3")}
-        </div>
-      )}
+        ) : (
+          <p className="display text-2xl font-semibold leading-snug text-night-soft">
+            Speak, and it comes out in {pair.them.language}, here, big enough to show.
+          </p>
+        )}
+        {latest && keepForm(latest, "rounded-2xl bg-surface p-3 text-ink")}
 
-      <div className="flex gap-2">
-        <input
-          value={typed}
-          onChange={(e) => setTyped(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && typed.trim()) send();
-          }}
-          placeholder={`…or type it, in ${pair.us.language} or ${pair.them.language}`}
-          className="w-full rounded-md border border-line bg-surface px-3 py-2.5 text-sm"
+        <Mic
+          label={listening === "them" ? "Tap when they finish" : "They speak"}
+          tone="theirs"
+          active={listening === "them"}
+          disabled={busy && listening !== "them"}
+          onPress={() => press("them")}
         />
-        <button
-          type="button"
-          onClick={send}
-          disabled={busy || !typed.trim()}
-          className="btn btn-felt shrink-0 px-4 py-2.5 text-sm"
-        >
-          Say it
-        </button>
-      </div>
+      </section>
+
+      <section aria-label={`Your side, in ${pair.us.language}`} className="flex flex-col gap-3">
+        <span className="eyebrow">You · {pair.us.language}</span>
+        <Mic
+          label={listening === "us" ? "Tap when you're done" : "Tap to speak"}
+          tone="ours"
+          active={listening === "us"}
+          disabled={busy && listening !== "us"}
+          onPress={() => press("us")}
+        />
+
+        <p className="min-h-5 text-center text-sm text-soft" aria-live="polite">
+          {partial ? (
+            <span className="italic">{partial}</span>
+          ) : listening ? (
+            "Listening…"
+          ) : thinking ? (
+            "Interpreting…"
+          ) : (
+            ""
+          )}
+        </p>
+
+        {error && (
+          <p
+            role="alert"
+            className="rounded-xl bg-no-tint px-3 py-2 text-center text-sm font-semibold text-no-deep"
+          >
+            {error}
+          </p>
+        )}
+
+        <div className="flex gap-2">
+          <input
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && typed.trim()) send();
+            }}
+            aria-label={`Type it, in ${pair.us.language} or ${pair.them.language}`}
+            placeholder="Or type it"
+            className="field min-w-0 flex-1"
+          />
+          <button
+            type="button"
+            onClick={send}
+            disabled={busy || !typed.trim()}
+            className="btn btn-ink shrink-0 px-4"
+          >
+            Say
+          </button>
+        </div>
+        <p className="text-[13px] text-soft">Nothing said here is saved unless you keep it.</p>
+      </section>
 
       {note && <p className="text-center text-xs text-soft">{note}</p>}
 
       {phrasebook}
 
       {turns.length > 1 && (
-        <div className="card list">
+        <div className="card list overflow-hidden">
           {turns
             .slice(0, -1)
             .reverse()
@@ -461,26 +474,25 @@ export function Talk({
                   <button
                     type="button"
                     onClick={() => replay(turn)}
-                    className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left hover:bg-paper"
+                    className="flex min-h-11 min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left"
                   >
                     <span
                       className={`h-2 w-2 shrink-0 rounded-full ${
-                        turn.side === "us" ? "bg-felt" : "bg-gold"
+                        turn.side === "us" ? "bg-ink" : "bg-sun"
                       }`}
                     />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold">{turn.said}</span>
                       <span className="block truncate text-xs text-soft">{turn.heard}</span>
                     </span>
-                    <span aria-hidden>🔊</span>
+                    <span className="text-soft">{PLAY}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setNaming(naming?.id === turn.id ? null : turn)}
-                    aria-label="Keep this one"
-                    className="shrink-0 self-stretch px-4 text-soft hover:bg-paper"
+                    className="min-h-11 shrink-0 self-stretch px-4 text-[13px] text-soft underline"
                   >
-                    ☆
+                    Keep
                   </button>
                 </div>
                 {keepForm(turn, "px-4 pb-3")}
@@ -492,16 +504,36 @@ export function Talk({
   );
 }
 
+const MIC = (
+  <svg
+    aria-hidden="true"
+    width="24"
+    height="24"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  >
+    <rect x="7" y="2" width="6" height="10" rx="3" />
+    <path d="M4 10a6 6 0 0012 0M10 16v2" />
+  </svg>
+);
+
+const PLAY = (
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+    <path d="M3 1.5v11l9-5.5z" />
+  </svg>
+);
+
 function Mic({
   label,
-  sub,
   tone,
   active,
   disabled,
   onPress,
 }: {
   label: string;
-  sub: string;
   tone: "ours" | "theirs";
   active: boolean;
   disabled: boolean;
@@ -512,17 +544,17 @@ function Mic({
       type="button"
       onClick={onPress}
       disabled={disabled}
-      className={`rounded-lg px-4 py-5 text-center transition-colors disabled:opacity-40 ${
+      aria-pressed={active}
+      className={`btn w-full text-lg disabled:opacity-40 ${
         active
-          ? "bg-no text-[#f1eee4]"
+          ? "h-[88px] rounded-3xl bg-no text-white"
           : tone === "ours"
-            ? "bg-felt text-[#f1eee4] hover:bg-felt-deep"
-            : "bg-gold text-[#21261f] hover:brightness-95"
+            ? "btn-sun h-[88px] rounded-3xl"
+            : "h-[72px] rounded-[20px] border-[1.5px] border-night-line text-white"
       }`}
     >
-      <span className="block text-xl leading-none">{active ? "◼" : "🎙"}</span>
-      <span className="display mt-2 block text-lg font-bold uppercase tracking-wide">{label}</span>
-      <span className="mt-0.5 block text-[11px] opacity-80">{sub}</span>
+      {active ? <span aria-hidden className="h-4 w-4 rounded-sm bg-current" /> : MIC}
+      {label}
     </button>
   );
 }
@@ -552,13 +584,13 @@ function KeepForm({
           if (e.key === "Escape") onCancel();
         }}
         placeholder="Call it something — “no peanuts”"
-        className="min-w-0 flex-1 rounded-md border border-line bg-surface px-3 py-2 text-sm"
+        className="field min-w-0 flex-1"
       />
       <button
         type="button"
         onClick={() => onKeep(name)}
         disabled={busy || !slug}
-        className="btn btn-felt shrink-0 px-3 py-2 text-sm"
+        className="btn btn-ink shrink-0 px-3 py-2 text-sm"
       >
         Keep
       </button>
@@ -585,29 +617,27 @@ function Card({
   const outbound = turn.side === "us";
   const target = speakerOf(pair, otherSide(turn.side));
   return (
-    <div className="card overflow-hidden">
-      <div aria-hidden className="zari" />
-      <div className="p-5 text-center">
-        <p className="eyebrow">{outbound ? "Show them this" : "They said"}</p>
-        <p
-          lang={target.code}
-          className={`mt-2 break-words font-semibold leading-snug ${outbound ? "text-4xl" : "text-3xl"}`}
+    <div className="flex flex-col gap-3">
+      {!outbound && <p className="eyebrow text-night-soft!">They said</p>}
+      <p lang={target.code} className="break-words text-[34px] font-semibold leading-tight">
+        {turn.said}
+      </p>
+      {turn.roman && <p className="mono text-sm text-night-soft">{turn.roman}</p>}
+      <p className="text-[13px] text-night-soft">
+        {outbound ? `You said “${turn.heard}”` : `In their words: “${turn.heard}”`}
+        {turn.literal && outbound && ` · literally: ${turn.literal}`}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={onReplay} className="btn bg-white px-4 text-[#12141a]">
+          {PLAY} Say it again
+        </button>
+        <button
+          type="button"
+          onClick={onKeep}
+          className="btn border-[1.5px] border-night-line px-4 font-semibold text-white"
         >
-          {turn.said}
-        </p>
-        {turn.roman && <p className="mono mt-2 text-sm text-soft">{turn.roman}</p>}
-        <p className="mt-3 text-xs text-soft">
-          {outbound ? `You said “${turn.heard}”` : `They said “${turn.heard}”`}
-          {turn.literal && outbound && ` · literally: ${turn.literal}`}
-        </p>
-        <div className="mt-4 flex justify-center gap-2">
-          <button type="button" onClick={onReplay} className="btn btn-line px-3 py-1.5 text-sm">
-            🔊 Again
-          </button>
-          <button type="button" onClick={onKeep} className="btn btn-line px-3 py-1.5 text-sm">
-            ☆ Keep it
-          </button>
-        </div>
+          Keep this phrase
+        </button>
       </div>
     </div>
   );

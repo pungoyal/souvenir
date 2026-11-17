@@ -8,8 +8,8 @@ import { TripHeader } from "@/components/trip-header";
 import { TripStoreProvider } from "@/components/trip-store";
 import { membersOf } from "@/lib/data";
 import { requireTrip } from "@/lib/session";
-import { DESTINATIONS, pairFor } from "@/lib/talk";
-import { daysBetween, placeOf, tripCurrencies, tripPhase, tripToday } from "@/lib/trips";
+import { pairFor } from "@/lib/talk";
+import { placeOf, tripClock, tripCurrencies, tripToday } from "@/lib/trips";
 import type { RosterMember } from "@/lib/views";
 
 // What the phone gets to know about a person: a face and a seat, no email.
@@ -37,16 +37,14 @@ export default async function TripLayout({
   const roster = await membersOf(tripId);
   const pair = pairFor(trip);
   const today = tripToday(trip);
-  const phase = tripPhase(trip, today);
 
+  const clock = tripClock(trip, today);
   let when: string | null = null;
-  if (phase === "before" && trip.startsOn) {
-    const d = daysBetween(today, trip.startsOn);
-    when = d === 1 ? "Leaving tomorrow" : `In ${d} days`;
-  } else if (phase === "during" && trip.endsOn) {
-    const left = daysBetween(today, trip.endsOn);
-    when = left === 0 ? "Last day" : `${left} day${left === 1 ? "" : "s"} left`;
-  } else if (phase === "after") {
+  if (clock.toGo !== null) {
+    when = clock.toGo === 1 ? "Tomorrow" : `In ${clock.toGo} days`;
+  } else if (clock.day !== null) {
+    when = clock.length ? `Day ${clock.day} of ${clock.length}` : `Day ${clock.day}`;
+  } else if (clock.phase === "after") {
     when = "Home";
   }
 
@@ -73,12 +71,11 @@ export default async function TripLayout({
     >
       <TripHeader
         tripId={tripId}
-        place={`${DESTINATIONS[trip.destination]?.flag ?? ""} ${placeOf(trip)}`.trim()}
+        place={placeOf(trip)}
         when={when}
         talkLabel={pair ? pair.them.language : null}
-        ended={phase === "after"}
       />
-      <div className="mt-5">{children}</div>
+      <div className="mx-auto mt-5 max-w-2xl">{children}</div>
     </TripStoreProvider>
   );
 }

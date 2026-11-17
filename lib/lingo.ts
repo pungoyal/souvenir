@@ -12,23 +12,17 @@ export interface Lingo {
   /** Handed to the AI polish prompt. */
   register: string;
   footer: string;
-  activityHeading: string;
   activitySoFarHeading: string;
   activityEmpty: string;
   openEmptyTitle: string;
   openEmptySub: string;
   resolvedEmpty: string;
-  forYouHeading: string;
-  forYouSub: string;
-  openBetsEmpty: string;
   betsEmpty: string;
   poolEmpty: string;
   leaderboardTitle: string;
   leaderboardSub: (min: number) => string;
-  leaderboardEmptyTitle: string;
   calibratingSub: string;
   membersTitle: string;
-  membersSub: string;
   newTitle: string;
   magicPitch: string;
   inboxSub: string;
@@ -48,12 +42,10 @@ export interface Lingo {
   commentsEmpty: string;
   commentPlaceholder: string;
   billsTitle: string;
-  billsSub: string;
   billsEmptyTitle: string;
   billsEmptySub: string;
   allSquare: string;
   talkTitle: (language: string) => string;
-  talkSub: (language: string) => string;
   phrasebookHeading: string;
   startersHeading: string;
   startersSub: string;
@@ -90,7 +82,6 @@ function hydrate(raw: RawLingo): Lingo {
     leaderboardSub: (min) => fill(raw.leaderboardSub, { min }),
     youWon: (amount) => fill(raw.youWon, { amount }),
     talkTitle: (language) => fill(raw.talkTitle, { language }),
-    talkSub: (language) => fill(raw.talkSub, { language }),
     youLost: (amount) => fill(raw.youLost, { amount }),
     noKeyYet: (name) => fill(raw.noKeyYet, { name }),
   };

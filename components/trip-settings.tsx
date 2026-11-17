@@ -13,9 +13,7 @@ export function TripSettings({
   const { name, epoch, t } = useOpenTrip();
   return (
     <>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">
-        {name ?? t.sealedTripName}
-      </h1>
+      <h1 className="display text-[28px] font-bold leading-tight">{name ?? t.sealedTripName}</h1>
       <p className="mt-1 text-sm text-soft">{sub}</p>
       <div className="mt-5">
         <TripForm initial={{ ...trip, name: name ?? "", epoch }} />

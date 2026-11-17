@@ -8,9 +8,8 @@ import { Avatar } from "./avatar";
 import { medal } from "./leaderboard";
 import { Pies } from "./pies";
 import { ShareRecap } from "./share-recap";
-import { StatTile } from "./trip-home";
 import { useOpenTrip } from "./trip-store";
-import { EmptyState } from "./ui";
+import { EmptyState, StatTile } from "./ui";
 
 export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolved: number }) {
   const { tripId, me, t, roster, people, state, name: tripName } = useOpenTrip();
@@ -21,7 +20,7 @@ export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolv
   return (
     <div className="mx-auto max-w-2xl">
       <p className="eyebrow">{eyebrow}</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">{t.recapTitle}</h1>
+      <h1 className="display text-[28px] font-bold leading-tight">{t.recapTitle}</h1>
       <p className="mt-1 text-sm text-soft">{t.recapSub}</p>
 
       {recap.resolvedCount === 0 ? (
@@ -45,9 +44,7 @@ export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolv
           </div>
 
           <section className="mt-7">
-            <h2 className="display text-xl font-bold uppercase tracking-wide text-soft">
-              The table
-            </h2>
+            <h2 className="display text-xl font-bold">The table</h2>
             <ol className="mt-3 card list">
               {recap.table.map((s, i) => (
                 <li key={s.member.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
@@ -80,9 +77,7 @@ export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolv
 
           {recap.rivalries.length > 0 && (
             <section className="mt-7">
-              <h2 className="display text-xl font-bold uppercase tracking-wide text-soft">
-                Rivalries
-              </h2>
+              <h2 className="display text-xl font-bold">Rivalries</h2>
               <p className="text-xs text-soft">
                 Who kept taking the other side of whom — and who came out ahead.
               </p>
@@ -90,7 +85,7 @@ export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolv
                 {recap.rivalries.slice(0, 6).map((r) => (
                   <li key={`${r.a}-${r.b}`} className="flex items-center gap-3 px-4 py-2.5 text-sm">
                     <span
-                      className={`min-w-0 truncate font-semibold ${r.aWins > r.bWins ? "text-felt" : ""}`}
+                      className={`min-w-0 truncate font-semibold ${r.aWins > r.bWins ? "text-up" : ""}`}
                     >
                       {name(r.a)}
                     </span>
@@ -98,7 +93,7 @@ export function RecapPage({ eyebrow, minResolved }: { eyebrow: string; minResolv
                       {r.aWins}–{r.bWins}
                     </span>
                     <span
-                      className={`min-w-0 truncate font-semibold ${r.bWins > r.aWins ? "text-felt" : ""}`}
+                      className={`min-w-0 truncate font-semibold ${r.bWins > r.aWins ? "text-up" : ""}`}
                     >
                       {name(r.b)}
                     </span>
@@ -135,12 +130,12 @@ function Swing({
   return (
     <Link
       href={routes.market(tripId, swing.market.id)}
-      className="card block px-4 py-3 hover:border-felt"
+      className="card block px-4 py-3 hover:border-ink"
     >
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">{label}</p>
+      <p className="eyebrow">{label}</p>
       <p className="mt-0.5 font-semibold">
         {swing.member.name}{" "}
-        <span className={`mono ${swing.profitC > 0 ? "text-felt" : "text-no-deep"}`}>
+        <span className={`mono ${swing.profitC > 0 ? "text-up" : "text-no-deep"}`}>
           <Pies c={swing.profitC} sign />
         </span>
       </p>

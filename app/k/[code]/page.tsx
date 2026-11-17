@@ -38,7 +38,7 @@ export default async function RekeyPage({ params }: { params: Promise<{ code: st
         <SignInKeepingSecret
           code={code}
           href={signInThen(routes.rekey(code))}
-          className="btn btn-felt mt-4 block w-full py-3 text-center"
+          className="btn btn-ink mt-4 block w-full py-3 text-center"
         >
           Sign in
         </SignInKeepingSecret>

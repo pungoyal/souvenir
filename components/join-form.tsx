@@ -92,11 +92,11 @@ export function JoinForm({ code, label }: { code?: string; label?: string }) {
         />
         <span>
           I'm 18 or over and I agree to the{" "}
-          <Link href={routes.terms} className="text-felt hover:underline" target="_blank">
+          <Link href={routes.terms} className="text-link hover:underline" target="_blank">
             terms
           </Link>{" "}
           and{" "}
-          <Link href={routes.privacy} className="text-felt hover:underline" target="_blank">
+          <Link href={routes.privacy} className="text-link hover:underline" target="_blank">
             privacy note
           </Link>
           . Stamps are never money.
@@ -107,7 +107,7 @@ export function JoinForm({ code, label }: { code?: string; label?: string }) {
         type="button"
         onClick={join}
         disabled={pending || !agreed || name.trim().length < 2}
-        className="btn btn-felt mt-3 block w-full py-3"
+        className="btn btn-ink mt-3 block w-full py-3"
       >
         {pending ? "Waiting for your device…" : "Create my passkey"}
       </button>

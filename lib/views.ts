@@ -47,7 +47,7 @@ export interface RosterMember extends Person {
   role: "organiser" | "member";
 }
 
-type People = Map<string, Person>;
+export type People = Map<string, Person>;
 
 export const DEPARTED_NAME = "Departed member";
 

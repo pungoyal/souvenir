@@ -23,14 +23,14 @@ const CURRENCY_KEY = "billCurrency";
 
 const chip = (on: boolean) =>
   `flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-sm font-semibold ${
-    on ? "border-felt bg-felt-tint" : "border-line bg-surface text-soft"
+    on ? "border-ink bg-sun-tint" : "border-line bg-surface text-soft"
   }`;
 
 const field =
-  "w-full rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-felt";
+  "w-full rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ink";
 
 const amountField =
-  "mono w-28 rounded-md border border-line bg-surface px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-felt";
+  "mono w-28 rounded-md border border-line bg-surface px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-ink";
 
 /**
  * Add or edit one bill. Fast path: amount, what for, you paid, split equally; more payers and
@@ -193,9 +193,7 @@ export function BillForm({
 
   return (
     <div className="card p-4">
-      <h3 className="display text-lg font-bold uppercase tracking-wide text-soft">
-        {initial ? "Edit bill" : "Add a bill"}
-      </h3>
+      <h3 className="display text-xl font-bold">{initial ? "Edit bill" : "Add a bill"}</h3>
 
       <div className="mt-3 grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
@@ -208,7 +206,7 @@ export function BillForm({
                   onClick={() => pickCurrency(c)}
                   aria-pressed={currency === c}
                   className={`px-3 py-2 text-sm font-bold ${
-                    currency === c ? "bg-felt text-white" : "bg-surface text-soft hover:text-ink"
+                    currency === c ? "bg-ink text-paper" : "bg-surface text-soft hover:text-ink"
                   }`}
                 >
                   {CURRENCY_SYMBOL[c]} {c.toUpperCase()}
@@ -223,7 +221,7 @@ export function BillForm({
               inputMode="decimal"
               placeholder="0"
               aria-label="Amount"
-              className="mono w-32 rounded-md border border-line bg-surface px-3 py-2 text-lg! font-bold focus:outline-none focus:ring-2 focus:ring-felt"
+              className="mono w-32 rounded-md border border-line bg-surface px-3 py-2 text-lg! font-bold focus:outline-none focus:ring-2 focus:ring-ink"
             />
           ) : (
             <span className="mono text-lg font-bold">{fmtMoney(currency, totalC)}</span>
@@ -242,7 +240,7 @@ export function BillForm({
               if (!e.target.value) e.target.value = onDate;
             }}
             aria-label="Date"
-            className="rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-felt"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ink"
           />
         </div>
 
@@ -256,7 +254,7 @@ export function BillForm({
         />
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-soft">Paid by</p>
+          <p className="eyebrow">Paid by</p>
           {memberChips((id) => payerIds.includes(id), togglePayer)}
           {!singlePayer && (
             <div className="mt-2 grid gap-1.5">
@@ -271,7 +269,7 @@ export function BillForm({
 
         <div>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-soft">Split between</p>
+            <p className="eyebrow">Split between</p>
             <div className="flex overflow-hidden rounded-md border border-line text-xs">
               {(
                 [
@@ -285,7 +283,7 @@ export function BillForm({
                   onClick={() => setSplit(mode)}
                   aria-pressed={split === mode}
                   className={`px-2.5 py-1 font-semibold ${
-                    split === mode ? "bg-felt text-white" : "bg-surface text-soft hover:text-ink"
+                    split === mode ? "bg-ink text-paper" : "bg-surface text-soft hover:text-ink"
                   }`}
                 >
                   {label}
@@ -330,7 +328,7 @@ export function BillForm({
             type="button"
             disabled={pending || totalC <= 0 || (split === "custom" && remainingC !== 0)}
             onClick={submit}
-            className="btn btn-felt display px-4 py-2 text-base font-bold uppercase"
+            className="btn btn-ink display px-4 py-2 text-base font-bold"
           >
             {initial ? "Save changes" : "Add bill"}
           </button>

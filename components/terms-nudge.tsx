@@ -12,18 +12,18 @@ import { ActError, useAct } from "./use-act";
 export function TermsNudge() {
   const { pending, error, act } = useAct("Try again.");
   return (
-    <div className="mx-auto mt-4 max-w-5xl px-4">
-      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-gold/40 bg-gold/10 px-4 py-3">
+    <div className="mx-auto mt-4 max-w-2xl px-5">
+      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-sun bg-sun-tint px-4 py-3">
         <div className="min-w-64 flex-1">
           <p className="font-semibold">One tick before you carry on.</p>
           <p className="text-sm text-soft">
             Souvenir is for adults, stamps are never money, and we keep only what the game needs.
             Read the{" "}
-            <Link href={routes.terms} className="text-felt hover:underline">
+            <Link href={routes.terms} className="text-link hover:underline">
               terms
             </Link>{" "}
             and{" "}
-            <Link href={routes.privacy} className="text-felt hover:underline">
+            <Link href={routes.privacy} className="text-link hover:underline">
               privacy note
             </Link>
             , then confirm you're 18 or over.
@@ -34,7 +34,7 @@ export function TermsNudge() {
           type="button"
           disabled={pending}
           onClick={() => act(acceptTermsAction)}
-          className="btn btn-felt px-4 py-2 text-sm"
+          className="btn btn-ink px-4 py-2 text-sm"
         >
           I'm 18+ and I agree
         </button>

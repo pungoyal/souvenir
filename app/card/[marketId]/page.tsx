@@ -37,14 +37,14 @@ export default async function CardPage({ params }: { params: Promise<{ marketId:
   return (
     <div className="mx-auto max-w-md">
       <div className="card overflow-hidden">
-        <div className="bg-felt-deep px-5 py-4 text-[#f1eee4]">
+        <div className="bg-night px-5 py-4 text-[#ffffff]">
           <p className="text-xs uppercase tracking-wider text-white/60">
             {there?.flag} {card.tripName} · {fmtDate(card.at)}
           </p>
-          <p className="display mt-1 text-3xl font-extrabold leading-tight">{card.question}</p>
+          <p className="display mt-1 text-3xl font-bold leading-tight">{card.question}</p>
         </div>
         <div className="px-5 py-4">
-          <p className="display text-xl font-bold uppercase tracking-wide">
+          <p className="display text-xl font-bold">
             {card.verdict === "refunded" && "Voided — everyone got their stamps back"}
             {settled && (
               <>
@@ -58,14 +58,12 @@ export default async function CardPage({ params }: { params: Promise<{ marketId:
           {settled && (
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-                  Called it
-                </p>
+                <p className="eyebrow">Called it</p>
                 <ul className="mt-1 space-y-1 text-sm">
                   {card.winners.map((w) => (
                     <li key={w.name} className="flex justify-between">
                       <span className="font-semibold">{w.name}</span>
-                      <span className="mono text-felt">
+                      <span className="mono text-up">
                         <Pies c={w.profitC} sign />
                       </span>
                     </li>
@@ -74,9 +72,7 @@ export default async function CardPage({ params }: { params: Promise<{ marketId:
                 </ul>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-                  Paid for it
-                </p>
+                <p className="eyebrow">Paid for it</p>
                 <ul className="mt-1 space-y-1 text-sm">
                   {card.losers.map((l) => (
                     <li key={l.name} className="flex justify-between">
@@ -109,7 +105,7 @@ export default async function CardPage({ params }: { params: Promise<{ marketId:
         </div>
         <Link
           href={me ? routes.trips : routes.home}
-          className="btn btn-felt shrink-0 px-3 py-2 text-sm"
+          className="btn btn-ink shrink-0 px-3 py-2 text-sm"
         >
           {me ? "Your trips" : "Start yours"}
         </Link>

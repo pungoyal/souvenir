@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { JoinForm } from "@/components/join-form";
-import { Logo } from "@/components/logo";
+import { Postmark } from "@/components/postmark";
 import { googleConfigured, passkeysConfigured } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import { currentMember } from "@/lib/session";
@@ -13,29 +13,37 @@ export default async function Landing() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <section className="mt-6 text-center">
-        <Logo size={72} className="mx-auto rounded-2xl" />
-        <p className="eyebrow mt-5">For a friend group going somewhere</p>
-        <h1 className="display mt-2 text-5xl font-extrabold uppercase leading-none tracking-wide sm:text-6xl">
-          One private page
+      <section className="mt-2 rounded-3xl bg-sun p-6 text-[#12141a] sm:p-10">
+        <div className="flex items-start justify-between gap-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.06em]">
+            For a friend group going somewhere
+          </p>
+          <Postmark
+            place="Wherever you're going"
+            year={String(new Date().getFullYear())}
+            top="Go"
+          />
+        </div>
+        <h1 className="display mt-2 text-[40px] font-bold leading-[1.05] sm:text-6xl">
+          One private app
           <br />
           for the whole trip
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-soft">
-          Predictions about the trip itself, a leaderboard that settles the arguments, the bills
-          split in two currencies, and an interpreter for the places you can't read the menu —
-          shared by one link, readable only by the people on it.
+        <p className="mt-4 max-w-xl text-lg">
+          It opens on what needs you today: the bill you haven't settled, the question the group is
+          arguing about, the phrase for the taxi. Shared by one link, readable only by the people on
+          it.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <a href="#start" className="btn btn-felt display px-5 py-3 text-xl font-bold uppercase">
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a href="#start" className="btn h-14 bg-[#12141a] px-6 text-lg text-white">
             Open a trip
           </a>
-          <Link href={routes.signin} className="btn btn-line px-5 py-3">
+          <Link href={routes.signin} className="btn h-14 border-[1.5px] border-[#12141a] px-6">
             Sign in
           </Link>
         </div>
-        <p className="mt-3 text-xs text-soft">
-          Free. Works in the browser on any phone — nothing to install, no email needed to join.
+        <p className="mt-4 text-sm">
+          Free. Works in the browser on any phone. Nothing to install, no email needed to join.
         </p>
       </section>
 
@@ -60,7 +68,7 @@ export default async function Landing() {
       <section className="mt-14 grid gap-4 sm:grid-cols-3">
         <Feature
           title="Call it"
-          body="Anyone opens a prediction with plain rules for what counts. Everyone backs YES or NO with stamps. When it resolves, the winning side splits exactly what the other side put in — no house, just who read the group best. The leaderboard ranks the season."
+          body="Anyone asks a yes-or-no question with plain rules for what counts. Everyone backs a side with stamps. When it resolves, the winning side splits exactly what the other side put in — no house, just who read the group best. The leaderboard ranks the season."
         />
         <Feature
           title="Split it"
@@ -74,9 +82,7 @@ export default async function Landing() {
 
       <section className="mt-14 card p-6">
         <p className="eyebrow">Private by design</p>
-        <p className="display mt-1 text-3xl font-extrabold uppercase tracking-wide">
-          Your trip stays between you
-        </p>
+        <p className="display mt-1 text-3xl font-bold">Your trip stays between you</p>
         <div className="mt-3 grid gap-4 text-sm text-soft sm:grid-cols-2">
           <p>
             Everything the group writes — every call, comment, bill and verdict — is locked on your
@@ -91,7 +97,7 @@ export default async function Landing() {
             passkey that supports it keeps a sealed backup of your keys too, so signing in on a new
             device just works. Someone leaves? The organiser turns the key and everyone still on the
             trip gets the new one.{" "}
-            <Link href={routes.privacy} className="text-felt hover:underline">
+            <Link href={routes.privacy} className="text-link hover:underline">
               The plain-words version
             </Link>
           </p>
@@ -113,9 +119,7 @@ export default async function Landing() {
 
       <section id="start" className="mx-auto mt-14 max-w-sm card p-6">
         <p className="eyebrow">Open a trip</p>
-        <p className="display text-3xl font-extrabold uppercase tracking-wide">
-          You're the organiser
-        </p>
+        <p className="display text-3xl font-bold">You're the organiser</p>
         <p className="mt-1 text-sm text-soft">
           Make a passkey — Face ID, a fingerprint, your phone — and open the first trip. Takes a
           minute; your friends need nothing but the link.
@@ -128,7 +132,7 @@ export default async function Landing() {
         {googleConfigured && (
           <p className="mt-4 text-center text-xs text-soft">
             Rather use Google?{" "}
-            <Link href={routes.signin} className="text-felt hover:underline">
+            <Link href={routes.signin} className="text-link hover:underline">
               Sign in that way
             </Link>
             .
@@ -151,8 +155,10 @@ export default async function Landing() {
 function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
     <li className="card p-4">
-      <p className="mono text-xs text-gold">{n}</p>
-      <p className="display mt-1 text-2xl font-extrabold uppercase tracking-wide">{title}</p>
+      <p className="mono flex h-8 w-8 items-center justify-center rounded-full bg-sun font-bold text-[#12141a]">
+        {n}
+      </p>
+      <p className="display mt-3 text-xl font-bold">{title}</p>
       <p className="mt-1 text-sm text-soft">{children}</p>
     </li>
   );
@@ -161,11 +167,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
 function Feature({ title, body, small = false }: { title: string; body: string; small?: boolean }) {
   return (
     <div className="card p-4">
-      <p
-        className={`display font-extrabold uppercase tracking-wide ${small ? "text-xl" : "text-2xl"}`}
-      >
-        {title}
-      </p>
+      <p className={`display font-bold ${small ? "text-xl" : "text-2xl"}`}>{title}</p>
       <p className="mt-1 text-sm text-soft">{body}</p>
     </div>
   );

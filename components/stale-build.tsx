@@ -52,8 +52,8 @@ export function StaleBuild() {
   if (!shown) return null;
 
   return (
-    <div className="mx-auto mt-4 max-w-5xl px-4">
-      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-gold/40 bg-gold/10 px-4 py-3">
+    <div className="mx-auto mt-4 max-w-2xl px-5">
+      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-sun bg-sun-tint px-4 py-3">
         <div className="min-w-64 flex-1">
           <p className="font-semibold">Souvenir updated while this page was open.</p>
           <p className="text-sm text-soft">
@@ -65,7 +65,7 @@ export function StaleBuild() {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="btn btn-felt px-4 py-2 text-sm"
+          className="btn btn-ink px-4 py-2 text-sm"
         >
           Reload
         </button>

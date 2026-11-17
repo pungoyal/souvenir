@@ -2,6 +2,8 @@ export const routes = {
   home: "/",
   signin: "/signin",
   trips: "/trips",
+  // The list itself, even for a member with one trip (who is otherwise sent straight to it).
+  allTrips: "/trips?all=1",
   newTrip: "/trips/new",
   account: "/account",
   terms: "/terms",
@@ -12,7 +14,8 @@ export const routes = {
   card: (marketId: string) => `/card/${marketId}`,
 
   trip: (tripId: string) => `/t/${tripId}`,
-  settled: (tripId: string) => `/t/${tripId}?view=settled`,
+  calls: (tripId: string, tab?: "yours" | "done") =>
+    tab ? `/t/${tripId}/calls?tab=${tab}` : `/t/${tripId}/calls`,
   newMarket: (tripId: string) => `/t/${tripId}/new`,
   market: (tripId: string, marketId: string) => `/t/${tripId}/p/${marketId}`,
   members: (tripId: string) => `/t/${tripId}/members`,

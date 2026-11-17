@@ -2,81 +2,92 @@
 
 /* Plain @theme (not inline) so utilities reference variables the dark blocks can swap. */
 @theme {
-  /* Colorblind-safe duality: YES = ultramarine, NO = burnt orange. */
-  --color-paper: #f1eee4;
-  --color-surface: #fbfaf4;
-  --color-ink: #21261f;
-  --color-soft: #6b7365;
-  --color-line: #d9d4c2;
-  --color-felt: #1f4a38;
-  --color-felt-deep: #143024;
-  --color-felt-tint: #e2eae2;
-  --color-yes: #2b57a5;
-  --color-yes-deep: #1d3f7c;
-  --color-yes-tint: #e4ebf8;
-  --color-yes-press: #1d3f7c;
-  --color-no: #bd521c;
-  --color-no-deep: #93400f;
-  --color-no-tint: #f8eadd;
-  --color-no-press: #93400f;
-  --color-gold: #a97e22;
+  /* Cool ground, white cards, near-black ink, one marigold accent.
+     Colorblind-safe duality: YES = blue, NO = burnt orange. */
+  --color-paper: #eef0f3;
+  --color-surface: #ffffff;
+  --color-ink: #12141a;
+  --color-soft: #565c6b;
+  --color-line: #dfe2e8;
+  /* The dark panel (money hero, the stranger's side of talk) stays dark in both themes. */
+  --color-night: #12141a;
+  --color-night-soft: #c9cdd6;
+  --color-night-line: #2a2e38;
+  --color-sun: #ffc229;
+  --color-sun-tint: #fff4d1;
+  --color-sun-deep: #8a5a00;
+  --color-link: #1b45c0;
+  --color-up: #17703f;
+  --color-yes: #2456e6;
+  --color-yes-deep: #1b45c0;
+  --color-yes-tint: #e6ecfd;
+  --color-yes-press: #1b45c0;
+  --color-no: #c7410d;
+  --color-no-deep: #9a3209;
+  --color-no-tint: #fce9df;
+  --color-no-press: #9a3209;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
 }
 
 /* Inline: next/font variables are set on <body>, not :root. */
 @theme inline {
-  --font-display: var(--font-big-shoulders);
-  --font-sans: var(--font-instrument), system-ui, sans-serif;
-  --font-mono: var(--font-spline-mono), ui-monospace, monospace;
-}
-
-:root {
-  --grain: rgba(33, 38, 31, 0.035);
+  --font-display: var(--font-grotesk), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-grotesk), system-ui, sans-serif;
 }
 
 /* Dark: chosen explicitly, or (below) the OS preference absent a choice. Deep text colors
    lighten, tint backgrounds darken. */
 :root[data-theme="dark"] {
-  --color-paper: #161a15;
-  --color-surface: #20251e;
-  --color-ink: #e9e6d8;
-  --color-soft: #97a08e;
-  --color-line: #3a4135;
-  --color-felt: #3f8a64;
-  --color-felt-deep: #0e2018;
-  --color-felt-tint: #203126;
-  --color-yes: #3d6cb8;
-  --color-yes-deep: #9db9e8;
-  --color-yes-tint: #1f2c44;
-  --color-yes-press: #315a9e;
-  --color-no: #c05a20;
-  --color-no-deep: #eda06d;
-  --color-no-tint: #3b2413;
-  --color-no-press: #a04a18;
-  --color-gold: #c9a04a;
-  --grain: rgba(233, 230, 216, 0.03);
+  --color-paper: #0e1014;
+  --color-surface: #1a1d24;
+  --color-ink: #f1f2f5;
+  --color-soft: #a3a9b8;
+  --color-line: #2d313b;
+  --color-night: #262a34;
+  --color-night-soft: #c9cdd6;
+  --color-night-line: #3b404d;
+  --color-sun-tint: #3a2e0a;
+  --color-sun-deep: #ffd466;
+  --color-link: #a9bffa;
+  --color-up: #5fcb93;
+  --color-yes: #2f5fe8;
+  --color-yes-deep: #a9bffa;
+  --color-yes-tint: #1a2548;
+  --color-yes-press: #2450cc;
+  --color-no: #c7410d;
+  --color-no-deep: #f3a27e;
+  --color-no-tint: #3d1f12;
+  --color-no-press: #a8370b;
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-paper: #161a15;
-    --color-surface: #20251e;
-    --color-ink: #e9e6d8;
-    --color-soft: #97a08e;
-    --color-line: #3a4135;
-    --color-felt: #3f8a64;
-    --color-felt-deep: #0e2018;
-    --color-felt-tint: #203126;
-    --color-yes: #3d6cb8;
-    --color-yes-deep: #9db9e8;
-    --color-yes-tint: #1f2c44;
-    --color-yes-press: #315a9e;
-    --color-no: #c05a20;
-    --color-no-deep: #eda06d;
-    --color-no-tint: #3b2413;
-    --color-no-press: #a04a18;
-    --color-gold: #c9a04a;
-    --grain: rgba(233, 230, 216, 0.03);
+    --color-paper: #0e1014;
+    --color-surface: #1a1d24;
+    --color-ink: #f1f2f5;
+    --color-soft: #a3a9b8;
+    --color-line: #2d313b;
+    --color-night: #262a34;
+    --color-night-soft: #c9cdd6;
+    --color-night-line: #3b404d;
+    --color-sun-tint: #3a2e0a;
+    --color-sun-deep: #ffd466;
+    --color-link: #a9bffa;
+    --color-up: #5fcb93;
+    --color-yes: #2f5fe8;
+    --color-yes-deep: #a9bffa;
+    --color-yes-tint: #1a2548;
+    --color-yes-press: #2450cc;
+    --color-no: #c7410d;
+    --color-no-deep: #f3a27e;
+    --color-no-tint: #3d1f12;
+    --color-no-press: #a8370b;
     color-scheme: dark;
   }
 }
@@ -84,30 +95,26 @@
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);
-  font-family: var(--font-instrument), system-ui, sans-serif;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 31px,
-    var(--grain) 31px,
-    var(--grain) 32px
-  );
+  font-family: var(--font-inter), system-ui, sans-serif;
 }
 
+/* In the components layer, so a utility at the call site (a tint, a border) still wins. */
+@layer components {
 .display {
   font-family: var(--font-display);
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
+/* Numbers: the heading face, with figures that line up in a column. */
 .mono {
-  font-family: var(--font-spline-mono), ui-monospace, monospace;
+  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
 }
 
 /* Structure only; size, padding and type stay utilities at the call site. */
 .card {
-  border: 1px solid var(--color-line);
-  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
   background-color: var(--color-surface);
 }
 
@@ -115,41 +122,82 @@ body {
   border-top: 1px solid var(--color-line);
 }
 
-/* Size and type stay utilities at the call site (`btn btn-felt px-4 py-2 text-sm`). */
+/* Type and padding stay utilities at the call site (`btn btn-ink px-4 text-sm`); the height
+   is here, so nothing tappable is under 44px. */
 .btn {
-  border-radius: 0.375rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  text-align: center;
 }
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-.btn-felt {
-  background-color: var(--color-felt);
+.btn-ink {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+}
+.btn-ink:hover:not(:disabled) {
+  background-color: color-mix(in oklab, var(--color-ink) 86%, var(--color-paper));
+}
+.btn-sun {
+  background-color: var(--color-sun);
+  color: #12141a;
+}
+.btn-sun:hover:not(:disabled) {
+  background-color: color-mix(in oklab, var(--color-sun) 88%, #12141a);
+}
+.btn-yes {
+  background-color: var(--color-yes);
   color: #fff;
 }
-.btn-felt:hover:not(:disabled) {
-  background-color: var(--color-felt-deep);
+.btn-yes:hover:not(:disabled) {
+  background-color: var(--color-yes-press);
 }
 .btn-no {
   background-color: var(--color-no);
   color: #fff;
 }
 .btn-no:hover:not(:disabled) {
-  background-color: var(--color-no-deep);
+  background-color: var(--color-no-press);
 }
 .btn-line {
-  border: 1px solid var(--color-line);
+  border: 1.5px solid var(--color-line);
+  background-color: var(--color-surface);
+  font-weight: 600;
 }
 .btn-line:hover:not(:disabled) {
-  background-color: color-mix(in oklab, var(--color-ink) 7%, transparent);
+  background-color: color-mix(in oklab, var(--color-ink) 6%, var(--color-surface));
+}
+.btn-link {
+  min-height: 2.75rem;
 }
 .btn-link:hover:not(:disabled) {
   text-decoration: underline;
 }
 
+/* One field, everywhere: 48px tall, 16px type so iOS never zooms. */
+.field {
+  width: 100%;
+  min-height: 3rem;
+  border: 1.5px solid var(--color-line);
+  border-radius: 0.875rem;
+  background-color: var(--color-surface);
+  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+}
+.field::placeholder {
+  color: var(--color-soft);
+}
+}
+
 :focus-visible {
-  outline: 2px solid var(--color-felt);
+  outline: 2px solid var(--color-yes);
   outline-offset: 2px;
 }
 
@@ -163,24 +211,29 @@ body {
   }
 }
 
-/* Zari border under the header and on the sign-in slip. Fixed gold: it trims the dark felt band
-   and still reads on light paper. */
-.zari {
-  height: 7px;
-  background-image: linear-gradient(to bottom, #c9a04a, #c9a04a),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5'%3E%3Cpath d='M0 0h10L5 5Z' fill='%23c9a04a'/%3E%3C/svg%3E");
-  background-repeat: no-repeat, repeat-x;
-  background-size: 100% 2px, 10px 5px;
-  background-position: 0 0, 0 2px;
+@layer components {
+/* Small functional label above a heading, so navigation words stay findable. */
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-soft);
 }
 
-/* Small functional label above a personality H1, so navigation words stay findable. */
-.eyebrow {
-  font-size: 11px;
-  font-weight: 600;
+/* A verdict, inked on at an angle like a stamp in a passport. */
+.inked {
+  display: inline-block;
+  border: 2px solid currentColor;
+  border-radius: 0.375rem;
+  padding: 0.0625rem 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-gold);
+  transform: rotate(-4deg);
+}
 }
 
 .pool-fill {
@@ -193,7 +246,12 @@ body {
   }
 }
 
-/* The header's theme toggle shows the right icon without client state. */
+/* The trip's tabs sit at the bottom of the screen; the page and the footer end above them. */
+body:has([data-trip-nav]) footer {
+  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+}
+
+/* The theme toggle shows the right label without client state. */
 .dark-only {
   display: none;
 }

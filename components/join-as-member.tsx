@@ -39,7 +39,7 @@ export function JoinAsMember({
         type="button"
         disabled={pending}
         onClick={join}
-        className="btn btn-felt block w-full py-3"
+        className="btn btn-ink block w-full py-3"
       >
         {pending
           ? seated

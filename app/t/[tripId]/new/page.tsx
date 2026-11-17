@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { NewMarketForm } from "@/components/new-market-form";
 import { Sealed } from "@/components/sealed";
 import { lingoOf } from "@/lib/lingo";
 import { llmEnabled } from "@/lib/llm";
+import { routes } from "@/lib/routes";
 import { requireTrip } from "@/lib/session";
 
 export default async function NewMarketPage({
@@ -15,15 +17,16 @@ export default async function NewMarketPage({
   const { me, trip } = await requireTrip(tripId);
   const { q, c } = await searchParams;
   const t = lingoOf(me.lingo);
-  const initial = q && c ? { question: q.slice(0, 200), criteria: c.slice(0, 2000) } : undefined;
+  const initial = q ? { question: q.slice(0, 200), criteria: (c ?? "").slice(0, 2000) } : undefined;
   return (
-    <div className="mx-auto max-w-2xl">
-      <p className="eyebrow">New prediction</p>
-      <h1 className="display text-4xl font-extrabold uppercase tracking-wide">{t.newTitle}</h1>
+    <div>
+      <Link href={routes.calls(tripId)} className="flex min-h-11 items-center text-sm text-soft">
+        ← Calls
+      </Link>
+      <h1 className="display text-[28px] font-bold leading-tight">{t.newTitle}</h1>
       <p className="mt-1 text-sm text-soft">
-        One binary question. Say exactly how you'll decide YES or NO — you're the one who resolves
-        it, and the criteria go on the permanent record. Everyone can put up to {trip.maxStakePies}{" "}
-        stamps on either side.
+        One yes-or-no question, and exactly how you'll decide it. You're the one who resolves it.
+        Everyone can put up to {trip.maxStakePies} stamps on either side.
       </p>
       <div className="mt-5">
         <Sealed>

@@ -7,12 +7,12 @@ import { useEffect } from "react";
 import { sendReport } from "@/components/error-reporter";
 import { routes } from "@/lib/routes";
 
-const paper = "#f1eee4";
-const surface = "#fbfaf4";
-const ink = "#21261f";
-const soft = "#6b7365";
-const line = "#d9d4c2";
-const felt = "#1f4a38";
+const paper = "#eef0f3";
+const surface = "#ffffff";
+const ink = "#12141a";
+const soft = "#565c6b";
+const line = "#dfe2e8";
+const felt = "#12141a";
 
 export default function GlobalError({
   error,

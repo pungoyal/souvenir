@@ -72,8 +72,8 @@ export function BackupNudge({
     });
 
   return (
-    <div className="mx-auto mt-4 max-w-5xl px-4">
-      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-gold/40 bg-gold/10 px-4 py-3">
+    <div className="mx-auto mt-4 max-w-2xl px-5">
+      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 border-sun bg-sun-tint px-4 py-3">
         <div className="min-w-64 flex-1">
           <p className="font-semibold">Back your trip keys up under your passkey.</p>
           <p className="text-sm text-soft">
@@ -88,7 +88,7 @@ export function BackupNudge({
             type="button"
             disabled={pending}
             onClick={backUp}
-            className="rounded-md bg-felt px-3 py-2 text-sm font-semibold text-white hover:bg-felt-deep disabled:opacity-40"
+            className="btn btn-ink px-4 text-sm"
           >
             {pending ? "Waiting for your device…" : "Back up now"}
           </button>

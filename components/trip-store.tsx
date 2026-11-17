@@ -42,6 +42,8 @@ export interface TripStoreValue {
   /** The trip's name: `undefined` while the key is loading, `null` when this phone cannot read it. */
   name: string | null | undefined;
   me: RosterMember;
+  /** The cap on one member's stamps on one prediction, in whole stamps. */
+  maxStakePies: number;
   lingo: string;
   t: Lingo;
   roster: RosterMember[];
@@ -363,6 +365,7 @@ export function TripStoreProvider({
       epoch,
       name,
       me,
+      maxStakePies: config.maxStakePies,
       lingo,
       t,
       roster,
@@ -382,6 +385,7 @@ export function TripStoreProvider({
       epoch,
       name,
       me,
+      config.maxStakePies,
       lingo,
       t,
       roster,

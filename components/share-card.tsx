@@ -93,7 +93,7 @@ export function ShareCard({
           type="button"
           disabled={pending}
           onClick={share}
-          className="btn btn-felt px-3 py-1.5 text-sm"
+          className="btn btn-ink px-3 py-1.5 text-sm"
         >
           Share the verdict
         </button>

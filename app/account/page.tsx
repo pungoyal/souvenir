@@ -1,8 +1,10 @@
+import { signOutAction } from "@/app/actions";
 import { AccountForms } from "@/components/account-forms";
 import { Avatar } from "@/components/avatar";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { LingoPicker } from "@/components/lingo-picker";
 import { PasskeyManager } from "@/components/passkeys";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { RP_ID } from "@/lib/auth";
 import { listPasskeySummaries, listTrips } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
@@ -19,7 +21,7 @@ export default async function AccountPage() {
         <Avatar member={me} size={56} />
         <div className="min-w-0">
           <p className="eyebrow">Your account</p>
-          <h1 className="display break-words text-3xl font-extrabold sm:text-4xl">{me.name}</h1>
+          <h1 className="display break-words text-[28px] font-bold leading-tight">{me.name}</h1>
           <p className="break-words text-sm text-soft">
             Since {fmtDate(me.joinedAt)} · {trips.length} trip{trips.length === 1 ? "" : "s"}
             {me.email && ` · ${me.email}`}
@@ -32,7 +34,7 @@ export default async function AccountPage() {
       </div>
 
       <section className="mt-7">
-        <h2 className="display text-xl font-bold uppercase tracking-wide text-soft">Passkeys</h2>
+        <h2 className="display text-xl font-bold">Passkeys</h2>
         <p className="text-xs text-soft">
           How you sign in. Each one is a key your own device holds — all we keep is its public half,
           which can verify a signature and nothing else. Add one per device you use, so a lost phone
@@ -40,6 +42,18 @@ export default async function AccountPage() {
         </p>
         <div className="mt-3">
           <PasskeyManager passkeys={passkeys} rpId={RP_ID} />
+        </div>
+      </section>
+
+      <section className="mt-7">
+        <h2 className="display text-xl font-bold">This phone</h2>
+        <div className="card mt-3 flex flex-wrap items-center gap-2 p-4">
+          <ThemeToggle />
+          <form action={signOutAction}>
+            <button type="submit" className="btn btn-line px-4 text-sm">
+              Sign out
+            </button>
+          </form>
         </div>
       </section>
 

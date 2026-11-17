@@ -9,15 +9,27 @@ import type { StarterDraft } from "@/lib/starters";
  */
 export function Starters({ tripId, drafts }: { tripId: string; drafts: StarterDraft[] }) {
   return (
-    <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+    <ul className="mt-2 grid gap-2">
       {drafts.map((d) => (
         <li key={d.key}>
           <Link
             href={`${routes.newMarket(tripId)}?q=${encodeURIComponent(d.question)}&c=${encodeURIComponent(d.criteria)}`}
-            className="card block px-4 py-3 hover:border-felt"
+            className="card flex min-h-14 items-center justify-between gap-3 px-4 py-2.5 font-semibold"
           >
-            <p className="font-semibold">{d.question}</p>
-            <p className="mt-1 line-clamp-2 text-xs text-soft">{d.criteria}</p>
+            <span>{d.question}</span>
+            <svg
+              aria-hidden="true"
+              className="shrink-0"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            >
+              <path d="M8 3v10M3 8h10" />
+            </svg>
           </Link>
         </li>
       ))}

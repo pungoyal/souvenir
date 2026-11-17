@@ -103,7 +103,7 @@ export function CommentsSection({
                         // biome-ignore lint/suspicious/noArrayIndexKey: segments are positional by construction
                         key={i}
                         className={`font-semibold ${
-                          segment.memberId === meId ? "text-gold" : "text-felt"
+                          segment.memberId === meId ? "text-sun-deep" : "text-link"
                         }`}
                       >
                         {segment.text}
@@ -132,7 +132,7 @@ export function CommentsSection({
             setCaret(e.target.selectionStart);
           }}
           onSelect={(e) => setCaret(e.currentTarget.selectionStart)}
-          className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-felt"
+          className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ink"
         />
         {suggestions.length > 0 && (
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">

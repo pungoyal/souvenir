@@ -45,7 +45,7 @@ export function RecoveryPanel({
   );
 
   return (
-    <div className="card border-gold/40 bg-gold/10 px-4 py-3">
+    <div className="card border-sun bg-sun-tint px-4 py-3">
       <p className="font-semibold">Lost every passkey?</p>
       <p className="mt-0.5 text-xs text-soft">
         A recovery link puts a new passkey on {memberName}'s seat. Whoever opens it becomes{" "}

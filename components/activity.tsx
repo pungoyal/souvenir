@@ -10,9 +10,9 @@ function phrase(item: ActivityItem): string {
   const amount = piesText(item.row.amountC);
   switch (item.row.kind) {
     case "bet":
-      return `put ${amount} on ${item.row.side?.toUpperCase()}`;
+      return `put ${amount} on ${item.row.side}`;
     case "switch":
-      return `switched ${amount} to ${item.row.side?.toUpperCase()}`;
+      return `switched ${amount} to ${item.row.side}`;
     case "payout":
       return `collected ${amount}`;
     case "refund":
@@ -41,7 +41,7 @@ export function ActivityFeed({
     <ul className="space-y-2.5">
       {items.map((item) => (
         <li key={item.row.id} className="flex items-start gap-2 text-sm">
-          <Avatar member={item.member} size={22} />
+          <Avatar member={item.member} size={24} />
           <span className="min-w-0">
             <span className="font-semibold">{item.member.name}</span> {phrase(item)}
             {showMarket && item.market && (
@@ -49,7 +49,7 @@ export function ActivityFeed({
                 {" — "}
                 <Link
                   href={routes.market(tripId, item.market.id)}
-                  className="text-felt underline decoration-line underline-offset-2 hover:decoration-felt"
+                  className="underline decoration-line underline-offset-2"
                 >
                   {item.market.question}
                 </Link>

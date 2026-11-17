@@ -41,9 +41,7 @@ export function ReactionBar({
           onClick={() => toggle(kind, !mine)}
           title={reactors.map((r) => r.name).join(", ")}
           className={`rounded-md border px-3 py-1.5 text-sm font-semibold disabled:opacity-40 ${
-            mine
-              ? "border-gold/60 bg-gold/20"
-              : "border-line text-soft hover:bg-paper hover:text-ink"
+            mine ? "border-sun bg-sun-tint" : "border-line text-soft hover:bg-paper hover:text-ink"
           }`}
         >
           {mine ? activeLabel : label}

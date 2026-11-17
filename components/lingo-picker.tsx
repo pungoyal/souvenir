@@ -10,7 +10,7 @@ export function LingoPicker({ current }: { current: string }) {
   return (
     <div>
       <label className="flex items-center gap-2 text-sm">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-soft">Lingo</span>
+        <span className="eyebrow">Lingo</span>
         <select
           value={current}
           disabled={pending}
