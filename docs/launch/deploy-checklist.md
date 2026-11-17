@@ -3,7 +3,7 @@
 Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
 and over SSH pulls it on the box and runs `docker compose up -d` — the
 one-shot `migrate` service against the live database, then `app`
-(`README.md`, *Deployment*). The box's `.env` is **rendered on every deploy
+(`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
 from the GitHub environment `oracle-cloud`** (`.github/workflows/ci.yml`):
 a variable lives there or nowhere, and editing the file on the box lasts
 until the next push. Nothing here needs a hand on the running containers;
@@ -15,7 +15,7 @@ what needs a hand is that environment, and a backup when the schema moves.
    a new or changed variable in `lib/env.ts` (`.env.example` documents each).
 2. **Migration?** Back up first — `docker exec souvenir-db-1 pg_dump -U souvenir souvenir > backup-$(date +%F).sql` on the box. Migrations are forward-only and some have been destructive.
 3. **New variable?** Add it to `ci.yml`'s `.env` heredoc and set it in the
-   `oracle-cloud` environment *before* pushing; a required one missing stops
+   `oracle-cloud` environment _before_ pushing; a required one missing stops
    the app at boot (`lib/env.ts` refuses to start), an optional one missing
    silently hides its feature. A blank value is the same as unset.
 4. **Push `main`.** Watch the Actions run to the deploy job.
@@ -53,7 +53,7 @@ for every other language; without it such a language gets the device's voice
 or none). The key is `LLM_API_KEY` unless a `SPEECH_API_KEY` secret says
 otherwise. `POST /v1/get_voice` lists the account's voices.
 
-**Check before anyone hears it**: run the *Speech check* workflow from the
+**Check before anyone hears it**: run the _Speech check_ workflow from the
 Actions tab (`pnpm speech:check` with the environment's values: a greeting
 per language, failing on any the vendor refuses, one clip each to play).
 Then redeploy. Locally it runs against a `.env`; on the box:

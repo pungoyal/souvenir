@@ -1,6 +1,6 @@
 # WhatsApp seed messages
 
-The invite link's own preview (the table, the names, the open calls) is the ad. These are the one-liners that go *above* it. Short, personal, never salesy; Hinglish only in groups where that's how you already talk.
+The invite link's own preview (the table, the names, the open calls) is the ad. These are the one-liners that go _above_ it. Short, personal, never salesy; Hinglish only in groups where that's how you already talk.
 
 ## To a group that is "planning" a trip
 

@@ -6,7 +6,7 @@ and stamps are never money.
 
 The lens: the app has what a group chat lacks — a roster, a sealed shared
 record, and a per-trip clock (`tripToday`). The best ideas turn daily
-logistics *into* the record, so the game feeds itself.
+logistics _into_ the record, so the game feeds itself.
 
 ## Make it the thing you open ten times a day (during the trip)
 
@@ -28,10 +28,10 @@ logistics *into* the record, so the game feeds itself.
 5. **The kitty.** Most groups have one person holding cash for taxis. Model a
    float (contributions in, spend out) inside bills — a constant real-world
    pattern the split model doesn't express.
-7. **Last-day settle sheet.** The trip knows when it ends *there*; on that
+6. **Last-day settle sheet.** The trip knows when it ends _there_; on that
    day, surface what is still open and a shareable text card for the chat
    (like `ShareRecap` — never a payment link).
-8. **Sealed receipt photo on a bill.** `lib/crypto` already has blobs. "What
+7. **Sealed receipt photo on a bill.** `lib/crypto` already has blobs. "What
    was the ฿12,000 for?" is answered by a picture the server cannot read.
    Watch the size.
 

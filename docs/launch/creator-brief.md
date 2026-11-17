@@ -7,7 +7,7 @@
 2. Drop the link in their group; film the friends reacting to the first calls ("Will X be late to the airport?").
 3. Post the verdict card or the recap when it resolves, with the link in bio.
 
-**What we give them:** nothing but the product and ₹2–5K on delivery. No script. The only required line: *"stamps are play money, nobody wins anything but the argument."*
+**What we give them:** nothing but the product and ₹2–5K on delivery. No script. The only required line: _"stamps are play money, nobody wins anything but the argument."_
 
 **What we want them to say in their own voice:** the trip that never happens; the friend who backs out; the friend who plans everything; who paid for what.
 

@@ -53,7 +53,7 @@ Per-trip, one-pays-for-all (Settle Up); loss-leader for a financial product (Tri
 ## Implications
 
 - Do not build another itinerary app, nor a pure split app (crowded, Paytm is free) unless UPI-native.
-- The unsolved pain is social: a *mechanism that changes behaviour inside the group* (commitment, visible accountability, a game) that a spreadsheet cannot do.
+- The unsolved pain is social: a _mechanism that changes behaviour inside the group_ (commitment, visible accountability, a game) that a spreadsheet cannot do.
 - Ship inside WhatsApp: link-joinable, no install, one owner, guests see the page before joining.
 - Price per trip to one person, or take nothing from the group and monetise a keepsake/affiliate layer.
 - Beachhead: Indian outbound SE Asia groups.

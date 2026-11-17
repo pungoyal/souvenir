@@ -1,6 +1,6 @@
 # Souvenir — agent notes
 
-Friend groups open a *trip*, join by link, and play a zero-sum play-money
+Friend groups open a _trip_, join by link, and play a zero-sum play-money
 prediction game about it, with split bills and a two-way interpreter beside.
 Next.js 16 App Router + server actions, Postgres via Drizzle, dependency-free
 passkeys + Google OAuth (`lib/auth.ts`). Multi-tenant: everything hangs off a
@@ -44,7 +44,7 @@ Read the test before changing a module; change them together.
 - `pnpm speech:check` — asks the voice service (`SPEECH_*`) for a greeting
   in every language a trip can speak, one clip each under `clips/`, and
   fails on any it refuses; the only way to know a destination speaks. In
-  production it is the *Speech check* workflow (`.github/workflows/
+  production it is the _Speech check_ workflow (`.github/workflows/
   speech-check.yml`), run by hand with the deploy's own values
 - `pnpm lingo:gen` — compile `lingo.yaml` → `lib/lingo.data.ts` (`dev` and
   `build` run it for you)
@@ -84,7 +84,7 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   passkey no backup exists under (`BackupNudge`, `passkeysToFetch`) — the
   backup is written by the phone with the keys, never waited for. A rotated key (`lib/data` `bumpEpoch`,
   `components/rotate-key.tsx`) reaches each seat wrapped to the member key
-  that seat announced *in the log* (`member.hello` `mkPub`, `HelloState`),
+  that seat announced _in the log_ (`member.hello` `mkPub`, `HelloState`),
   never to anything the server supplied, and the server turns the epoch only
   with a grant for every other seat. The server stores keys only wrapped
   under secrets it has never seen. Never encrypt to a public key the server
@@ -135,9 +135,9 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   server fetches (`lib/rates.ts`, `FX_BASE_URL`, cached an hour) and hands
   the page; the request names the two currencies and nothing else. Without a
   rate the page falls back to settling each currency on its own — never
-  guess one. UI vocabulary is *prediction / call / resolve /
-  pool / stamp / points*; never *bet, wager, stake (as money), odds, payout,
-  cash*. Code keeps `market/stake/settle*/amountC`. Don't half-rename either.
+  guess one. UI vocabulary is _prediction / call / resolve /
+  pool / stamp / points_; never _bet, wager, stake (as money), odds, payout,
+  cash_. Code keeps `market/stake/settle*/amountC`. Don't half-rename either.
 - **The trip opens on Today.** Bottom tabs (`components/trip-nav.tsx`): Today
   (`/t/[id]`), Calls (`/calls?tab=`), the interpreter, Money (`/bills`),
   Group (`/members`). Today is `lib/today.ts` (`needsYou`, `myMoney`,
@@ -225,7 +225,7 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   key back from a phone. An organiser rotates from the members page, and the
   departed member reads what was written until then and nothing after.
   Never add a removal that skips the mark.
-- Who organises is `memberships.role`, per trip, *and* a `member.role` event
+- Who organises is `memberships.role`, per trip, _and_ a `member.role` event
   in the log — the row gates invites and recovery on the server, the event
   gates reopening and rotation on every phone, and `setRole` lands both in
   one transaction from an envelope the organiser's phone sealed. Whoever
@@ -233,16 +233,16 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   each other (and themselves) from a member's page; stepping down the last organiser is
   refused, since nobody could then invite or recover. There is no global
   admin and no `FOUNDING_MEMBERS` — anyone can make an account and a trip.
-- Losing every passkey is recovered by an organiser-minted *recovery* link
+- Losing every passkey is recovered by an organiser-minted _recovery_ link
   (`lib/recovery.ts`, `recoveries` table, `/recover/[code]`) — never by
   relaxing anything about sign-in. It is a separate table from `invites` on
-  purpose: this link does not create a member, it *becomes* one, so it lasts
+  purpose: this link does not create a member, it _becomes_ one, so it lasts
   30 minutes, spends on first use, and only one is live per member at a time.
   The check that matters is an organiser (of a trip the member shares)
   confirming out of band who is asking;
   what code contributes is that nothing happens quietly — mint, shut, and use
   are `logger.warn`, every live and recently-used link is named on the
-  trip's members page for the whole table, revocable by any organiser *and* by
+  trip's members page for the whole table, revocable by any organiser _and_ by
   the member it names, and the member it names is followed by a banner on
   every page (`recoveryNoticeFor`, root layout) until a live link is shut or a
   spent one has been theirs for a week — the one person who must not miss it
@@ -261,7 +261,7 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
 - Avatars are an upload or a generated monogram — initials on a gradient seeded
   by member id, never the name, so a rename keeps the same face. Nothing reads
   `members.image` any more.
-- `/talk` is the one page pointed *outward*, at somebody who is not in the
+- `/talk` is the one page pointed _outward_, at somebody who is not in the
   group: tap a side, speak, and the phone says it in the other language.
   The conversation is not stored — no turn, no clip, no transcript. It is
   component state and dies with the tab, which is the only sensible lifetime
@@ -287,11 +287,11 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   a domestic trip has one currency and no bill ever asks. A new destination is
   a line in `DESTINATIONS` — language, currency, and the IANA zone its
   calendar days run on (`tripToday`: a trip ends when its last day does
-  *there*, not at anyone's home midnight) — plus a line in `lib/split.ts`
+  _there_, not at anyone's home midnight) — plus a line in `lib/split.ts`
   `CURRENCY_INFO` if its money is new, which `resolvePair` refuses rather than
   discovers at the till. The currency column is text; the set lives in code.
   Who speaks is two settings, not one. On the device, `pickVoice` reads the
-  voice's *name* for a gender — the API offers no other clue — and prefers the
+  voice's _name_ for a gender — the API offers no other clue — and prefers the
   one the `Speaker` asks for, below the language and never instead of it. On
   the server, MiniMax voices are cross-lingual and one deploy serves trips to
   many places, so the voice is per language (`SPEECH_VOICES`, `th=…,hi=…`),
@@ -318,7 +318,7 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   shown only where the destination's speaker names its `particles` — each
   form with the prompt line the interpreter is given, so `lib/llm` knows no
   language.
-  A lingo is how the app talks *to a member*; the destination language is how a
+  A lingo is how the app talks _to a member_; the destination language is how a
   member talks to a stranger. Do not add one to `lingo.yaml` — it would owe all
   47 fields and would be roasting the wrong person.
 - pnpm hoisted linker (pnpm-workspace.yaml) keeps standalone output identical

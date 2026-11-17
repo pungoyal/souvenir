@@ -8,22 +8,22 @@ Evidence for each claim is in `docs/research/`.
 lack of itineraries or split apps (free and everywhere). They fail between
 "chalte hain" and booking (42% of Indian outbound trips are booked inside 7
 days), and fall out over money afterwards (1 in 5 friendships ended over a
-trip's money, Experian 2025). Souvenir attacks *commitment* and
-*awkwardness*: a zero-sum, play-money prediction game about the trip itself,
+trip's money, Experian 2025). Souvenir attacks _commitment_ and
+_awkwardness_: a zero-sum, play-money prediction game about the trip itself,
 with bills and the interpreter alongside.
 
 ## Decisions
 
-| Decision | Choice | Why |
-|---|---|---|
-| Spine | Commitment game first; bills and talk supporting | Itineraries and splitting are commoditised; the social mechanic has no incumbent |
-| Market | Indian friend groups going abroad, built global-ready | 32.7M departures, WhatsApp- and UPI-native, no purpose-built tools |
-| Price | Free; instrument; decide at day 90 | Nobody in this category grew on per-seat pricing; Indian tolerance for a ₹149/mo utility is nil |
-| Vocabulary | *prediction / call / pool / stamp*; never *bet, wager, odds, payout* | PROGA 2025 and the stores pattern-match on words |
-| Money | Stamps are never bought, sold, or cashed out; the app never records or links money on a prediction | Keeps it an "online social game" under PROGA and off gambling ratings |
-| Bills | At most two currencies per trip (destination + home), set at creation | Matches the real trip; avoids Splitwise's currency confusion |
-| Age | 18+, India + global terms | Avoids DPDP parental-consent machinery |
-| Privacy | Trips sealed end to end | A group's arguments and money are its own; a dump, subpoena or the operator gets nothing readable (`docs/private-trips.md`) |
+| Decision   | Choice                                                                                             | Why                                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Spine      | Commitment game first; bills and talk supporting                                                   | Itineraries and splitting are commoditised; the social mechanic has no incumbent                                            |
+| Market     | Indian friend groups going abroad, built global-ready                                              | 32.7M departures, WhatsApp- and UPI-native, no purpose-built tools                                                          |
+| Price      | Free; instrument; decide at day 90                                                                 | Nobody in this category grew on per-seat pricing; Indian tolerance for a ₹149/mo utility is nil                             |
+| Vocabulary | _prediction / call / pool / stamp_; never _bet, wager, odds, payout_                               | PROGA 2025 and the stores pattern-match on words                                                                            |
+| Money      | Stamps are never bought, sold, or cashed out; the app never records or links money on a prediction | Keeps it an "online social game" under PROGA and off gambling ratings                                                       |
+| Bills      | At most two currencies per trip (destination + home), set at creation                              | Matches the real trip; avoids Splitwise's currency confusion                                                                |
+| Age        | 18+, India + global terms                                                                          | Avoids DPDP parental-consent machinery                                                                                      |
+| Privacy    | Trips sealed end to end                                                                            | A group's arguments and money are its own; a dump, subpoena or the operator gets nothing readable (`docs/private-trips.md`) |
 
 ## Positioning
 
@@ -33,8 +33,8 @@ the group game that makes backing out visible and settling up painless,
 you actually coming" into a call with stamps on it, and the leaderboard
 remembers.
 
-Tagline: *The trip that actually happens.* Secondary: *Call who shows up,
-who's late, who pays. Play-money stamps, real bragging rights.*
+Tagline: _The trip that actually happens._ Secondary: _Call who shows up,
+who's late, who pays. Play-money stamps, real bragging rights._
 
 Copy rules: Hinglish is a member's choice (lingo), never the default; no
 crude roast outside the opt-in "unhinged" lingo; never roast a money error;
@@ -59,14 +59,14 @@ planner opens trip ──► drops invite link in WhatsApp ──► 4–9 frien
   a friend opens their own trip  ◄──  verdict cards / recap  ◄──  predictions resolve during the trip
 ```
 
-| Metric | Source | Target by day 90 |
-|---|---|---|
-| Trips opened / week | `pnpm stats` | 10 seeded by day 45, 40 by day 90 |
-| Members per trip (trips with ≥2) | `pnpm stats` mean roster | ≥ 4.5 |
-| Invite → join conversion | `invites.use_count` vs memberships | ≥ 50% of personal links, ≥ 3 joins per group link |
-| **Founding rate** (invited → founded) | `pnpm stats` | **≥ 15%**, the line between a product and a toy |
-| Predictions resolved per trip | `pnpm stats` | ≥ 5 (the leaderboard threshold) |
-| Cards shared | log hits on the `card` route from non-members | ≥ 1 per resolved prediction |
+| Metric                                | Source                                        | Target by day 90                                  |
+| ------------------------------------- | --------------------------------------------- | ------------------------------------------------- |
+| Trips opened / week                   | `pnpm stats`                                  | 10 seeded by day 45, 40 by day 90                 |
+| Members per trip (trips with ≥2)      | `pnpm stats` mean roster                      | ≥ 4.5                                             |
+| Invite → join conversion              | `invites.use_count` vs memberships            | ≥ 50% of personal links, ≥ 3 joins per group link |
+| **Founding rate** (invited → founded) | `pnpm stats`                                  | **≥ 15%**, the line between a product and a toy   |
+| Predictions resolved per trip         | `pnpm stats`                                  | ≥ 5 (the leaderboard threshold)                   |
+| Cards shared                          | log hits on the `card` route from non-members | ≥ 1 per resolved prediction                       |
 
 Founding rate under 10% at day 90 means the loop is not compounding; the fix
 is the card and the join preview, not marketing.
@@ -107,11 +107,11 @@ post with the founding-rate number.
 
 ## Calendar
 
-| When | What | Why |
-|---|---|---|
-| Oct 2026 | Public launch + creator seeding | Diwali 6–10 Nov trips are being booked; NYE plans open |
-| 20 Nov – 5 Dec | Second push | NYE trips booked inside a 23–25 day window |
-| 15 Feb 2027 | Third push | Holi 22 Mar 2027 long weekend |
+| When           | What                            | Why                                                    |
+| -------------- | ------------------------------- | ------------------------------------------------------ |
+| Oct 2026       | Public launch + creator seeding | Diwali 6–10 Nov trips are being booked; NYE plans open |
+| 20 Nov – 5 Dec | Second push                     | NYE trips booked inside a 23–25 day window             |
+| 15 Feb 2027    | Third push                      | Holi 22 Mar 2027 long weekend                          |
 
 ## Needs a human
 
@@ -131,7 +131,7 @@ post with the founding-rate number.
 - **Play-money fatigue.** Manifold-style decay happens without a season. The
   trip is the season; recap, rivalries and the nemesis line are retention.
   If a trip's predictions stop at 2–3, improve the starters.
-- **Regulatory drift.** PROGA's "other stakes" hinges on *purchased*. Selling
+- **Regulatory drift.** PROGA's "other stakes" hinges on _purchased_. Selling
   stamps, cosmetic or not, is a no. The Supreme Court challenge is pending;
   the social-game carve-out is stable ground.
 - **Store risk if wrapped.** "Pool" plus a currency may rate 18+ simulated

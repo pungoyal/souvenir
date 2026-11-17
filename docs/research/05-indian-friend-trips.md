@@ -4,7 +4,7 @@
 
 ## Numbers
 
-**Outbound (Ministry of Tourism):** 2023 ~27.9M, 2024 **30.89M**, 2025 **32.71M** (+5.9%); ~50M by 2030. Travel LRS *fell* 4–8% on a weak rupee while headcount rose: more trips, less spend per head.
+**Outbound (Ministry of Tourism):** 2023 ~27.9M, 2024 **30.89M**, 2025 **32.71M** (+5.9%); ~50M by 2030. Travel LRS _fell_ 4–8% on a weak rupee while headcount rose: more trips, less spend per head.
 
 **Indian arrivals 2025:** UAE ~8M+; Thailand **2.487M** (+16.8%, #3 source, ~7 nights, ~₹1L per person); Malaysia **1.56M** (+15%, visa-free to Dec 2026); Vietnam **746k** (+49%, e-visa $25); Bali **569k** (#2 source); Sri Lanka **531k** (+27.5%, #1 source, free ETA); Japan >300k (record). Azerbaijan fell after May 2025 (−42% visa applications); Georgia and Kazakhstan are rising.
 
@@ -23,7 +23,7 @@
 ## Pain points
 
 - **The planner**: see Klook; 33% of non-planners "operate on pure trust".
-- **Backing out**: "Goa plan" is shorthand for the trip that won't happen (*"Bhai, iss baar nahi ho payega, next month chale?"*), a shared vocabulary already.
+- **Backing out**: "Goa plan" is shorthand for the trip that won't happen (_"Bhai, iss baar nahi ho payega, next month chale?"_), a shared vocabulary already.
 - **Money**: one person fronting hotels and chasing UPI for weeks; who holds the zero-markup card; reconciling THB/VND to INR at different rates.
 - **Bimodal booking**: TravClan 2025, **42% of outbound trips booked within 7 days**, 21.9% over a month ahead. The long "let's go" to booking gap is where friend groups die.
 - **Abroad**: Bangkok tops Mastercard's 2025 scam list; English is thin outside Vietnam's tourist cores. Geopolitics is a group decision (Turkey/Azerbaijan bookings fell 42% in 10 days, May 2025).
@@ -34,7 +34,7 @@ It works: Zomato push copy, Swiggy, Cred; 38–44% of metro users "always" mix. 
 
 ## Willingness to pay
 
-Subscription ceilings are low (Niyo Premium ₹999/yr; Splitwise Pro is what people are *leaving over*). Indians pay where the *trip* is: zero-forex cards, booking fees, group-operator margin (~₹40k/head), not for tools. A "kitty" is a Goa staple; abroad it degrades to one cardholder fronting. Prediction-style stakes among friends are not a documented behaviour; the analogue is WhatsApp bet/dare culture.
+Subscription ceilings are low (Niyo Premium ₹999/yr; Splitwise Pro is what people are _leaving over_). Indians pay where the _trip_ is: zero-forex cards, booking fees, group-operator margin (~₹40k/head), not for tools. A "kitty" is a Goa staple; abroad it degrades to one cardholder fronting. Prediction-style stakes among friends are not a documented behaviour; the analogue is WhatsApp bet/dare culture.
 
 ## Seasonality
 
