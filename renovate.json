@@ -5,6 +5,7 @@
   "timezone": "Asia/Kolkata",
   "schedule": ["* 0-6 * * 1"],
   "automergeSchedule": ["* 9-18 * * 1-5"],
+  "platformAutomerge": false,
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
   "rangeStrategy": "bump",
@@ -15,16 +16,42 @@
   },
   "packageRules": [
     {
-      "description": "Everything short of a major lands as one weekly PR and merges itself once verify, image and stack pass.",
+      "description": "Images: base-image rebuilds and Postgres/Node minors. Its own PR, so a broken npm update never holds back an OS security fix.",
+      "matchDatasources": ["docker"],
       "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
-      "groupName": "non-major dependencies",
-      "groupSlug": "non-major",
+      "groupName": "container images",
+      "groupSlug": "images",
       "automerge": true
     },
     {
-      "description": "A digest has no release date, so a minimum age would hold it forever. Image rebuilds are how OS security fixes arrive; they go through at once.",
+      "description": "An image digest has no release date, so a minimum age would hold it forever; a rebuild of the same tag is how Debian's and Alpine's security fixes arrive.",
+      "matchDatasources": ["docker"],
       "matchUpdateTypes": ["digest", "pin", "pinDigest"],
       "minimumReleaseAge": null
+    },
+    {
+      "description": "Actions: new releases, aged seven days like everything else.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "GitHub Actions",
+      "groupSlug": "actions",
+      "automerge": true
+    },
+    {
+      "description": "An action's digest moving under the same version tag means the tag was moved, which is how a compromised action spreads. A person reads it.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest"],
+      "groupName": "moved action tags",
+      "groupSlug": "action-digests",
+      "automerge": false
+    },
+    {
+      "description": "npm: dependencies, devDependencies and pnpm itself (packageManager).",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "npm",
+      "groupSlug": "npm",
+      "automerge": true
     },
     {
       "description": "Nothing tests the UI, so a Next.js minor is read before it merges.",

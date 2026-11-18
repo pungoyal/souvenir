@@ -2,7 +2,8 @@
 
 Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
 and over SSH pulls it on the box, dumps the database into
-`$DEPLOY_DIR/backups/` (the last ten are kept), and runs
+`$DEPLOY_DIR/backups/` (the last ten are kept; a box with a data volume and
+no dump does not deploy), and runs
 `docker compose up -d --wait` for the whole stack — a new Postgres digest,
 the one-shot `migrate` against the live database, then `app` — failing the
 deploy unless db and app report healthy (`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
@@ -32,27 +33,45 @@ what needs a hand is that environment.
 
 Renovate (`renovate.json`, the Mend-hosted GitHub app) owns every version:
 npm, the lockfile, pnpm, Node, the images and the actions. It runs Monday
-before 07:00 IST and opens one PR for everything short of a major. That PR
-merges itself on a weekday between 09:00 and 19:00 IST once `verify`,
-`image` and `stack` pass, and the merge deploys. `stack` is what makes that
-safe: it runs this compose file with the pinned Postgres, migrates an empty
-database and waits for the app to answer.
+before 07:00 IST and opens one PR per group — **container images**,
+**GitHub Actions**, **npm**, and the lockfile refresh — so a broken npm
+update never holds back an image carrying an OS security fix. Each merges
+itself on a weekday between 09:00 and 19:00 IST once `verify`, `image` and
+`stack` pass, and the merge deploys. Renovate merges them itself
+(`platformAutomerge: false`); keep the repository's _Allow auto-merge_ off,
+since GitHub's own auto-merge would ignore the window. `stack` is what makes
+this safe: it runs this compose file with the pinned Postgres, migrates an
+empty database and waits for the app to answer.
 
-- **Versions wait seven days** after release before they are proposed.
-  Image digests do not wait: a digest has no release date, and a rebuild of
-  the same tag is how Debian's and Alpine's security fixes arrive.
-- **Read by a person:** every major (one PR each, Node's grouped across the
-  image and the workflows) and Next.js minors, since nothing tests the UI.
+- **Waiting.** A new version is proposed seven days after release. pnpm
+  refuses anything, direct or transitive, under a day old
+  (`pnpm-workspace.yaml` `minimumReleaseAge`); it checks the whole lockfile
+  on every install, which is why its floor is a day and not a week. Image
+  digests do not wait: a digest has no release date, and a rebuild of the
+  same tag is how Debian's and Alpine's security fixes arrive.
+- **Read by a person:** every major (Node's grouped across the image and the
+  workflows; `config:recommended` also keeps a monorepo's packages together),
+  Next.js minors, since nothing tests the UI, and **moved action tags** — a
+  new digest under the same action version means the tag was re-pointed,
+  which is how a compromised action spreads. Check the upstream release
+  before merging one.
 - **Never proposed:** a Postgres major (it needs `pg_upgrade` on the volume)
   and a change of base distribution (`18-bookworm` stays bookworm). Both are
   runbooks.
-- **Security advisories** skip the schedule and the wait.
+- **Security advisories** skip the schedule and Renovate's wait; pnpm's day
+  still applies.
 - The **Dependency Dashboard** issue lists everything pending, held or
   failing. Nothing Renovate decided against is silent; look there before
-  assuming the box is current.
+  assuming the box is current. No dashboard issue at all means the app is
+  not installed and nothing is moving.
 
 If a PR fails `stack`, its log ends with every container's output. Fix it on
 the Renovate branch or close the PR; Renovate reopens it at the next version.
+
+Deploys queue in the order their checks finish, so only the head of `main`
+deploys; an older run that arrives late steps aside for the newer one. If a
+deploy fails after the dump, the box runs whatever came up: read the log,
+then push a fix or restore the named dump (step 2 above).
 
 ## Domain and passkeys
 

@@ -98,10 +98,12 @@ jobs:
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
-  # The stack exactly as the box runs it: the compose file, the pinned Postgres, the migrations
-  # from an empty database, this commit's image, and `--wait` until db and app report healthy.
-  # A green run here is what lets Renovate merge an image or database bump with nobody watching
-  # (renovate.json); `verify` alone never starts Postgres.
+  # The stack as the box runs it: the compose file, the pinned Postgres, every migration from an
+  # empty database, an image built from this commit's Dockerfile (the same build as `image`, not
+  # the published bytes), and `--wait` until db and app report healthy. A green run is what lets
+  # Renovate merge an image or database bump with nobody watching (renovate.json); `verify` never
+  # starts Postgres. It does not test a migration against existing data, nor a new Postgres over
+  # an old volume: the deploy's dump is the answer to those.
   stack:
     runs-on: ubuntu-24.04-arm
     steps:
@@ -161,8 +163,19 @@ jobs:
           SSH_PORT: ${{ vars.SSH_PORT || 22 }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+
+          # Only the head of main deploys. Runs enter the deploy queue when their checks finish,
+          # not in commit order, so an older run can arrive after a newer one has deployed (and
+          # migrated). Checked inside the concurrency group: a newer head deploys after this.
+          head="$(gh api "repos/$REPO/commits/main" --jq .sha)"
+          if [ "$head" != "$SHA" ]; then
+            echo "::notice::$SHA is no longer the head of main ($head); its own run deploys it."
+            exit 0
+          fi
+
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
@@ -224,11 +237,24 @@ jobs:
           docker compose pull --quiet
 
           # A restore point before anything moves: migrations are forward-only and a new Postgres
-          # digest replaces the db container. No dump, no deploy. The last ten are kept.
+          # digest replaces the db container. Where there is data there is a dump, or no deploy;
+          # only a host with no data volume yet skips it. The last ten are kept.
           mkdir -p backups
-          if [ -n "$(docker compose ps --status running --quiet db)" ]; then
+          project="$(docker compose config | sed -n 's/^name: //p')"
+          if docker volume inspect "${project}_pgdata" >/dev/null 2>&1; then
+            if [ -z "$(docker compose ps --all --quiet db)" ]; then
+              echo "data volume ${project}_pgdata exists but no db container does, so there is" >&2
+              echo "nothing safe to dump from. Start db on its old image by hand, then re-run." >&2
+              exit 1
+            fi
+            # On the image it already runs: --no-recreate leaves a new digest for later.
+            docker compose up -d --no-recreate --no-deps --wait db
             dump="backups/$(date -u +%Y%m%dT%H%M%SZ)-${SHA::7}.dump"
-            docker compose exec -T db pg_dump -U souvenir -Fc souvenir > "$dump.partial"
+            if ! docker compose exec -T db pg_dump -U souvenir -Fc souvenir > "$dump.partial"; then
+              rm -f "$dump.partial"
+              echo "pg_dump failed; nothing was deployed." >&2
+              exit 1
+            fi
             mv "$dump.partial" "$dump"
             ls -1t backups/*.dump | tail -n +11 | xargs -r rm --
             echo "restore point: $DEPLOY_DIR/$dump"

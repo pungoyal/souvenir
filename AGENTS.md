@@ -324,13 +324,16 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
 - pnpm hoisted linker (pnpm-workspace.yaml) keeps standalone output identical
   locally and in Docker; one arm64 image serves the app and runs migrations
   (`next.config.ts` `outputFileTracingIncludes`).
-- Honor pnpm's `minimumReleaseAge`: pin an older version if an install fails on
-  a too-fresh package — never add exclusions without the owner's approval.
+- Honor pnpm's `minimumReleaseAge` (one day, set in `pnpm-workspace.yaml` so
+  it is enforced rather than pnpm's loosened default): pin an older version if
+  an install fails on a too-fresh package — never add exclusions or lower it
+  without the owner's approval.
   Likewise `trustPolicy`.
 - Every action is pinned to a full commit SHA (`# vX.Y.Z` alone after it; the
   repo refuses a short one) and every image to a digest. Renovate
   (`renovate.json`) moves them and everything else, and merges a non-major
-  update by itself once `verify`, `image` and `stack` pass; the policy is
+  update by itself once `verify`, `image` and `stack` pass — except a moved
+  action tag and a Next.js minor, which a person reads; the policy is
   `docs/launch/deploy-checklist.md`, _Updates_. Each version has one home:
   pnpm is `packageManager` (the Dockerfile reads it), Node is the Dockerfile's
   `FROM` and the workflows' `node-version`, which Renovate moves together.

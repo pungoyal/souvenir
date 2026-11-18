@@ -6,6 +6,13 @@ allowBuilds:
 
 trustPolicy: no-downgrade
 
+# Nothing resolves until it is a day old (minutes) — direct or transitive, here or in Renovate's
+# lockfile regeneration. Set explicitly because pnpm loosens its own 1440 default (it excludes
+# too-fresh picks and carries on); a set value is enforced. Not seven days like Renovate's
+# wait for direct updates: pnpm checks the whole lockfile on every install, so a week would
+# hold any security fix (#17) out of CI for a week.
+minimumReleaseAge: 1440
+
 # npm-style flat node_modules. Next.js standalone output traces files from
 # node_modules; the hoisted layout keeps that working identically in local
 # dev and the Docker image, with no image-only install flags.

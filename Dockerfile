@@ -4,7 +4,8 @@ FROM node AS pnpm
 WORKDIR /app
 # pnpm's version is package.json's packageManager and nowhere else; Renovate moves it there.
 COPY package.json ./
-RUN npm i -g --ignore-scripts "$(node -p 'require("./package.json").packageManager')"
+RUN pm="$(node -p 'require("./package.json").packageManager ?? process.exit(1)')" \
+    && npm i -g --ignore-scripts "$pm"
 
 FROM pnpm AS deps
 ENV HUSKY=0
