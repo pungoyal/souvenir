@@ -2,8 +2,10 @@
 #
 #   Dev:   docker compose up -d db        (then `pnpm dev`)
 #          docker compose up -d --build   (full stack, built locally)
-#   Prod:  export APP_IMAGE=...   (GHCR tag; CI does this)
-#          docker compose pull app && docker compose up -d --no-build app
+#   Prod:  export APP_IMAGE=...   (GHCR image@digest; CI does this)
+#          docker compose pull && docker compose up -d --no-build --wait
+#          The whole stack is one release: a new Postgres digest is applied the same way a
+#          new app image is, and `--wait` returns only once db and app report healthy.
 #
 # Knobs come from .env (see .env.example).
 
@@ -55,6 +57,18 @@ services:
       - .env
     environment:
       DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:-souvenir}@db:5432/souvenir
+    # Serving, not merely started: /signin needs no session. The image has node and no curl.
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/signin').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+      start_interval: 2s
     depends_on:
       db:
         condition: service_healthy

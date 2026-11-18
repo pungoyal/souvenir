@@ -34,8 +34,8 @@ jobs:
           # Placeholder for lib/env.ts at build; the server gets its real secret from the deploy .env.
           AUTH_SECRET: insecure-build-time-placeholder
 
-  # Beside `verify`, not after it; `deploy` waits on both. A pull request builds the image and
-  # discards it, the only proof the Dockerfile and standalone trace work. PUSH is that one
+  # Beside `verify` and `stack`; `deploy` waits on all three. A pull request builds the image and
+  # discards it (`stack` runs its own build); a push publishes and attests it. PUSH is that one
   # decision; every step below reads it.
   image:
     runs-on: ubuntu-24.04-arm
@@ -98,8 +98,27 @@ jobs:
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
+  # The stack exactly as the box runs it: the compose file, the pinned Postgres, the migrations
+  # from an empty database, this commit's image, and `--wait` until db and app report healthy.
+  # A green run here is what lets Renovate merge an image or database bump with nobody watching
+  # (renovate.json); `verify` alone never starts Postgres.
+  stack:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Start db, migrate and app from this commit
+        run: |
+          docker network create edge
+          printf 'AUTH_SECRET=%s\n' "$(openssl rand -hex 32)" > .env
+          docker compose up -d --build --wait --wait-timeout 300
+      - name: Logs
+        if: failure()
+        run: docker compose logs --no-color
+
   deploy:
-    needs: [verify, image]
+    needs: [verify, image, stack]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04-arm
     # Everything host-specific comes from the "oracle-cloud" GitHub environment,
@@ -132,7 +151,6 @@ jobs:
       - name: Deploy over SSH
         env:
           APP_IMAGE: ${{ needs.image.outputs.image }}@${{ needs.image.outputs.digest }}
-          APP_PORT: ${{ vars.APP_PORT }}
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
           GHCR_USER: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -150,8 +168,8 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           {
-            printf 'export APP_IMAGE=%q APP_PORT=%q DEPLOY_DIR=%q GHCR_USER=%q GHCR_TOKEN=%q REPO=%q SHA=%q\n' \
-              "$APP_IMAGE" "$APP_PORT" "$DEPLOY_DIR" "$GHCR_USER" "$GHCR_TOKEN" "$REPO" "$SHA"
+            printf 'export APP_IMAGE=%q DEPLOY_DIR=%q GHCR_USER=%q GHCR_TOKEN=%q REPO=%q SHA=%q\n' \
+              "$APP_IMAGE" "$DEPLOY_DIR" "$GHCR_USER" "$GHCR_TOKEN" "$REPO" "$SHA"
             cat <<'DEPLOY_SCRIPT'
           set -euo pipefail
 
@@ -203,24 +221,26 @@ jobs:
 
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
           export APP_IMAGE
-          docker compose pull app
-          docker compose up -d --no-build app
+          docker compose pull --quiet
 
-          # `up -d` returns on start, not on serving: a boot-then-crash would deploy green. Poll
-          # /signin (needs no session) and fail with logs if it never answers.
-          probe="http://127.0.0.1:${APP_PORT:-3000}/signin"
-          for attempt in $(seq 1 30); do
-            if curl -fsS --max-time 5 -o /dev/null "$probe"; then
-              echo "app is serving ($probe)"
-              break
-            fi
-            if [ "$attempt" -eq 30 ]; then
-              echo "app never served $probe after 60s; last 50 log lines:" >&2
-              docker compose logs --tail=50 app >&2
-              exit 1
-            fi
-            sleep 2
-          done
+          # A restore point before anything moves: migrations are forward-only and a new Postgres
+          # digest replaces the db container. No dump, no deploy. The last ten are kept.
+          mkdir -p backups
+          if [ -n "$(docker compose ps --status running --quiet db)" ]; then
+            dump="backups/$(date -u +%Y%m%dT%H%M%SZ)-${SHA::7}.dump"
+            docker compose exec -T db pg_dump -U souvenir -Fc souvenir > "$dump.partial"
+            mv "$dump.partial" "$dump"
+            ls -1t backups/*.dump | tail -n +11 | xargs -r rm --
+            echo "restore point: $DEPLOY_DIR/$dump"
+          fi
+
+          # The whole stack is the release. `--wait` returns once db and app report healthy (the
+          # app's healthcheck fetches /signin), so a boot-then-crash fails the deploy.
+          if ! docker compose up -d --no-build --wait --wait-timeout 180; then
+            echo "the stack never came up healthy; last 50 log lines:" >&2
+            docker compose logs --tail=50 migrate app >&2
+            exit 1
+          fi
 
           docker image prune -f
           docker compose ps

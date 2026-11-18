@@ -205,9 +205,12 @@ compiles `lingo.yaml` (`dev` and `build` run it).
 
 ## Deployment (OCI over SSH)
 
-Push to `main`: verify → build and push one arm64 GHCR image (`:short-sha` +
-`:latest`) → SSH to the OCI box, pull the pinned tag, `docker compose up -d`
-(one-shot `migrate`, then `app`).
+Push to `main`: verify, run the whole stack (`stack`), build and push one
+arm64 GHCR image (`:short-sha` + `:latest`) → SSH to the OCI box, pull it by
+digest, dump the database into `backups/`, `docker compose up -d --wait`
+(Postgres, one-shot `migrate`, then `app`, until db and app are healthy).
+Renovate keeps every dependency current and merges the routine ones itself
+(`docs/launch/deploy-checklist.md`, _Updates_).
 
 Configure a GitHub **environment named `oracle-cloud`**:
 
@@ -224,7 +227,8 @@ Configure a GitHub **environment named `oracle-cloud`**:
 No registry credentials needed: the deploy job logs the server into GHCR with
 its ephemeral `GITHUB_TOKEN` (`packages: read`).
 
-One-time server setup: install Docker, create `DEPLOY_DIR`, and point your
+One-time server setup: install Docker (Engine 25 or later: the app's healthcheck uses
+`start_interval`), create `DEPLOY_DIR`, and point your
 reverse proxy at the app — `souvenir:3000` if the proxy shares the
 `DOCKER_NETWORK` network (the app's alias there; the generic `app` name is
 ambiguous on a shared network), or `127.0.0.1:${APP_PORT:-3000}` from the

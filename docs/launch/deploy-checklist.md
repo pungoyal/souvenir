@@ -1,19 +1,24 @@
 # Deploy checklist
 
 Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
-and over SSH pulls it on the box and runs `docker compose up -d` — the
-one-shot `migrate` service against the live database, then `app`
-(`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
+and over SSH pulls it on the box, dumps the database into
+`$DEPLOY_DIR/backups/` (the last ten are kept), and runs
+`docker compose up -d --wait` for the whole stack — a new Postgres digest,
+the one-shot `migrate` against the live database, then `app` — failing the
+deploy unless db and app report healthy (`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
 from the GitHub environment `oracle-cloud`** (`.github/workflows/ci.yml`):
 a variable lives there or nowhere, and editing the file on the box lasts
 until the next push. Nothing here needs a hand on the running containers;
-what needs a hand is that environment, and a backup when the schema moves.
+what needs a hand is that environment.
 
 ## Every release
 
 1. **Read the diff for two things**: a new migration under `drizzle/`, and
    a new or changed variable in `lib/env.ts` (`.env.example` documents each).
-2. **Migration?** Back up first — `docker exec souvenir-db-1 pg_dump -U souvenir souvenir > backup-$(date +%F).sql` on the box. Migrations are forward-only and some have been destructive.
+2. **Migration?** Read it: migrations are forward-only and some have been
+   destructive. The deploy dumps first and names the file in its log; to go
+   back, stop `app` and `pg_restore --clean -U souvenir -d souvenir` that
+   dump into the db container.
 3. **New variable?** Add it to `ci.yml`'s `.env` heredoc and set it in the
    `oracle-cloud` environment _before_ pushing; a required one missing stops
    the app at boot (`lib/env.ts` refuses to start), an optional one missing
@@ -22,6 +27,32 @@ what needs a hand is that environment, and a backup when the schema moves.
 5. **Verify**: the footer names the new build (`GIT_SHA`);
    `docker compose run --rm migrate node scripts/stats.ts` still reads the
    trips; open the live trip on a phone that holds the key.
+
+## Updates
+
+Renovate (`renovate.json`, the Mend-hosted GitHub app) owns every version:
+npm, the lockfile, pnpm, Node, the images and the actions. It runs Monday
+before 07:00 IST and opens one PR for everything short of a major. That PR
+merges itself on a weekday between 09:00 and 19:00 IST once `verify`,
+`image` and `stack` pass, and the merge deploys. `stack` is what makes that
+safe: it runs this compose file with the pinned Postgres, migrates an empty
+database and waits for the app to answer.
+
+- **Versions wait seven days** after release before they are proposed.
+  Image digests do not wait: a digest has no release date, and a rebuild of
+  the same tag is how Debian's and Alpine's security fixes arrive.
+- **Read by a person:** every major (one PR each, Node's grouped across the
+  image and the workflows) and Next.js minors, since nothing tests the UI.
+- **Never proposed:** a Postgres major (it needs `pg_upgrade` on the volume)
+  and a change of base distribution (`18-bookworm` stays bookworm). Both are
+  runbooks.
+- **Security advisories** skip the schedule and the wait.
+- The **Dependency Dashboard** issue lists everything pending, held or
+  failing. Nothing Renovate decided against is silent; look there before
+  assuming the box is current.
+
+If a PR fails `stack`, its log ends with every container's output. Fix it on
+the Renovate branch or close the PR; Renovate reopens it at the next version.
 
 ## Domain and passkeys
 

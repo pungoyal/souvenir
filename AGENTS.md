@@ -327,8 +327,15 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
 - Honor pnpm's `minimumReleaseAge`: pin an older version if an install fails on
   a too-fresh package — never add exclusions without the owner's approval.
   Likewise `trustPolicy`.
-- Every action is pinned to a commit SHA (`# vX.Y.Z` alone after it) and every
-  image to a digest; Dependabot (`.github/dependabot.yml`) moves them.
+- Every action is pinned to a full commit SHA (`# vX.Y.Z` alone after it; the
+  repo refuses a short one) and every image to a digest. Renovate
+  (`renovate.json`) moves them and everything else, and merges a non-major
+  update by itself once `verify`, `image` and `stack` pass; the policy is
+  `docs/launch/deploy-checklist.md`, _Updates_. Each version has one home:
+  pnpm is `packageManager` (the Dockerfile reads it), Node is the Dockerfile's
+  `FROM` and the workflows' `node-version`, which Renovate moves together.
+  Short SHAs are for people to read (image tags, the footer); nothing that
+  pins or verifies uses one.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
