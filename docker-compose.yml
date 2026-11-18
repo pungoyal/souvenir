@@ -3,9 +3,8 @@
 #   Dev:   docker compose up -d db        (then `pnpm dev`)
 #          docker compose up -d --build   (full stack, built locally)
 #   Prod:  export APP_IMAGE=...   (GHCR image@digest; CI does this)
-#          docker compose pull && docker compose up -d --no-build --wait
-#          The whole stack is one release: a new Postgres digest is applied the same way a
-#          new app image is, and `--wait` returns only once db and app report healthy.
+#          docker compose pull, then db, then `run --rm migrate`, then `up -d --no-build --wait`:
+#          the order and the restore point are the deploy step in .github/workflows/ci.yml.
 #
 # Knobs come from .env (see .env.example).
 

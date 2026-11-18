@@ -2,11 +2,10 @@
 
 Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
 and over SSH pulls it on the box, dumps the database into
-`$DEPLOY_DIR/backups/` (the last ten are kept; a box with a data volume and
-no dump does not deploy), and runs
-`docker compose up -d --wait` for the whole stack — a new Postgres digest,
-the one-shot `migrate` against the live database, then `app` — failing the
-deploy unless db and app report healthy (`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
+`$DEPLOY_DIR/backups/` (kept 30 days; a box with a data volume and no dump
+does not deploy), then releases in three steps: Postgres (a new digest lands
+here), the migrations while the old app still serves, then the new app,
+failing the deploy unless it reports healthy (`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
 from the GitHub environment `oracle-cloud`** (`.github/workflows/ci.yml`):
 a variable lives there or nowhere, and editing the file on the box lasts
 until the next push. Nothing here needs a hand on the running containers;
@@ -17,9 +16,11 @@ what needs a hand is that environment.
 1. **Read the diff for two things**: a new migration under `drizzle/`, and
    a new or changed variable in `lib/env.ts` (`.env.example` documents each).
 2. **Migration?** Read it: migrations are forward-only and some have been
-   destructive. The deploy dumps first and names the file in its log; to go
-   back, stop `app` and `pg_restore --clean -U souvenir -d souvenir` that
-   dump into the db container.
+   destructive. They run while the previous build still serves, for the
+   seconds until the new app replaces it, so one must not break that build:
+   add before you remove, across two releases. Drizzle applies every pending
+   migration in one transaction, so a failing one rolls back and the
+   previous build keeps serving; the deploy fails and nothing else moves.
 3. **New variable?** Add it to `ci.yml`'s `.env` heredoc and set it in the
    `oracle-cloud` environment _before_ pushing; a required one missing stops
    the app at boot (`lib/env.ts` refuses to start), an optional one missing
@@ -43,12 +44,14 @@ since GitHub's own auto-merge would ignore the window. `stack` is what makes
 this safe: it runs this compose file with the pinned Postgres, migrates an
 empty database and waits for the app to answer.
 
-- **Waiting.** A new version is proposed seven days after release. pnpm
-  refuses anything, direct or transitive, under a day old
+- **Waiting.** An npm package or action is proposed seven days after
+  release. pnpm refuses anything, direct or transitive, under a day old
   (`pnpm-workspace.yaml` `minimumReleaseAge`); it checks the whole lockfile
-  on every install, which is why its floor is a day and not a week. Image
-  digests do not wait: a digest has no release date, and a rebuild of the
-  same tag is how Debian's and Alpine's security fixes arrive.
+  on every install, which is why its floor is a day and not a week, and it
+  is the only wait on the weekly lockfile refresh. Images do not wait:
+  Docker Hub dates a tag by its last push and official images re-push every
+  tag on each base rebuild, so an age would restart with every rebuild, and
+  those rebuilds are how Debian's and Alpine's security fixes arrive.
 - **Read by a person:** every major (Node's grouped across the image and the
   workflows; `config:recommended` also keeps a monorepo's packages together),
   Next.js minors, since nothing tests the UI, and **moved action tags** — a
@@ -58,8 +61,12 @@ empty database and waits for the app to answer.
 - **Never proposed:** a Postgres major (it needs `pg_upgrade` on the volume)
   and a change of base distribution (`18-bookworm` stays bookworm). Both are
   runbooks.
-- **Security advisories** skip the schedule and Renovate's wait; pnpm's day
-  still applies.
+- **Security advisories** (npm and actions; images get theirs as digests)
+  open a PR at once, skipping the schedule and Renovate's wait, and merge in
+  the next weekday window. pnpm's day still applies: a fix published that
+  day fails its lockfile update until tomorrow, and the PR says so.
+- **Everything else** — an action newly pinned, a package replaced, any
+  major — gets a PR of its own for a person.
 - The **Dependency Dashboard** issue lists everything pending, held or
   failing. Nothing Renovate decided against is silent; look there before
   assuming the box is current. No dashboard issue at all means the app is
@@ -69,9 +76,27 @@ If a PR fails `stack`, its log ends with every container's output. Fix it on
 the Renovate branch or close the PR; Renovate reopens it at the next version.
 
 Deploys queue in the order their checks finish, so only the head of `main`
-deploys; an older run that arrives late steps aside for the newer one. If a
-deploy fails after the dump, the box runs whatever came up: read the log,
-then push a fix or restore the named dump (step 2 above).
+deploys; an older run that arrives late steps aside for the newer one, and
+its `deploy` job still shows green, with a notice saying so.
+
+**A failed deploy.** If the migrations fail, nothing changed: the previous
+build is still serving. If the new app fails its healthcheck, the old one is
+already stopped and the schema already migrated: the site is down until a
+fix is pushed, or until you go back. To go back, on the box, with the dump
+the deploy's log named:
+
+```sh
+docker compose stop app
+docker compose exec -T db dropdb -U souvenir --force souvenir
+docker compose exec -T db createdb -U souvenir souvenir
+docker compose exec -T db pg_restore -U souvenir -d souvenir \
+  --single-transaction --exit-on-error < backups/<the dump>.dump
+```
+
+then revert the release on `main` and push; its deploy brings the previous
+build up against the restored schema. Restore into a fresh database as
+above — `pg_restore --clean` drops only what the dump contains, so a table
+the failed migration added would survive it.
 
 ## Domain and passkeys
 

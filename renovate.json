@@ -12,6 +12,7 @@
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
+    "minimumReleaseAge": null,
     "schedule": ["* 0-6 * * 1"]
   },
   "packageRules": [
@@ -24,13 +25,12 @@
       "automerge": true
     },
     {
-      "description": "An image digest has no release date, so a minimum age would hold it forever; a rebuild of the same tag is how Debian's and Alpine's security fixes arrive.",
+      "description": "Images do not wait. Docker Hub dates a tag by its last push, and official images re-push every tag on each base rebuild, so an age restarts with every rebuild and may never be reached; the rebuilds are how Debian's and Alpine's security fixes arrive. Majors are still read by a person.",
       "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["digest", "pin", "pinDigest"],
       "minimumReleaseAge": null
     },
     {
-      "description": "Actions: new releases, aged seven days like everything else.",
+      "description": "Actions: new releases, aged seven days like npm.",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "GitHub Actions",

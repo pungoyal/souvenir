@@ -207,8 +207,8 @@ compiles `lingo.yaml` (`dev` and `build` run it).
 
 Push to `main`: verify, run the whole stack (`stack`), build and push one
 arm64 GHCR image (`:short-sha` + `:latest`) → SSH to the OCI box, pull it by
-digest, dump the database into `backups/`, `docker compose up -d --wait`
-(Postgres, one-shot `migrate`, then `app`, until db and app are healthy).
+digest, dump the database into `backups/`, then Postgres, the migrations
+(while the old app still serves) and the new app, until it reports healthy.
 Renovate keeps every dependency current and merges the routine ones itself
 (`docs/launch/deploy-checklist.md`, _Updates_).
 

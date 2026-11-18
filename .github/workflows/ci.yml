@@ -238,7 +238,8 @@ jobs:
 
           # A restore point before anything moves: migrations are forward-only and a new Postgres
           # digest replaces the db container. Where there is data there is a dump, or no deploy;
-          # only a host with no data volume yet skips it. The last ten are kept.
+          # only a host with no data volume yet skips it. Kept 30 days, by age not count, so
+          # retries of a failing deploy cannot push the last good restore point out.
           mkdir -p backups
           project="$(docker compose config | sed -n 's/^name: //p')"
           if docker volume inspect "${project}_pgdata" >/dev/null 2>&1; then
@@ -256,15 +257,27 @@ jobs:
               exit 1
             fi
             mv "$dump.partial" "$dump"
-            ls -1t backups/*.dump | tail -n +11 | xargs -r rm --
+            find backups -name '*.dump' -mtime +30 -delete
             echo "restore point: $DEPLOY_DIR/$dump"
           fi
 
-          # The whole stack is the release. `--wait` returns once db and app report healthy (the
-          # app's healthcheck fetches /signin), so a boot-then-crash fails the deploy.
+          # The release, in the order that keeps the old app serving for as long as possible.
+          # 1. Postgres alone: a new digest replaces the container here (seconds), data volume kept.
+          docker compose up -d --no-build --no-deps --wait db
+
+          # 2. Migrations, while the old app still serves. Drizzle applies every pending one in a
+          #    single transaction, so a failure leaves the schema as it was and the old app up.
+          if ! docker compose run --rm --no-deps migrate; then
+            echo "migration failed and rolled back; the previous build is still serving." >&2
+            exit 1
+          fi
+
+          # 3. The new app (`migrate` runs again inside `up`, with nothing left to apply). `--wait`
+          #    returns once the app's healthcheck fetches /signin, so a boot-then-crash fails the
+          #    deploy; by then the old app is gone and the schema is migrated.
           if ! docker compose up -d --no-build --wait --wait-timeout 180; then
-            echo "the stack never came up healthy; last 50 log lines:" >&2
-            docker compose logs --tail=50 migrate app >&2
+            echo "the new app never came up healthy, and the old one is stopped; last 50 log lines:" >&2
+            docker compose logs --tail=50 app >&2
             exit 1
           fi
 
