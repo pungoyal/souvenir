@@ -205,9 +205,11 @@ compiles `lingo.yaml` (`dev` and `build` run it).
 
 ## Deployment (OCI over SSH)
 
-Push to `main`: verify → build and push one arm64 GHCR image (`:short-sha` +
-`:latest`) → SSH to the OCI box, pull the pinned tag, `docker compose up -d`
-(one-shot `migrate`, then `app`).
+Push to `main`: verify → build and push one arm64 GHCR image, tagged with the
+commit sha → copy `docker-compose.yml` and a rendered `.env` to the OCI box and
+`docker compose up -d --wait` there (one-shot `migrate`, then `app`, and the
+deploy fails unless the app's healthcheck passes). Running the workflow by
+hand on `main` redeploys, which is how a changed variable reaches the box.
 
 Configure a GitHub **environment named `oracle-cloud`**:
 
@@ -228,7 +230,9 @@ One-time server setup: install Docker, create `DEPLOY_DIR`, and point your
 reverse proxy at the app — `souvenir:3000` if the proxy shares the
 `DOCKER_NETWORK` network (the app's alias there; the generic `app` name is
 ambiguous on a shared network), or `127.0.0.1:${APP_PORT:-3000}` from the
-host; the deploy writes `docker-compose.yml` and `.env` there itself.
+host; the deploy writes `docker-compose.yml` and `.env` there itself. The
+`.env` names the running image (`APP_IMAGE`), so `docker compose` on the box
+always means the deployed build.
 
 Every release follows [`docs/launch/deploy-checklist.md`](docs/launch/deploy-checklist.md).
 Console scripts run from the image, which has no pnpm:

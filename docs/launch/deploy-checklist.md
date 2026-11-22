@@ -1,12 +1,13 @@
 # Deploy checklist
 
 Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
-and over SSH pulls it on the box and runs `docker compose up -d` — the
+and over SSH pulls it on the box and runs `docker compose up -d --wait` — the
 one-shot `migrate` service against the live database, then `app`
 (`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
 from the GitHub environment `oracle-cloud`** (`.github/workflows/ci.yml`):
 a variable lives there or nowhere, and editing the file on the box lasts
-until the next push. Nothing here needs a hand on the running containers;
+until the next push. A changed value reaches the box on the next deploy: run
+_CI & Deploy_ by hand on `main` to make that now. Nothing here needs a hand on the running containers;
 what needs a hand is that environment, and a backup when the schema moves.
 
 ## Every release

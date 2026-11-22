@@ -335,11 +335,16 @@ hook manager): biome on staged files, tsc, full test suite.
   itself once `verify` and `image` pass, and so deploys; a major, a 0.x
   minor, and anything held are on the Dependency Dashboard issue, waiting
   for a person. Never bump a
-  version by hand that Renovate would have — fix the config instead. An
-  update that wants the repository changed with it (a new Biome reformats
-  and migrates `biome.json`) gets that from `renovate-fixup.yml`, which runs
-  the tool's own fixer on Renovate's branch and commits the result; a new
-  tool with the same need is a line in its `Fix` step.
+  version by hand that Renovate would have — fix the config instead. Biome
+  is a PR of its own: a new one can reformat the repository, and a person
+  runs `pnpm format` on its branch when `verify` says so.
+- **The deploy is two files and one command.** `ci.yml` copies
+  `docker-compose.yml` and a `.env` rendered from the `oracle-cloud` GitHub
+  environment to the box, then `docker compose up -d --wait app`; the app's
+  compose healthcheck is what makes a bad boot fail the deploy. A new
+  variable is a line in `lib/env.ts`, `.env.example` and that heredoc. Keep
+  logic out of the SSH step: if the box needs to know something, it goes in
+  one of the two files.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

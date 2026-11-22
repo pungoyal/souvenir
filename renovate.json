@@ -4,7 +4,6 @@
   "timezone": "Asia/Kolkata",
   "schedule": ["before 6am on monday"],
   "osvVulnerabilityAlerts": true,
-  "gitIgnoredAuthors": ["41898282+github-actions[bot]@users.noreply.github.com"],
   "lockFileMaintenance": { "automerge": true },
   "packageRules": [
     {
@@ -35,6 +34,11 @@
       "matchUpdateTypes": ["minor"],
       "groupName": null,
       "automerge": false
+    },
+    {
+      "description": "A new Biome can reformat the repository, which fails verify; on its own it cannot hold the weekly PR back. A person runs `pnpm format` on its branch.",
+      "matchPackageNames": ["@biomejs/biome"],
+      "groupName": null
     }
   ]
 }

@@ -2,8 +2,8 @@
 #
 #   Dev:   docker compose up -d db        (then `pnpm dev`)
 #          docker compose up -d --build   (full stack, built locally)
-#   Prod:  export APP_IMAGE=...   (GHCR tag; CI does this)
-#          docker compose pull app && docker compose up -d --no-build app
+#   Prod:  CI writes this file and a .env naming APP_IMAGE, then
+#          docker compose pull app && docker compose up -d --no-build --wait app
 #
 # Knobs come from .env (see .env.example).
 
@@ -60,6 +60,12 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+    # What `up --wait` waits for. /signin needs no session; wget is the image's busybox.
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:3000/signin"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
     # The proxy reaches the app over this shared network without a public port. Every project
     # calls its service `app`, so the proxy targets the unique alias: souvenir:3000.
     networks:
