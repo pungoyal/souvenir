@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: souvenir
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-souvenir}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: souvenir
     volumes:
       - pgdata:/var/lib/postgresql
@@ -36,7 +36,7 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:-souvenir}@db:5432/souvenir
+      DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/souvenir
     depends_on:
       db:
         condition: service_healthy
@@ -54,7 +54,7 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:-souvenir}@db:5432/souvenir
+      DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/souvenir
     depends_on:
       db:
         condition: service_healthy

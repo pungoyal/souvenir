@@ -28,6 +28,7 @@ jobs:
         run: node scripts/speech-check.ts clips
         env:
           AUTH_SECRET: insecure-build-time-placeholder
+          DATABASE_URL: postgres://build-time-placeholder
           SPEECH_BASE_URL: ${{ vars.SPEECH_BASE_URL }}
           SPEECH_API_KEY: ${{ secrets.SPEECH_API_KEY || secrets.LLM_API_KEY }}
           SPEECH_TTS_MODEL: ${{ vars.SPEECH_TTS_MODEL }}

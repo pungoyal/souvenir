@@ -6,7 +6,9 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
   // 127.0.0.1, not localhost: the compose bind is IPv4-only and localhost may resolve to ::1.
-  DATABASE_URL: z.string().default("postgres://souvenir:souvenir@127.0.0.1:5566/souvenir"),
+  // Required, like AUTH_SECRET: a default would be a password in the source. Builds export a
+  // placeholder.
+  DATABASE_URL: z.string().min(1, "DATABASE_URL is required — see .env.example"),
 
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).optional(),
 

@@ -33,6 +33,7 @@ jobs:
         env:
           # Placeholder for lib/env.ts at build; the server gets its real secret from the deploy .env.
           AUTH_SECRET: insecure-build-time-placeholder
+          DATABASE_URL: postgres://build-time-placeholder
 
   # Beside `verify`, not after it; `deploy` waits on both. A pull request builds the image and
   # discards it, the only proof the Dockerfile and standalone trace work. PUSH is that one

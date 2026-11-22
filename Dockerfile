@@ -16,9 +16,11 @@ COPY . .
 ARG GIT_SHA=dev
 ENV GIT_SHA=$GIT_SHA
 ENV NEXT_TELEMETRY_DISABLED=1
-# AUTH_SECRET only satisfies lib/env.ts, and stays out of the stage's environment. Turbopack
-# ignores outputFileTracingExcludes, so what standalone needn't ship is stripped here.
-RUN AUTH_SECRET=insecure-build-time-placeholder pnpm build \
+# The AUTH_SECRET and DATABASE_URL placeholders only satisfy lib/env.ts, and stay out of the
+# stage's environment. Turbopack ignores outputFileTracingExcludes, so what standalone needn't
+# ship is stripped here.
+RUN AUTH_SECRET=insecure-build-time-placeholder DATABASE_URL=postgres://build-time-placeholder \
+    pnpm build \
     && rm -rf .next/standalone/node_modules/@typescript .next/standalone/node_modules/typescript \
     && find .next/standalone \
         \( -name '*.test.ts' -o -name '*.d.ts' -o -name '*.d.cts' -o -name '*.d.mts' -o -name '*.map' \) \
