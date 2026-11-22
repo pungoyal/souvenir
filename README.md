@@ -137,7 +137,7 @@ for prediction-draft polish and live interpreting; optional MiniMax
 
 ```sh
 cp .env.example .env          # set AUTH_SECRET at minimum
-docker compose up -d db       # Postgres on 127.0.0.1:${DB_PORT:-5566}
+docker compose up -d db       # Postgres on 127.0.0.1:5566
 pnpm install
 pnpm db:migrate
 pnpm seed                     # optional demo data
@@ -146,7 +146,9 @@ pnpm dev                      # http://localhost:3000
 
 `AUTH_DEV_LOGIN=true` enables a passwordless dev login (any email). **Never
 in production.** Full stack in Docker: `docker compose up -d --build` (db →
-one-shot `migrate` → app).
+one-shot `migrate` → app, on 127.0.0.1:3004; set `AUTH_URL=http://127.0.0.1:3004`
+for it, since a passkey is bound to `AUTH_URL`'s origin). `docker-compose.override.yml`
+adds those host ports; it is never copied to the server, which publishes none.
 
 `/talk` needs a microphone, which browsers hand over only in a secure context
 (`localhost` counts, a LAN address does not). Reach it from a phone with
@@ -166,7 +168,7 @@ list. Highlights:
 | `AUTH_GOOGLE_ID/SECRET`                                   | Google OAuth app (redirect URI `{AUTH_URL}/api/auth/callback/google`)                                                                                                       |
 | `RANKED_MIN_RESOLVED`                                     | Verdicts needed to appear ranked (default 5)                                                                                                                                |
 | `CONTACT_EMAIL`                                           | Shown on `/privacy`: grievances, and verification requests                                                                                                                  |
-| `DB_PORT` / `APP_PORT` / `APP_BIND` / `PORT`              | Database and HTTP ports                                                                                                                                                     |
+| `PORT`                                                    | HTTP port the app listens on                                                                                                                                                |
 | `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL`              | Optional draft-polish and live interpreting endpoint (hidden when unset)                                                                                                    |
 | `SPEECH_BASE_URL` / `SPEECH_API_KEY`                      | Optional voice for phones with none: MiniMax `/v1/t2a_v2` (hidden when unset)                                                                                               |
 | `SPEECH_VOICES` / `SPEECH_VOICE_US` / `SPEECH_VOICE_THEM` | Which voice says which language (`th=…,hi=…`), and the fallback per side; a language with no voice gets the device's or none. `pnpm speech:check` hears every language once |
@@ -224,8 +226,7 @@ Everything comes from a GitHub environment named `oracle-cloud`:
 | var / secret | every name in the `.env` step | the server's `.env`; a blank one is unset |
 
 The server needs Docker, `DEPLOY_DIR`, and a reverse proxy pointed at
-`souvenir:3000` on the `DOCKER_NETWORK` network, or at
-`127.0.0.1:$APP_PORT` on the host.
+`souvenir:3000` on the `DOCKER_NETWORK` network.
 
 Every release follows [`docs/launch/deploy-checklist.md`](docs/launch/deploy-checklist.md).
 Console scripts run from the image, in `DEPLOY_DIR`:

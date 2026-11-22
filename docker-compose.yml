@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:19-trixie@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
+    image: postgres:19.0-trixie@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
     restart: unless-stopped
     environment:
       POSTGRES_USER: souvenir
@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: souvenir
     volumes:
       - pgdata:/var/lib/postgresql
-    ports:
-      - "127.0.0.1:${DB_PORT:-5566}:5432"
     # Over TCP, as migrate and app connect: on a fresh volume the entrypoint runs a temporary
     # server on the socket alone, so a socket check passes before the real one is listening.
     # Polled each second while starting, then every 10s; `docker compose up --wait db` and the
@@ -37,8 +35,6 @@ services:
     image: ${APP_IMAGE:-souvenir:local}
     build: .
     restart: unless-stopped
-    ports:
-      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-3000}:3000"
     env_file: .env
     environment:
       DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:?}@db:5432/souvenir
