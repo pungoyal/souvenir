@@ -48,7 +48,7 @@ jobs:
       attestations: write
     outputs:
       image: ${{ steps.meta.outputs.image }}
-      digest: ${{ steps.build.outputs.digest }}
+      tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -131,7 +131,7 @@ jobs:
       # across without the remote shell re-parsing it.
       - name: Deploy over SSH
         env:
-          APP_IMAGE: ${{ needs.image.outputs.image }}@${{ needs.image.outputs.digest }}
+          APP_IMAGE: ${{ needs.image.outputs.image }}:${{ needs.image.outputs.tag }}
           APP_PORT: ${{ vars.APP_PORT }}
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
           GHCR_USER: ${{ github.actor }}
@@ -204,9 +204,6 @@ jobs:
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
           export APP_IMAGE
           docker compose pull app
-          # Pulled by digest, which leaves the image untagged on the box; name it by its short sha
-          # too, as the registry does, so `docker image ls` says which build is which.
-          docker tag "$APP_IMAGE" "${APP_IMAGE%@*}:${SHA::7}"
           docker compose up -d --no-build app
 
           # `up -d` returns on start, not on serving: a boot-then-crash would deploy green. Poll
@@ -225,10 +222,6 @@ jobs:
             sleep 2
           done
 
-          # A tagged image is never dangling, so untag the builds before this one for prune to take.
-          docker image ls "${APP_IMAGE%@*}" --format '{{.Tag}}' \
-            | grep -vx -e "${SHA::7}" -e '<none>' \
-            | xargs -r -I{} docker image rm "${APP_IMAGE%@*}:{}" || true
           docker image prune -f
           docker compose ps
           DEPLOY_SCRIPT
