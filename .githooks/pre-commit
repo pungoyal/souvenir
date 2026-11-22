@@ -1,0 +1,6 @@
+#!/bin/sh
+# Git runs this itself: `pnpm install` points core.hooksPath here (package.json `prepare`).
+set -e
+pnpm biome check --staged --no-errors-on-unmatched
+pnpm tsc --noEmit
+pnpm vitest run

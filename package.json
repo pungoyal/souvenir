@@ -18,7 +18,7 @@
     "stats": "node --env-file-if-exists=.env scripts/stats.ts",
     "recovery:link": "node --env-file-if-exists=.env scripts/recovery-link.ts",
     "speech:check": "node --env-file-if-exists=.env scripts/speech-check.ts",
-    "prepare": "husky",
+    "prepare": "git config core.hooksPath .githooks || true",
     "format": "biome check --write ."
   },
   "dependencies": {
@@ -39,7 +39,6 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "drizzle-kit": "^0.31.11",
-    "husky": "^9.1.7",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5",
