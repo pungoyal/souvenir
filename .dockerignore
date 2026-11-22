@@ -7,6 +7,6 @@ node_modules
 Dockerfile
 docker-compose.yml
 .github
-.husky
+.githooks
 *.md
 .claude

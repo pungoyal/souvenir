@@ -49,7 +49,8 @@ Read the test before changing a module; change them together.
 - `pnpm lingo:gen` — compile `lingo.yaml` → `lib/lingo.data.ts` (`dev` and
   `build` run it for you)
 
-Pre-commit (husky): biome on staged files, tsc, full test suite.
+Pre-commit (`.githooks/pre-commit`, which `pnpm install` points git at — no
+hook manager): biome on staged files, tsc, full test suite.
 
 ## Rules
 
