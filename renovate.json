@@ -5,6 +5,7 @@
   "schedule": ["before 6am on monday"],
   "minimumReleaseAge": "7 days",
   "osvVulnerabilityAlerts": true,
+  "gitIgnoredAuthors": ["41898282+github-actions[bot]@users.noreply.github.com"],
   "lockFileMaintenance": { "enabled": true, "automerge": true, "minimumReleaseAge": null },
   "packageRules": [
     {

@@ -34,13 +34,14 @@ jobs:
           # Placeholder for lib/env.ts at build; the server gets its real secret from the deploy .env.
           AUTH_SECRET: insecure-build-time-placeholder
 
-  # Beside `verify`, not after it; `deploy` waits on both. A pull request builds the image and
+  # Beside `verify`, not after it; `deploy` waits on both. Anything but `main` — a pull request,
+  # or a run started by hand on a branch (renovate-fixup.yml does) — builds the image and
   # discards it, the only proof the Dockerfile and standalone trace work. PUSH is that one
   # decision; every step below reads it.
   image:
     runs-on: ubuntu-24.04-arm
     env:
-      PUSH: ${{ github.event_name != 'pull_request' }}
+      PUSH: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
       packages: write
@@ -87,7 +88,7 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
             ${{ steps.meta.outputs.image }}:latest
-          # Both describe a published image; a pull request publishes nothing.
+          # Both describe a published image; only `main` publishes one.
           provenance: ${{ env.PUSH == 'true' && 'mode=max' || 'false' }}
           sbom: ${{ env.PUSH }}
       - name: Attest the image (Sigstore, signed with this run's OIDC identity)
