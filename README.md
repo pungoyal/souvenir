@@ -194,7 +194,7 @@ The promise on `/privacy` rests on the code the server serves to the phone.
 (`GIT_SHA`, shown in the footer) and signs a Sigstore provenance attestation.
 A member writes to `CONTACT_EMAIL` naming the footer's build and gets the
 source for that commit and the attestation
-(`gh attestation verify oci://ghcr.io/pungoyal/souvenir:<sha7> --owner pungoyal`).
+(`gh attestation verify oci://ghcr.io/pungoyal/souvenir:<sha> --owner pungoyal`).
 Verification is on request, not public, so the repository can be private.
 
 ## Quality gates
@@ -203,44 +203,37 @@ Verification is on request, not public, so the repository can be private.
 CI runs them, builds an arm64 image to GHCR, and deploys. `pnpm lingo:gen`
 compiles `lingo.yaml` (`dev` and `build` run it).
 
-## Deployment (OCI over SSH)
+## Deployment
 
-Push to `main`: verify → build and push one arm64 GHCR image, tagged with the
-commit sha → copy `docker-compose.yml` and a rendered `.env` to the OCI box and
-`docker compose up -d --wait` there (one-shot `migrate`, then `app`, and the
-deploy fails unless the app's healthcheck passes). Running the workflow by
-hand on `main` redeploys, which is how a changed variable reaches the box.
+Pushing to `main` deploys (`.github/workflows/ci.yml`): CI builds one arm64
+image, pushes it to GHCR tagged with the commit sha, copies
+`docker-compose.yml` and a rendered `.env` to the server, and runs
+`docker compose up -d --wait` there. The deploy fails unless migrations
+apply and the app's healthcheck passes. Running the workflow by hand on
+`main` redeploys, which is how a changed variable reaches the server.
 
-Configure a GitHub **environment named `oracle-cloud`**:
+Everything comes from a GitHub environment named `oracle-cloud`:
 
-| Kind         | Name                                        | Value                                                                                      |
-| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| var          | `SSH_HOST`                                  | server hostname/IP                                                                         |
-| var          | `SSH_USER`                                  | ssh user                                                                                   |
-| var          | `SSH_PORT`                                  | optional, defaults to 22                                                                   |
-| var          | `SSH_KNOWN_HOSTS`                           | the box's host keys (`ssh-keyscan <host>`); the deploy refuses a host that doesn't match   |
-| var          | `DEPLOY_DIR`                                | server directory holding `docker-compose.yml` + `.env`                                     |
-| secret       | `SSH_PRIVATE_KEY`                           | private key for the ssh user                                                               |
-| var / secret | every name in the configuration table above | the server's `.env` is rendered from these on each deploy (`ci.yml`); a blank one is unset |
+| Kind         | Name                          | Value                                     |
+| ------------ | ----------------------------- | ----------------------------------------- |
+| var          | `SSH_HOST`, `SSH_USER`        | where to deploy                           |
+| var          | `SSH_PORT`                    | optional, defaults to 22                  |
+| var          | `SSH_KNOWN_HOSTS`             | output of `ssh-keyscan <host>`            |
+| var          | `DEPLOY_DIR`                  | directory on the server; must exist       |
+| secret       | `SSH_PRIVATE_KEY`             | key for `SSH_USER`                        |
+| var / secret | every name in the `.env` step | the server's `.env`; a blank one is unset |
 
-No registry credentials needed: the deploy job logs the server into GHCR with
-its ephemeral `GITHUB_TOKEN` (`packages: read`).
-
-One-time server setup: install Docker, create `DEPLOY_DIR`, and point your
-reverse proxy at the app — `souvenir:3000` if the proxy shares the
-`DOCKER_NETWORK` network (the app's alias there; the generic `app` name is
-ambiguous on a shared network), or `127.0.0.1:${APP_PORT:-3000}` from the
-host; the deploy writes `docker-compose.yml` and `.env` there itself. The
-`.env` names the running image (`APP_IMAGE`), so `docker compose` on the box
-always means the deployed build.
+The server needs Docker, `DEPLOY_DIR`, and a reverse proxy pointed at
+`souvenir:3000` on the `DOCKER_NETWORK` network, or at
+`127.0.0.1:$APP_PORT` on the host.
 
 Every release follows [`docs/launch/deploy-checklist.md`](docs/launch/deploy-checklist.md).
-Console scripts run from the image, which has no pnpm:
+Console scripts run from the image, in `DEPLOY_DIR`:
 
 ```sh
-docker compose run --rm migrate node scripts/stats.ts               # pnpm stats
-docker compose run --rm migrate node scripts/recovery-link.ts "<member>"  # pnpm recovery:link
-docker compose run --rm -v "$PWD/clips:/app/clips" migrate node scripts/speech-check.ts  # pnpm speech:check
+docker compose run --rm migrate node scripts/stats.ts
+docker compose run --rm migrate node scripts/recovery-link.ts "<member>"
+docker compose run --rm -v "$PWD/clips:/app/clips" migrate node scripts/speech-check.ts
 ```
 
 ## Documents

@@ -7,36 +7,36 @@
   "lockFileMaintenance": { "automerge": true },
   "packageRules": [
     {
-      "description": "A release is a week old before it is proposed (as a rule, because the preset sets npm's age with one).",
+      "description": "A release is a week old before it is proposed.",
       "matchPackageNames": ["*"],
       "minimumReleaseAge": "7 days"
     },
     {
-      "description": "Docker Hub dates a tag by its last push and a digest not at all, so an age would hold images forever.",
+      "description": "Docker Hub gives digests no date, so an age would hold images forever.",
       "matchDatasources": ["docker"],
       "minimumReleaseAge": null
     },
     {
-      "description": "A Node major moves as one: the Dockerfile's image, the workflows' node-version, and its types.",
+      "description": "A Node major moves as one PR.",
       "matchDepNames": ["node", "@types/node"],
       "matchUpdateTypes": ["major"],
       "groupName": "node"
     },
     {
-      "description": "Everything short of a major is one weekly PR that merges itself once verify and image pass: one lockfile change, one deploy.",
+      "description": "Everything short of a major is one weekly PR that merges itself.",
       "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
       "groupName": "everything short of a major",
       "automerge": true
     },
     {
-      "description": "A 0.x minor is a major by another name: its own PR, for a person.",
+      "description": "A 0.x minor can break: its own PR, for a person.",
       "matchCurrentVersion": "/^0\\./",
       "matchUpdateTypes": ["minor"],
       "groupName": null,
       "automerge": false
     },
     {
-      "description": "A new Biome can reformat the repository, which fails verify; on its own it cannot hold the weekly PR back. A person runs `pnpm format` on its branch.",
+      "description": "A new Biome can fail verify until `pnpm format` is run, so it must not hold the weekly PR back.",
       "matchPackageNames": ["@biomejs/biome"],
       "groupName": null
     }

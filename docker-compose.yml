@@ -1,12 +1,3 @@
-# One compose file for dev and prod.
-#
-#   Dev:   docker compose up -d db        (then `pnpm dev`)
-#          docker compose up -d --build   (full stack, built locally)
-#   Prod:  CI writes this file and a .env naming APP_IMAGE, then
-#          docker compose pull app && docker compose up -d --no-build --wait app
-#
-# Knobs come from .env (see .env.example).
-
 services:
   db:
     image: postgres:19-trixie@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
@@ -17,7 +8,6 @@ services:
       POSTGRES_DB: souvenir
     volumes:
       - pgdata:/var/lib/postgresql
-    # Loopback only; never expose Postgres.
     ports:
       - "127.0.0.1:${DB_PORT:-5566}:5432"
     healthcheck:
@@ -26,33 +16,24 @@ services:
       timeout: 3s
       retries: 20
 
-  # Runs pending migrations and exits; the app starts only after it succeeds.
   migrate:
     image: ${APP_IMAGE:-souvenir:local}
-    build:
-      context: .
+    build: .
     command: ["node", "scripts/migrate.ts"]
-    # lib/env.ts validates the whole environment on import, so migrate needs the real .env.
-    env_file:
-      - .env
+    env_file: .env
     environment:
       DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:-souvenir}@db:5432/souvenir
     depends_on:
       db:
         condition: service_healthy
-    restart: "no"
 
   app:
     image: ${APP_IMAGE:-souvenir:local}
-    build:
-      context: .
+    build: .
     restart: unless-stopped
-    # Loopback assumes a reverse proxy terminates TLS; APP_BIND=0.0.0.0 exposes directly.
     ports:
       - "${APP_BIND:-127.0.0.1}:${APP_PORT:-3000}:3000"
-    # Required: AUTH_SECRET has no default, so a missing .env fails fast.
-    env_file:
-      - .env
+    env_file: .env
     environment:
       DATABASE_URL: postgres://souvenir:${POSTGRES_PASSWORD:-souvenir}@db:5432/souvenir
     depends_on:
@@ -60,17 +41,16 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-    # What `up --wait` waits for. /signin needs no session; wget is the image's busybox.
+    # The deploy's `up --wait` passes or fails on this.
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:3000/signin"]
       interval: 5s
       timeout: 5s
       retries: 12
-    # The proxy reaches the app over this shared network without a public port. Every project
-    # calls its service `app`, so the proxy targets the unique alias: souvenir:3000.
     networks:
-      default: null
+      default:
       edge:
+        # `app` is ambiguous on a network shared with other projects.
         aliases:
           - souvenir
 
@@ -78,7 +58,7 @@ volumes:
   pgdata:
 
 networks:
-  # Must already exist (the proxy lives there); locally, `docker network create edge` once.
+  # The reverse proxy's network; it must already exist (`docker network create edge`).
   edge:
     external: true
     name: ${DOCKER_NETWORK:-edge}

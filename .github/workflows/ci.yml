@@ -19,7 +19,7 @@ jobs:
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 26 # Renovate moves it with the Dockerfile
+          node-version: 26
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Biome
@@ -29,9 +29,7 @@ jobs:
       - name: Tests
         run: pnpm vitest run
 
-  # Beside `verify`, not after it; `deploy` waits on both. The image is the only `next build`
-  # CI runs, and the only proof the Dockerfile and standalone trace work, so every run builds
-  # it; only `main` pushes and attests it.
+  # The only `next build` in CI. Every run builds; only `main` pushes and attests.
   image:
     runs-on: ubuntu-24.04-arm
     permissions:
@@ -40,7 +38,7 @@ jobs:
       id-token: write
       attestations: write
     env:
-      IMAGE: ghcr.io/${{ github.repository }} # GHCR wants lowercase, and the repository is
+      IMAGE: ghcr.io/${{ github.repository }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -52,7 +50,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build the image (arm64, matching the host)
+      - name: Build the image
         id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
@@ -60,9 +58,8 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
           tags: ${{ env.IMAGE }}:${{ github.sha }}
           build-args: GIT_SHA=${{ github.sha }}
-      # What /privacy promises. A member checks it with
-      # `gh attestation verify oci://<image>:<sha> --owner <owner>`.
-      - name: Attest the image (Sigstore, signed with this run's OIDC identity)
+      # /privacy promises this.
+      - name: Attest the image
         if: github.ref == 'refs/heads/main'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
@@ -70,10 +67,6 @@ jobs:
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
-  # The box gets two files, docker-compose.yml from this commit and a .env rendered from the
-  # "oracle-cloud" GitHub environment, then one `docker compose up`. README.md (Deployment)
-  # lists what the environment holds. A run started by hand on `main` redeploys, which is how
-  # a changed variable reaches the box.
   deploy:
     needs: [verify, image]
     if: github.ref == 'refs/heads/main'
@@ -87,8 +80,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Every name lib/env.ts and docker-compose.yml read; a blank one is unset. Edit values in
-      # the environment, never on the box. GitHub masks the secrets in the log.
+      # A blank value is unset (lib/env.ts).
       - name: Render .env
         run: |
           umask 077
@@ -121,9 +113,7 @@ jobs:
           SPEECH_VOICE_THEM_PITCH=${{ vars.SPEECH_VOICE_THEM_PITCH }}
           SPEECH_VOICE_THEM_SPEED=${{ vars.SPEECH_VOICE_THEM_SPEED }}
           ENV_EOF
-      # Plain ssh. SSH_KNOWN_HOSTS pins the box's host keys, so the deploy cannot be redirected.
-      # The registry login is this run's own token, which dies with the run: no PAT on the box.
-      - name: Copy the two files, then compose up
+      - name: Copy both files to the box and compose up
         env:
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -152,9 +142,8 @@ jobs:
           ssh box "docker login ghcr.io -u '$GITHUB_ACTOR' --password-stdin" <<< "$GHCR_TOKEN"
           ssh box "cd '$DEPLOY_DIR' && IMAGE='$IMAGE' SHA='$GITHUB_SHA' bash -se" <<'REMOTE'
           docker compose pull -q app
-          # --wait holds until the app's healthcheck passes: a boot-then-crash fails the deploy.
           docker compose up -d --no-build --wait app || { docker compose logs --tail=50 migrate app >&2; exit 1; }
           docker compose ps
-          # Each deploy leaves its sha-tagged image behind; keep only the one now running.
+          # Remove the images of earlier deploys.
           docker images --format '{{.Repository}}:{{.Tag}}' "$IMAGE" | grep -v ":$SHA$" | xargs -r docker rmi || true
           REMOTE

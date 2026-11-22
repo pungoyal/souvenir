@@ -1,21 +1,17 @@
 # Deploy checklist
 
-Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
-and over SSH pulls it on the box and runs `docker compose up -d --wait` — the
-one-shot `migrate` service against the live database, then `app`
-(`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
-from the GitHub environment `oracle-cloud`** (`.github/workflows/ci.yml`):
-a variable lives there or nowhere, and editing the file on the box lasts
-until the next push. A changed value reaches the box on the next deploy: run
-_CI & Deploy_ by hand on `main` to make that now. Nothing here needs a hand on the running containers;
-what needs a hand is that environment, and a backup when the schema moves.
+Pushing to `main` is the deploy (`README.md`, _Deployment_). The box's
+`.env` is rendered on every deploy from the GitHub environment
+`oracle-cloud`: a variable lives there or nowhere, and an edit on the box
+lasts until the next deploy. To apply a changed value now, run _CI & Deploy_
+by hand on `main`.
 
 ## Every release
 
 1. **Read the diff for two things**: a new migration under `drizzle/`, and
    a new or changed variable in `lib/env.ts` (`.env.example` documents each).
 2. **Migration?** Back up first — `docker exec souvenir-db-1 pg_dump -U souvenir souvenir > backup-$(date +%F).sql` on the box. Migrations are forward-only and some have been destructive.
-3. **New variable?** Add it to `ci.yml`'s `.env` heredoc and set it in the
+3. **New variable?** Add it to `ci.yml`'s `.env` step and set it in the
    `oracle-cloud` environment _before_ pushing; a required one missing stops
    the app at boot (`lib/env.ts` refuses to start), an optional one missing
    silently hides its feature. A blank value is the same as unset.
