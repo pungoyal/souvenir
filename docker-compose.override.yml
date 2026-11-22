@@ -1,0 +1,7 @@
+# Local only, never copied to the server, where the reverse proxy reaches app
+# over its network and nothing outside the stack talks to db.
+services:
+  db:
+    ports: ["127.0.0.1:5566:5432"]
+  app:
+    ports: ["127.0.0.1:3004:3000"]

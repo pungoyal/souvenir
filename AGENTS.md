@@ -345,6 +345,10 @@ hook manager): biome on staged files, tsc, full test suite.
   variable is a line in `lib/env.ts`, `.env.example` and that heredoc. Keep
   logic out of the SSH step: if the box needs to know something, it goes in
   one of the two files.
+- `docker-compose.yml` publishes no host port: other projects on the box
+  pick theirs freely, and a clash fails `up` after compose has recreated the
+  containers. `docker-compose.override.yml`, local only and never copied,
+  adds them.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
