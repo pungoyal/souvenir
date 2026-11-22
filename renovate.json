@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "timezone": "Asia/Kolkata",
+  "schedule": ["before 6am on monday"],
+  "minimumReleaseAge": "7 days",
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": { "enabled": true, "automerge": true, "minimumReleaseAge": null },
+  "packageRules": [
+    {
+      "description": "Everything short of a major merges itself once verify and image pass.",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "automerge": true
+    },
+    {
+      "description": "A 0.x minor is a major by another name.",
+      "matchCurrentVersion": "/^0\\./",
+      "matchUpdateTypes": ["minor"],
+      "automerge": false
+    },
+    {
+      "description": "Docker Hub dates a tag by its last push and a digest not at all, so an age would hold images forever.",
+      "matchDatasources": ["docker"],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "Node moves as one: the Dockerfile's image and the workflows' node-version.",
+      "matchPackageNames": ["node"],
+      "matchDatasources": ["docker", "node-version"],
+      "groupName": "node"
+    }
+  ]
+}
