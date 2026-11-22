@@ -48,7 +48,7 @@ jobs:
       attestations: write
     outputs:
       image: ${{ steps.meta.outputs.image }}
-      digest: ${{ steps.build.outputs.digest }}
+      tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -131,7 +131,7 @@ jobs:
       # across without the remote shell re-parsing it.
       - name: Deploy over SSH
         env:
-          APP_IMAGE: ${{ needs.image.outputs.image }}@${{ needs.image.outputs.digest }}
+          APP_IMAGE: ${{ needs.image.outputs.image }}:${{ needs.image.outputs.tag }}
           APP_PORT: ${{ vars.APP_PORT }}
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
           GHCR_USER: ${{ github.actor }}
