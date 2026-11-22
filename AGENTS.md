@@ -333,7 +333,11 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   reads) and Node. Anything short of a major merges itself once `verify` and
   `image` pass, and so deploys; a major, a 0.x minor, and anything held are
   on the Dependency Dashboard issue, waiting for a person. Never bump a
-  version by hand that Renovate would have — fix the config instead.
+  version by hand that Renovate would have — fix the config instead. An
+  update that wants the repository changed with it (a new Biome reformats
+  and migrates `biome.json`) gets that from `renovate-fixup.yml`, which runs
+  the tool's own fixer on Renovate's branch and commits the result; a new
+  tool with the same need is a line in its `Fix` step.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
