@@ -10,11 +10,17 @@ services:
       - pgdata:/var/lib/postgresql
     ports:
       - "127.0.0.1:${DB_PORT:-5566}:5432"
+    # Over TCP, as migrate and app connect: on a fresh volume the entrypoint runs a temporary
+    # server on the socket alone, so a socket check passes before the real one is listening.
+    # Polled each second while starting, then every 10s; `docker compose up --wait db` and the
+    # services below wait on it.
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U souvenir -d souvenir"]
-      interval: 5s
+      test: ["CMD-SHELL", 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -q']
+      start_period: 60s
+      start_interval: 1s
+      interval: 10s
       timeout: 3s
-      retries: 20
+      retries: 3
 
   migrate:
     image: ${APP_IMAGE:-souvenir:local}

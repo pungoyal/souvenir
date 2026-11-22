@@ -406,30 +406,20 @@ export async function ensureMember(
   opts?: { termsAccepted?: boolean },
 ): Promise<{ member: Member; created: boolean }> {
   const normalized = normalizeEmail(email);
-  const [existing] = await db.select().from(members).where(eq(members.email, normalized));
-  if (existing) {
-    if (existing.deletedAt) throw new DataError("That account was deleted.");
-    return { member: existing, created: false };
-  }
-  try {
-    const [created] = await db
-      .insert(members)
-      .values({
-        id: randomUUID(),
-        email: normalized,
-        name: name ?? normalized,
-        termsAcceptedAt: opts?.termsAccepted ? new Date() : null,
-      })
-      .returning();
-    logger.info({ memberId: created.id }, "member joined");
-    return { member: created, created: true };
-  } catch {
-    // Concurrent first sign-in: the unique email constraint fired; re-read.
-    logger.debug("concurrent first sign-in, re-reading member");
-    const [raced] = await db.select().from(members).where(eq(members.email, normalized));
-    if (!raced) throw new DataError("Something went wrong signing you in. Try again.");
-    return { member: raced, created: false };
-  }
+  // Postgres 19's DO SELECT: insert, or hand back the row that holds the address — one
+  // statement, so two first sign-ins at once get the same member. `old` is the row that was
+  // already there (null when this insert made it). Drizzle has no builder for it yet.
+  const { rows } = await db.execute<{ id: string; created: boolean }>(sql`
+    insert into ${members} (id, email, name, terms_accepted_at)
+    values (${randomUUID()}, ${normalized}, ${name ?? normalized},
+            ${opts?.termsAccepted ? new Date().toISOString() : null})
+    on conflict (email) do select
+    returning new.id, old.id is null as created`);
+  const [{ id, created }] = rows;
+  const [member] = await db.select().from(members).where(eq(members.id, id));
+  if (member.deletedAt) throw new DataError("That account was deleted.");
+  if (created) logger.info({ memberId: id }, "member joined");
+  return { member, created };
 }
 
 function checkName(raw: string): string {
