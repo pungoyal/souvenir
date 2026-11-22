@@ -13,6 +13,11 @@ permissions:
   contents: write
   actions: write
 
+# Renovate rewrites its branch when it rebases; only the newest push is worth fixing.
+concurrency:
+  group: renovate-fixup-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   fixup:
     # Not on our own commit, should a token ever start one.

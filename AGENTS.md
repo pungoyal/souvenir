@@ -330,9 +330,10 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
 - Every action is pinned to a commit SHA (`# vX.Y.Z` alone after it) and every
   image to a digest; Renovate (`renovate.json`, the hosted app) moves them,
   along with npm, the lockfile, pnpm (`packageManager`, which the Dockerfile
-  reads) and Node. Anything short of a major merges itself once `verify` and
-  `image` pass, and so deploys; a major, a 0.x minor, and anything held are
-  on the Dependency Dashboard issue, waiting for a person. Never bump a
+  reads) and Node. Anything short of a major is one PR on Monday that merges
+  itself once `verify` and `image` pass, and so deploys; a major, a 0.x
+  minor, and anything held are on the Dependency Dashboard issue, waiting
+  for a person. Never bump a
   version by hand that Renovate would have — fix the config instead. An
   update that wants the repository changed with it (a new Biome reformats
   and migrates `biome.json`) gets that from `renovate-fixup.yml`, which runs
