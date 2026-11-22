@@ -146,7 +146,8 @@ pnpm dev                      # http://localhost:3000
 
 `AUTH_DEV_LOGIN=true` enables a passwordless dev login (any email). **Never
 in production.** Full stack in Docker: `docker compose up -d --build` (db →
-one-shot `migrate` → app, on 127.0.0.1:3004). `docker-compose.override.yml`
+one-shot `migrate` → app, on 127.0.0.1:3004; set `AUTH_URL=http://127.0.0.1:3004`
+for it, since a passkey is bound to `AUTH_URL`'s origin). `docker-compose.override.yml`
 adds those host ports; it is never copied to the server, which publishes none.
 
 `/talk` needs a microphone, which browsers hand over only in a secure context
