@@ -359,7 +359,7 @@ Decisions that still govern the code:
   BuildKit provenance and an SBOM, and signs a Sigstore attestation with the
   workflow's OIDC identity. A member writes to `CONTACT_EMAIL` naming the
   footer's build and receives the source and the attestation
-  (`gh attestation verify oci://<image>:<sha7> --owner vaari-dev`). Not
+  (`gh attestation verify oci://<image>:<sha7> --owner pungoyal`). Not
   built, on purpose: public verification, a public crypto library, and a
   per-trip hash chain (tamper-evident ordering was never part of the
   promise).

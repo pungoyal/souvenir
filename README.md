@@ -194,7 +194,7 @@ The promise on `/privacy` rests on the code the server serves to the phone.
 (`GIT_SHA`, shown in the footer) and signs a Sigstore provenance attestation.
 A member writes to `CONTACT_EMAIL` naming the footer's build and gets the
 source for that commit and the attestation
-(`gh attestation verify oci://ghcr.io/vaari-dev/souvenir:<sha7> --owner vaari-dev`).
+(`gh attestation verify oci://ghcr.io/pungoyal/souvenir:<sha7> --owner pungoyal`).
 Verification is on request, not public, so the repository can be private.
 
 ## Quality gates
