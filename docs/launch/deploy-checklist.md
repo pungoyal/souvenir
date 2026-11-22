@@ -1,20 +1,17 @@
 # Deploy checklist
 
-Pushing to `main` is the deploy: CI runs the gates, builds one arm64 image,
-and over SSH pulls it on the box and runs `docker compose up -d` — the
-one-shot `migrate` service against the live database, then `app`
-(`README.md`, _Deployment_). The box's `.env` is **rendered on every deploy
-from the GitHub environment `oracle-cloud`** (`.github/workflows/ci.yml`):
-a variable lives there or nowhere, and editing the file on the box lasts
-until the next push. Nothing here needs a hand on the running containers;
-what needs a hand is that environment, and a backup when the schema moves.
+Pushing to `main` is the deploy (`README.md`, _Deployment_). The box's
+`.env` is rendered on every deploy from the GitHub environment
+`oracle-cloud`: a variable lives there or nowhere, and an edit on the box
+lasts until the next deploy. To apply a changed value now, run _CI & Deploy_
+by hand on `main`.
 
 ## Every release
 
 1. **Read the diff for two things**: a new migration under `drizzle/`, and
    a new or changed variable in `lib/env.ts` (`.env.example` documents each).
 2. **Migration?** Back up first — `docker exec souvenir-db-1 pg_dump -U souvenir souvenir > backup-$(date +%F).sql` on the box. Migrations are forward-only and some have been destructive.
-3. **New variable?** Add it to `ci.yml`'s `.env` heredoc and set it in the
+3. **New variable?** Add it to `ci.yml`'s `.env` step and set it in the
    `oracle-cloud` environment _before_ pushing; a required one missing stops
    the app at boot (`lib/env.ts` refuses to start), an optional one missing
    silently hides its feature. A blank value is the same as unset.
@@ -22,47 +19,6 @@ what needs a hand is that environment, and a backup when the schema moves.
 5. **Verify**: the footer names the new build (`GIT_SHA`);
    `docker compose run --rm migrate node scripts/stats.ts` still reads the
    trips; open the live trip on a phone that holds the key.
-
-## Postgres major upgrade (18 → 19)
-
-A new major cannot open the old one's data: the image keeps each major's
-cluster in its own directory (`/var/lib/postgresql/18/docker`) and refuses
-to start while an older one sits on the volume. So the move is by hand, on
-the box, _before_ the PR that bumps `db` merges: dump, set the 18 cluster
-aside in a volume of its own, restore into 19. Rehearsed on a copy of a
-dev volume: about ten seconds of database work; budget ten minutes of
-downtime for the typing.
-
-```sh
-cd "$DEPLOY_DIR"
-NEW=postgres:19-trixie@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
-COUNT="select (select count(*) from trips), (select count(*) from members),
-  (select count(*) from events), (select count(*) from drizzle.__drizzle_migrations)"
-docker pull "$NEW"                                          # before the downtime
-
-docker compose stop app                                     # downtime starts
-docker compose exec -T db psql -U souvenir -d souvenir -Atc "$COUNT" | tee before.txt
-docker compose exec -T db pg_dump -U souvenir -Fc souvenir > pre-19.dump
-docker compose stop db
-docker volume create souvenir_pgdata18
-docker run --rm -v souvenir_pgdata:/v -v souvenir_pgdata18:/keep "$NEW" mv /v/18 /keep/
-sed -i "s|image: postgres:18.*|image: $NEW|" docker-compose.yml
-docker compose up -d --wait db
-docker compose exec -T db pg_restore -U souvenir -d souvenir \
-  --no-owner --exit-on-error --single-transaction < pre-19.dump
-docker compose exec -T db psql -U souvenir -d souvenir -Atc "$COUNT" | tee after.txt
-diff before.txt after.txt && docker compose start app       # downtime ends
-```
-
-Then merge the PR. The deploy writes the same `db` line, so it leaves the
-database alone; `migrate` finds nothing to apply.
-
-**Rollback** (before anyone writes to 19, or lose what they wrote):
-`docker compose stop app db`, `docker run --rm -v souvenir_pgdata:/v -v
-souvenir_pgdata18:/keep alpine mv /keep/18 /v/`, put the 18 image line back
-in `docker-compose.yml`, `docker compose up -d --wait db && docker compose
-start app` — and revert the PR if it merged. After a quiet week:
-`docker volume rm souvenir_pgdata18` and delete `pre-19.dump`.
 
 ## Domain and passkeys
 

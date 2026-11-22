@@ -19,83 +19,51 @@ jobs:
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 26 # Renovate moves it with the Dockerfile
+          node-version: 26
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Biome
         run: pnpm biome ci .
       - name: Typecheck
         run: pnpm tsc --noEmit
-      - name: Engine tests
+      - name: Tests
         run: pnpm vitest run
-      - name: Build
-        run: pnpm build
-        env:
-          # Placeholder for lib/env.ts at build; the server gets its real secret from the deploy .env.
-          AUTH_SECRET: insecure-build-time-placeholder
 
-  # Beside `verify`, not after it; `deploy` waits on both. Anything but `main` — a pull request,
-  # or a run started by hand on a branch (renovate-fixup.yml does) — builds the image and
-  # discards it, the only proof the Dockerfile and standalone trace work. PUSH is that one
-  # decision; every step below reads it.
+  # The only `next build` in CI. Every run builds; only `main` pushes and attests.
   image:
     runs-on: ubuntu-24.04-arm
-    env:
-      PUSH: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
       packages: write
       id-token: write
       attestations: write
-    outputs:
-      image: ${{ steps.meta.outputs.image }}
-      tag: ${{ steps.meta.outputs.tag }}
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
-        if: env.PUSH == 'true'
+        if: github.ref == 'refs/heads/main'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Image name (lowercase) and short-sha tag
-        id: meta
-        run: |
-          echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
-          echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-          echo "epoch=$(git log -1 --format=%ct)" >> "$GITHUB_OUTPUT"
-      # Reproducible where the tooling allows: build id and layer timestamps are the commit's,
-      # and the image carries its sha for /privacy. A member checks the attestation with
-      # `gh attestation verify oci://<image>:<tag> --owner <owner>`.
-      #
-      # No layer cache: `rewrite-timestamp` stamps every layer with the commit date, so nothing
-      # exported is reusable and `cache-to` only cost time. Check the log for `CACHED` before
-      # re-adding it.
-      - name: Build the image (arm64, matching the OCI host) — pushed unless this is a PR
+      - name: Build the image
         id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
-        env:
-          SOURCE_DATE_EPOCH: ${{ steps.meta.outputs.epoch }}
         with:
           context: .
-          platforms: linux/arm64
-          outputs: ${{ env.PUSH == 'true' && 'type=image,push=true,rewrite-timestamp=true' || 'type=cacheonly' }}
-          build-args: |
-            GIT_SHA=${{ github.sha }}
-          tags: |
-            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
-            ${{ steps.meta.outputs.image }}:latest
-          # Both describe a published image; only `main` publishes one.
-          provenance: ${{ env.PUSH == 'true' && 'mode=max' || 'false' }}
-          sbom: ${{ env.PUSH }}
-      - name: Attest the image (Sigstore, signed with this run's OIDC identity)
-        if: env.PUSH == 'true'
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          build-args: GIT_SHA=${{ github.sha }}
+      # /privacy promises this.
+      - name: Attest the image
+        if: github.ref == 'refs/heads/main'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-name: ${{ steps.meta.outputs.image }}
+          subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
@@ -103,79 +71,21 @@ jobs:
     needs: [verify, image]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04-arm
-    # Everything host-specific comes from the "oracle-cloud" GitHub environment,
-    # which is the single source of truth for the server's .env:
-    #   vars:    SSH_HOST, SSH_USER, SSH_PORT (optional), SSH_KNOWN_HOSTS
-    #            (the box's host keys, `ssh-keyscan` format — the deploy
-    #            refuses a host that doesn't match), DEPLOY_DIR,
-    #            APP_PORT, APP_BIND, DB_PORT, AUTH_URL, DOCKER_NETWORK
-    #            (the external network the proxy shares with the app),
-    #            RANKED_MIN_RESOLVED, CONTACT_EMAIL, LLM_BASE_URL, LLM_MODEL,
-    #            SPEECH_BASE_URL, SPEECH_TTS_MODEL, SPEECH_GROUP_ID, SPEECH_VOICES,
-    #            SPEECH_VOICE_US, SPEECH_VOICE_THEM, SPEECH_VOICE_THEM_PITCH,
-    #            SPEECH_VOICE_THEM_SPEED (all optional: blank is unset, lib/env.ts)
-    #   secrets: SSH_PRIVATE_KEY, POSTGRES_PASSWORD, AUTH_SECRET,
-    #            AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, LLM_API_KEY,
-    #            SPEECH_API_KEY (optional: one vendor, so LLM_API_KEY serves)
-    # The registry pull uses this run's ephemeral GITHUB_TOKEN — no PAT needed.
     environment: oracle-cloud
     permissions:
       contents: read
       packages: read
-    concurrency:
-      group: deploy-oracle-cloud
-      cancel-in-progress: false
+    concurrency: deploy-oracle-cloud
     steps:
-      # One SSH step does the whole deploy. Plain ssh, not an action: SSH_KNOWN_HOSTS pins the
-      # host keys and StrictHostKeyChecking refuses anything else, so the deploy cannot be
-      # redirected. The host needs no checkout. The `export %q` prelude carries the runner's env
-      # across without the remote shell re-parsing it.
-      - name: Deploy over SSH
-        env:
-          APP_IMAGE: ${{ needs.image.outputs.image }}:${{ needs.image.outputs.tag }}
-          APP_PORT: ${{ vars.APP_PORT }}
-          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
-          GHCR_USER: ${{ github.actor }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          SHA: ${{ github.sha }}
-          SSH_HOST: ${{ vars.SSH_HOST }}
-          SSH_USER: ${{ vars.SSH_USER }}
-          SSH_PORT: ${{ vars.SSH_PORT || 22 }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # A blank value is unset (lib/env.ts).
+      - name: Render .env
         run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          {
-            printf 'export APP_IMAGE=%q APP_PORT=%q DEPLOY_DIR=%q GHCR_USER=%q GHCR_TOKEN=%q REPO=%q SHA=%q\n' \
-              "$APP_IMAGE" "$APP_PORT" "$DEPLOY_DIR" "$GHCR_USER" "$GHCR_TOKEN" "$REPO" "$SHA"
-            cat <<'DEPLOY_SCRIPT'
-          set -euo pipefail
-
-          # DEPLOY_DIR may not exist on a fresh host; parents like /opt are root-owned, so sudo.
-          if [ ! -d "$DEPLOY_DIR" ]; then
-            mkdir -p "$DEPLOY_DIR" 2>/dev/null || {
-              sudo mkdir -p "$DEPLOY_DIR"
-              sudo chown "$(id -u):$(id -g)" "$DEPLOY_DIR"
-            }
-          fi
-          cd "$DEPLOY_DIR"
-
-          # The compose file comes from the deployed commit, so the host cannot drift.
-          curl -fsSL \
-            -H "Authorization: Bearer $GHCR_TOKEN" \
-            -H "Accept: application/vnd.github.raw" \
-            "https://api.github.com/repos/$REPO/contents/docker-compose.yml?ref=$SHA" \
-            -o docker-compose.yml
-
-          # .env is rendered on every deploy from the oracle-cloud environment: edit there, never
-          # on the server. Quoted heredoc writes values verbatim; GitHub masks secrets in the log.
           umask 077
           cat > .env <<'ENV_EOF'
+          APP_IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
           APP_PORT=${{ vars.APP_PORT }}
           APP_BIND=${{ vars.APP_BIND }}
           DB_PORT=${{ vars.DB_PORT }}
@@ -186,8 +96,10 @@ jobs:
           AUTH_GOOGLE_ID=${{ secrets.AUTH_GOOGLE_ID }}
           AUTH_GOOGLE_SECRET=${{ secrets.AUTH_GOOGLE_SECRET }}
           AUTH_DEV_LOGIN=false
+          LOG_LEVEL=${{ vars.LOG_LEVEL }}
           RANKED_MIN_RESOLVED=${{ vars.RANKED_MIN_RESOLVED }}
           CONTACT_EMAIL=${{ vars.CONTACT_EMAIL }}
+          FX_BASE_URL=${{ vars.FX_BASE_URL }}
           LLM_BASE_URL=${{ vars.LLM_BASE_URL }}
           LLM_API_KEY=${{ secrets.LLM_API_KEY }}
           LLM_MODEL=${{ vars.LLM_MODEL }}
@@ -201,31 +113,37 @@ jobs:
           SPEECH_VOICE_THEM_PITCH=${{ vars.SPEECH_VOICE_THEM_PITCH }}
           SPEECH_VOICE_THEM_SPEED=${{ vars.SPEECH_VOICE_THEM_SPEED }}
           ENV_EOF
+      - name: Copy both files to the box and compose up
+        env:
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE: ghcr.io/${{ github.repository }}
+          SSH_HOST: ${{ vars.SSH_HOST }}
+          SSH_USER: ${{ vars.SSH_USER }}
+          SSH_PORT: ${{ vars.SSH_PORT || 22 }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host box
+            HostName $SSH_HOST
+            User $SSH_USER
+            Port $SSH_PORT
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
 
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
-          export APP_IMAGE
-          docker compose pull app
-          docker compose up -d --no-build app
-
-          # `up -d` returns on start, not on serving: a boot-then-crash would deploy green. Poll
-          # /signin (needs no session) and fail with logs if it never answers.
-          probe="http://127.0.0.1:${APP_PORT:-3000}/signin"
-          for attempt in $(seq 1 30); do
-            if curl -fsS --max-time 5 -o /dev/null "$probe"; then
-              echo "app is serving ($probe)"
-              break
-            fi
-            if [ "$attempt" -eq 30 ]; then
-              echo "app never served $probe after 60s; last 50 log lines:" >&2
-              docker compose logs --tail=50 app >&2
-              exit 1
-            fi
-            sleep 2
-          done
-
-          docker image prune -f
+          scp docker-compose.yml .env "box:$DEPLOY_DIR/"
+          ssh box "docker login ghcr.io -u '$GITHUB_ACTOR' --password-stdin" <<< "$GHCR_TOKEN"
+          ssh box "cd '$DEPLOY_DIR' && IMAGE='$IMAGE' SHA='$GITHUB_SHA' bash -se" <<'REMOTE'
+          docker compose pull -q app
+          docker compose up -d --no-build --wait app || { docker compose logs --tail=50 migrate app >&2; exit 1; }
           docker compose ps
-          DEPLOY_SCRIPT
-          } | ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" \
-                -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
-                "$SSH_USER@$SSH_HOST" bash -s
+          # Remove the images of earlier deploys.
+          docker images --format '{{.Repository}}:{{.Tag}}' "$IMAGE" | grep -v ":$SHA$" | xargs -r docker rmi || true
+          REMOTE

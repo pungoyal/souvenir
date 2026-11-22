@@ -1,8 +1,6 @@
 name: Speech check
 
-# `pnpm speech:check` with the oracle-cloud environment's SPEECH_* values, so the key is never
-# copied. The report is in the log; the clips are the artifact. Run by hand after changing a
-# voice, before redeploying.
+# `pnpm speech:check` with production's SPEECH_* values. Run after changing a voice.
 
 on:
   workflow_dispatch:
