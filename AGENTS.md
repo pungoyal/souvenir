@@ -328,7 +328,17 @@ Pre-commit (husky): biome on staged files, tsc, full test suite.
   a too-fresh package — never add exclusions without the owner's approval.
   Likewise `trustPolicy`.
 - Every action is pinned to a commit SHA (`# vX.Y.Z` alone after it) and every
-  image to a digest; Dependabot (`.github/dependabot.yml`) moves them.
+  image to a digest; Renovate (`renovate.json`, the hosted app) moves them,
+  along with npm, the lockfile, pnpm (`packageManager`, which the Dockerfile
+  reads) and Node. Anything short of a major is one PR on Monday that merges
+  itself once `verify` and `image` pass, and so deploys; a major, a 0.x
+  minor, and anything held are on the Dependency Dashboard issue, waiting
+  for a person. Never bump a
+  version by hand that Renovate would have — fix the config instead. An
+  update that wants the repository changed with it (a new Biome reformats
+  and migrates `biome.json`) gets that from `renovate-fixup.yml`, which runs
+  the tool's own fixer on Renovate's branch and commits the result; a new
+  tool with the same need is a line in its `Fix` step.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

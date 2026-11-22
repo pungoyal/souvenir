@@ -2,8 +2,9 @@ FROM node:26.12.1-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64
 
 FROM node AS pnpm
 WORKDIR /app
-# Keep equal to packageManager.
-RUN npm i -g --ignore-scripts pnpm@12.6.0
+# pnpm is whatever package.json's packageManager names; that is its one home.
+COPY package.json ./
+RUN npm i -g --ignore-scripts "$(node -p "require('./package.json').packageManager")"
 
 FROM pnpm AS deps
 ENV HUSKY=0
