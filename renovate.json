@@ -24,9 +24,8 @@
       "minimumReleaseAge": null
     },
     {
-      "description": "Node moves as one: the Dockerfile's image and the workflows' node-version.",
-      "matchPackageNames": ["node"],
-      "matchDatasources": ["docker", "node-version"],
+      "description": "Node moves as one: the Dockerfile's image, the workflows' node-version, and its types.",
+      "matchDepNames": ["node", "@types/node"],
       "groupName": "node"
     }
   ]
