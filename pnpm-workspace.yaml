@@ -10,3 +10,11 @@ trustPolicy: no-downgrade
 # node_modules; the hoisted layout keeps that working identically in local
 # dev and the Docker image, with no image-only install flags.
 nodeLinker: hoisted
+
+# drizzle-kit 0.31 still loads TypeScript through the deprecated
+# @esbuild-kit loader, which pins esbuild 0.18 (GHSA-67mh-4wv8-2f99, the dev
+# server answering any origin). The loader only calls transform(), which is
+# the same API on 0.25 — the line drizzle-kit itself already depends on.
+# Drop this once drizzle-kit 1.0 (no @esbuild-kit) is the release.
+overrides:
+  "@esbuild-kit/core-utils>esbuild": "^0.25.4"
