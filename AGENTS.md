@@ -337,7 +337,9 @@ hook manager): biome on staged files, tsc, full test suite.
   for a person. Never bump a
   version by hand that Renovate would have — fix the config instead. Biome
   is a PR of its own: a new one can reformat the repository, and a person
-  runs `pnpm format` on its branch when `verify` says so.
+  runs `pnpm format` on its branch when `verify` says so. `biome.json`'s
+  `$schema` names the version (`biomejs.dev/schemas/X.Y.Z`), not a path in
+  `node_modules`, so `customManagers:biomeVersions` moves it in that same PR.
 - **The deploy is two files and one command.** `ci.yml` copies
   `docker-compose.yml` and a `.env` rendered from the `oracle-cloud` GitHub
   environment to the box, then `docker compose up -d --wait app`; the app's
