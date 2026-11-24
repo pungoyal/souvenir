@@ -97,6 +97,7 @@ their own trip's board and posting the recap. IndieHackers / r/SideProject
 post with the founding-rate number.
 
 **Days 71–90: decide.**
+
 - Founding rate ≥ 15% and ≥ 5 resolved predictions per trip: stay PWA-only;
   optionally test an organiser tier (₹299 per trip for server voice, AI
   polish, CSV export; Razorpay UPI). Free is right for India; revenue, if

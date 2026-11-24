@@ -48,6 +48,7 @@ A thin core retains hard; the mass does not, unless the game sits inside an exis
 Play money does not retain strangers but retains well inside a **closed group with a season**. A trip is a natural season (fixed roster, start and end, daily resolvable questions, a final leaderboard that is the story): the fantasy-league shape, not Manifold's.
 
 Three rules:
+
 1. Nothing is ever purchased or cashed out: no IAP for stamps, no top-up, no sponsor cash prizes. Any subscription must be for the app, not contest entry.
 2. Never facilitate a money settlement on a prediction: no currency fields, no UPI/Venmo links, no IOU ledger. Groups settle in dinner or dares.
 3. Vocabulary: _prediction, call, stamp, leaderboard_; avoid _wager, stake (money sense), odds, payout, cash_. Answer store questionnaires as _Contests_. Present stamps as points.
